@@ -4,6 +4,7 @@
 
 #include "LinkedList.h"
 #include "Queue.h"
+#include "Stack.h"
 
 int main() {
 	/*LinkedList list;
@@ -27,7 +28,7 @@ int main() {
 	LinkedList list3 = list + list2;
 	list3.print_contents();*/
 
-	Queue queue;
+	/*Queue queue;
 	queue.enqueue(1);
 	queue.enqueue(2);
 	queue.enqueue(4);
@@ -38,5 +39,15 @@ int main() {
 	std::cout << queue.peek() << "\n";
 	queue.display();
 	std::cout << queue.contains(2) << "\n";
-	std::cout << queue.length() << "\n";
+	std::cout << queue.length() << "\n";*/
+
+	/*Stack stack;
+	stack.push(2);
+	stack.push(5);
+	stack.push(7);
+	stack.push(8);
+	stack.display();
+	stack.pop();
+	std::cout << stack.peek() << "\n";
+	std::cout << stack.length() << "\n";*/
 }
