@@ -1,53 +1,57 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <string>
 
 #include "LinkedList.h"
 #include "Queue.h"
 #include "Stack.h"
 
+
 int main() {
-	/*LinkedList list;
-	list.append(2);
-	list.append(3);
-	list.append(5);
-	list.append(15);
-	list.append(45);
-	list.print_contents();
+	LinkedList<float> list;
+	list.append(2.31f);
+	list.append(3.13f);
+	list.append(5.87f);
+	list.append(15.55f);
+	list.append(45.90f);
+	list.display();
 	std::cout << list.length() << std::endl;
 	list.erase(2);
-	list.print_contents();
+	list.display();
 	std::cout << list[0] <<"\n";
 
-	LinkedList list2;
-	list2.append(190);
-	list2.append(290);
-	list2.append(390);
-	list2.print_contents();
+	LinkedList<float> list2;
+	list2.append(1.90f);
+	list2.append(2.90f);
+	list2.append(3.90f);
+	list2.display();
+	std::cout << "\n";
 
 	LinkedList list3 = list + list2;
-	list3.print_contents();*/
+	list3.display();
+	std::cout << "\n\n";
 
-	/*Queue queue;
-	queue.enqueue(1);
-	queue.enqueue(2);
-	queue.enqueue(4);
-	queue.enqueue(8);
+	Queue<std::string> queue;
+	queue.enqueue("Hello ");
+	queue.enqueue("my ");
+	queue.enqueue("name ");
+	queue.enqueue("is ");
 	std::cout << queue.peek() << "\n";
-	queue.enqueue(10);
+	queue.enqueue("Bart");
 	queue.dequeue();
 	std::cout << queue.peek() << "\n";
 	queue.display();
-	std::cout << queue.contains(2) << "\n";
-	std::cout << queue.length() << "\n";*/
+	std::cout << queue.contains("is ") << "\n";
+	std::cout << queue.length() << "\n\n";
 
-	/*Stack stack;
-	stack.push(2);
-	stack.push(5);
-	stack.push(7);
-	stack.push(8);
+	Stack<char> stack;
+	stack.push('a');
+	stack.push('n');
+	stack.push('d');
+	stack.push('k');
 	stack.display();
 	stack.pop();
 	std::cout << stack.peek() << "\n";
-	std::cout << stack.length() << "\n";*/
+	std::cout << stack.length() << "\n";
 }
