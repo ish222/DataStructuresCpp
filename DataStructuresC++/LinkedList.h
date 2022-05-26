@@ -53,7 +53,7 @@ public:
 		return total;
 	}
 
-	void erase(const T& index) {
+	void erase(const int& index) {
 		if (index >= length()) {
 			throw std::invalid_argument("Invalid index");
 		}
@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	T get(const T& index) {
+	T get(const int& index) {
 		if (index >= length()) {
 			throw std::invalid_argument("Invalid index");
 		}
