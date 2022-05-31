@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	T get(const T& index) {
+	T get(const int& index) {
 		if (index >= length()) {
 			throw std::invalid_argument("Invalid index");
 		}
