@@ -53,7 +53,7 @@ public:
 		return total;
 	}
 
-	void erase(const T& index) {
+	void erase(const int& index) {
 		if (index >= length()) {
 			throw std::invalid_argument("Invalid index");
 		}
@@ -104,7 +104,7 @@ public:
 		for (T& i : right_data) {
 			data.push_back(i);
 		}
-		LinkedList res;
+		LinkedList<T> res;
 		for (T& i : data) {
 			res.append(i);
 		}
