@@ -2,37 +2,35 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-#include <functional>
 
 namespace BT {
 
+	template<typename T>
 	struct Node {
-		int data;
-		Node* left = NULL;
-		Node* right = NULL;
+		T data;
+		Node<T>* left = NULL;
+		Node<T>* right = NULL;
 	};
 
+	template<typename T>
 	class BinaryTree {
 	public:
-		BinaryTree(const int& data) {
-			root = new Node();
+		BinaryTree(const T& data) {
+			root = new Node<T>();
 			root->data = data;
 			current_head = root;
-			_height = 1;
 		}
 
-		void new_left(const int& data) {
-			Node* new_node = new Node();
+		void new_left(const T& data) {
+			Node<T>* new_node = new Node<T>();
 			new_node->data = data;
 			current_head->left = new_node;
-			if (current_head->right == NULL) _height++;
 		}
 
-		void new_right(const int& data) {
-			Node* new_node = new Node();
+		void new_right(const T& data) {
+			Node<T>* new_node = new Node<T>();
 			new_node->data = data;
 			current_head->right = new_node;
-			if (current_head->left == NULL) _height++;
 		}
 
 		void advance_left() {
@@ -51,31 +49,45 @@ namespace BT {
 			current_head = root;
 		}
 
-		Node* get_root() {
+		Node<T>* get_root() {
 			return root;
 		}
 
-		int get_data() {
+		T get_data() {
 			return current_head->data;
 		}
 
-		int get_data(BinaryTree* node) {
+		T get_data(BinaryTree<T>* node) {
 			return node->current_head->data;
 		}
 
-		int height() {
-			return _height;
+		int max_height(Node<T>* node) {
+			if (node == NULL) {
+				return -1;
+			}
+			
+			int l_height = max_height(node->left);
+			int r_height = max_height(node->right);
+
+			if (l_height > r_height) {
+				return l_height + 1;
+			}
+			else return r_height + 1;
 		}
 
-		int show_left() {
+		int height() {
+			return max_height(root);
+		}
+
+		T show_left() {
 			return current_head->left->data;
 		}
 
-		int show_right() {
+		T show_right() {
 			return current_head->right->data;
 		}
 
-		std::vector<int>& PreOrder(Node* node, std::vector<int>& data) {
+		std::vector<T>& PreOrder(Node<T>* node, std::vector<T>& data) {
 			if (node != NULL) {
 				data.push_back(node->data);
 				PreOrder(node->left, data);
@@ -84,7 +96,7 @@ namespace BT {
 			return data;
 		}
 
-		std::vector<int>& InOrder(Node* node, std::vector<int>& data) {
+		std::vector<T>& InOrder(Node<T>* node, std::vector<T>& data) {
 			if (node != NULL) {
 				InOrder(node->left, data);
 				data.push_back(node->data);
@@ -93,7 +105,7 @@ namespace BT {
 			return data;
 		}
 
-		std::vector<int>& PostOrder(Node* node, std::vector<int>& data) {
+		std::vector<T>& PostOrder(Node<T>* node, std::vector<T>& data) {
 			if (node != NULL) {
 				PostOrder(node->left, data);
 				PostOrder(node->right, data);
@@ -102,25 +114,24 @@ namespace BT {
 			return data;
 		}
 
-		std::vector<int> contents_PreOrder() {
-			std::vector<int> temp = {};
+		std::vector<T> contents_PreOrder() {
+			std::vector<T> temp = {};
 			return PreOrder(root, temp);
 		}
 
-		std::vector<int> contents_InOrder() {
-			std::vector<int> temp = {};
+		std::vector<T> contents_InOrder() {
+			std::vector<T> temp = {};
 			return InOrder(root, temp);
 		}
 
-		std::vector<int> contents_PostOrder() {
-			std::vector<int> temp = {};
+		std::vector<T> contents_PostOrder() {
+			std::vector<T> temp = {};
 			return PostOrder(root, temp);
 		}
 
 	private:
-		Node* root;
-		Node* current_head;
-		int _height;
+		Node<T>* root;
+		Node<T>* current_head;
 	};
 
 }
