@@ -22,15 +22,33 @@ namespace BT {
 		}
 
 		void new_left(const T& data) {
-			Node<T>* new_node = new Node<T>();
-			new_node->data = data;
-			current_head->left = new_node;
+			if (current_head->left == NULL) {
+				Node<T>* new_node = new Node<T>();
+				new_node->data = data;
+				current_head->left = new_node;
+			}
+			else throw std::invalid_argument("Left node is already initialised, use change_left function to change left node.");
 		}
 
 		void new_right(const T& data) {
-			Node<T>* new_node = new Node<T>();
-			new_node->data = data;
-			current_head->right = new_node;
+			if (current_head->right == NULL) {
+				Node<T>* new_node = new Node<T>();
+				new_node->data = data;
+				current_head->right = new_node;
+			}
+			else throw std::invalid_argument("Right node is already initialised, use change_right function to change right node.");
+		}
+
+		void change_left(const T& data) {
+			if (current_head->left != NULL)
+				current_head->left->data = data;
+			else throw std::invalid_argument("Left node is uninitialised, use new_left function to add a left node.");
+		}
+
+		void change_right(const T& data) {
+			if (current_head->right != NULL)
+				current_head->right->data = data;
+			else throw std::invalid_argument("Right node is uninitialised, use new_right function to add a right node.");
 		}
 
 		void advance_left() {
@@ -49,43 +67,48 @@ namespace BT {
 			current_head = root;
 		}
 
-		Node<T>* get_root() {
+		Node<T>* get_root() const {
 			return root;
 		}
 
-		T get_data() {
+		T get_data() const {
 			return current_head->data;
 		}
 
-		T get_data(BinaryTree<T>* node) {
+		static T get_data(BinaryTree<T>* node) {
 			return node->current_head->data;
-		}
-
-		int max_height(Node<T>* node) {
-			if (node == NULL) {
-				return -1;
-			}
-			
-			int l_height = max_height(node->left);
-			int r_height = max_height(node->right);
-
-			if (l_height > r_height) {
-				return l_height + 1;
-			}
-			else return r_height + 1;
 		}
 
 		int height() {
 			return max_height(root);
 		}
 
-		T show_left() {
+		T show_left() const {
 			return current_head->left->data;
 		}
 
-		T show_right() {
+		T show_right() const {
 			return current_head->right->data;
 		}
+
+		std::vector<T> contents_PreOrder() {
+			std::vector<T> temp = {};
+			return PreOrder(root, temp);
+		}
+
+		std::vector<T> contents_InOrder() {
+			std::vector<T> temp = {};
+			return InOrder(root, temp);
+		}
+
+		std::vector<T> contents_PostOrder() {
+			std::vector<T> temp = {};
+			return PostOrder(root, temp);
+		}
+
+	private:
+		Node<T>* root;
+		Node<T>* current_head;
 
 		std::vector<T>& PreOrder(Node<T>* node, std::vector<T>& data) {
 			if (node != NULL) {
@@ -114,24 +137,19 @@ namespace BT {
 			return data;
 		}
 
-		std::vector<T> contents_PreOrder() {
-			std::vector<T> temp = {};
-			return PreOrder(root, temp);
-		}
+		int max_height(Node<T>* node) {
+			if (node == NULL) {
+				return -1;
+			}
 
-		std::vector<T> contents_InOrder() {
-			std::vector<T> temp = {};
-			return InOrder(root, temp);
-		}
+			int l_height = max_height(node->left);
+			int r_height = max_height(node->right);
 
-		std::vector<T> contents_PostOrder() {
-			std::vector<T> temp = {};
-			return PostOrder(root, temp);
+			if (l_height > r_height) {
+				return l_height + 1;
+			}
+			else return r_height + 1;
 		}
-
-	private:
-		Node<T>* root;
-		Node<T>* current_head;
 	};
 
 }

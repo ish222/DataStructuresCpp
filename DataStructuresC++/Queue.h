@@ -33,12 +33,12 @@ public:
 		return first.data;
 	}
 
-	T peek() {
+	T peek() const {
 		Node<T> first = *(head->next);
 		return first.data;
 	}
 
-	int length() {
+	int length() const {
 		Node<T> cur_node = *head;
 		int total = 0;
 		while (cur_node.next != NULL) {
@@ -48,7 +48,7 @@ public:
 		return total;
 	}
 
-	bool contains(const T& data) {
+	bool contains(const T& data) const {
 		Node<T> cur_node = *head;
 		while (cur_node.next != NULL) {
 			if (cur_node.data == data)
@@ -59,7 +59,7 @@ public:
 		return false;
 	}
 
-	std::vector<T> contents() {
+	std::vector<T> contents() const {
 		std::vector<T> elems;
 		Node<T> cur_node = *head;
 		while (cur_node.next != NULL) {
@@ -69,7 +69,7 @@ public:
 		return elems;
 	}
 
-	void display() {
+	void display() const {
 		std::vector<T> data = contents();
 		for (T& i : data) {
 			std::cout << i << "\n";

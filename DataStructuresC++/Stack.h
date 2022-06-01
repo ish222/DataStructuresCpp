@@ -28,7 +28,7 @@ public:
 		size++;
 	}
 
-	bool is_empty() {
+	bool is_empty() const {
 		return size == 0;
 	}
 
@@ -42,18 +42,18 @@ public:
 		return result;
 	}
 
-	T peek() {
+	T peek() const {
 		if (is_empty()) {
 			throw std::invalid_argument("Stack is empty, there is nothing to peek.");
 		}
 		return head->data;
 	}
 
-	int length() {
+	int length() const {
 		return size;
 	}
 
-	std::vector<T> contents() {
+	std::vector<T> contents() const {
 		std::vector<T> elems;
 		Node<T> cur_node = *head;
 		while (cur_node.next != NULL) {
@@ -63,7 +63,7 @@ public:
 		return elems;
 	}
 
-	void display() {
+	void display() const {
 		std::vector<T> data = contents();
 		for (T& i : data) {
 			std::cout << i << "\n";

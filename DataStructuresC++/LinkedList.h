@@ -26,7 +26,7 @@ public:
 		tail = new_node;
 	}
 
-	std::vector<T> contents() {
+	std::vector<T> contents() const {
 		std::vector<T> elems;
 		Node<T> cur_node = *head;
 		while (cur_node.next != NULL) {
@@ -36,14 +36,14 @@ public:
 		return elems;
 	}
 
-	void display() {
+	void display() const {
 		std::vector<T> vals = contents();
 		for (T& i : vals) {
 			std::cout << i << "\n";
 		}
 	}
 
-	int length() {
+	int length() const {
 		Node<T> cur_node = *head;
 		int total = 0;
 		while (cur_node.next != NULL) {
@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	T get(const int& index) {
+	T get(const int& index) const {
 		if (index >= length()) {
 			throw std::invalid_argument("Invalid index");
 		}
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	T operator[](const int& index) {
+	T operator[](const int& index) const {
 		if (index >= length()) {
 			throw std::invalid_argument("Invalid index");
 		}

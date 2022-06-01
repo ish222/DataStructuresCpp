@@ -73,7 +73,6 @@ int main() {
 	tree.advance_right();
 	tree.new_left(30);
 	tree.new_right(35);
-
 	std::vector<int> data = tree.contents_InOrder();
 	printvec(data);
 	data = tree.contents_PostOrder();
