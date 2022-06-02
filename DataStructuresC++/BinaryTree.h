@@ -76,36 +76,104 @@ namespace BT {
 		}
 
 		static T get_data(BinaryTree<T>* node) {
-			return node->current_head->data;
+			if (node->current_head != NULL)
+				return node->current_head->data;
+			else {
+				throw std::runtime_error("Error: Binary tree object provided is empty");
+				return T();
+			}
+		}
+
+		int max_height() {
+			return calc_max_height(root);
 		}
 
 		int height() {
-			return max_height(root);
+			return calc_max_height(current_head);
+		}
+
+		bool is_empty() {
+			return max_height() == 0;
 		}
 
 		T show_left() const {
-			return current_head->left->data;
+			if(current_head->left != NULL)
+				return current_head->left->data;
+			else {
+				throw std::runtime_error("Error: left node is empty");
+				return T();
+			}
 		}
 
 		T show_right() const {
-			return current_head->right->data;
+			if (current_head->right != NULL)
+				return current_head->right->data;
+			else {
+				throw std::runtime_error("Error: right node is empty");
+				return T();
+			}
 		}
 
 		std::vector<T> contents_PreOrder() {
+			if (max_height() == 0) {
+				throw std::runtime_error("Error: Binary tree is empty, there is no content to return");
+				return std::vector<T>();
+			}
 			std::vector<T> temp = {};
 			return PreOrder(root, temp);
 		}
 
 		std::vector<T> contents_InOrder() {
+			if (max_height() == 0) {
+				throw std::runtime_error("Error: Binary tree is empty, there is no content to return");
+				return std::vector<T>();
+			}
 			std::vector<T> temp = {};
 			return InOrder(root, temp);
 		}
 
 		std::vector<T> contents_PostOrder() {
+			if (max_height() == 0) {
+				throw std::runtime_error("Error: Binary tree is empty, there is no content to return");
+				return std::vector<T>();
+			}
 			std::vector<T> temp = {};
 			return PostOrder(root, temp);
 		}
 
+		void remove_left() {
+			if (current_head->left != NULL)
+				delete current_head->left;
+			else {
+				throw std::runtime_error("Error: Left node is empty, there is nothing to remove");
+			}
+		}
+
+		void remove_right() {
+			if (current_head->right != NULL)
+				delete current_head->right;
+			else {
+				throw std::runtime_error("Error: Right node is empty, there is nothing to remove");
+			}
+		}
+
+		void clear(bool destroy = false) {
+			if (max_height() == 0 && destroy == false) {
+				throw std::runtime_error("Error: Binary tree is empty, there is nothing to remove");
+				return;
+			}
+			delete_tree(root);
+			if (destroy == false) {
+				this->root = new Node<T>();
+				this->current_head = root;
+			}
+		}
+
+		~BinaryTree() {
+			if (root != NULL)
+				clear(true);
+			else delete root;
+		}
 	private:
 		Node<T>* root;
 		Node<T>* current_head;
@@ -137,18 +205,22 @@ namespace BT {
 			return data;
 		}
 
-		int max_height(Node<T>* node) {
-			if (node == NULL) {
+		int calc_max_height(Node<T>* node) {
+			if (node == NULL)
 				return -1;
-			}
-
-			int l_height = max_height(node->left);
-			int r_height = max_height(node->right);
-
-			if (l_height > r_height) {
+			int l_height = calc_max_height(node->left);
+			int r_height = calc_max_height(node->right);
+			if (l_height > r_height)
 				return l_height + 1;
-			}
 			else return r_height + 1;
+		}
+
+		void delete_tree(Node<T>* node) {
+			if (node->left != NULL)
+				delete_tree(node->left);
+			if (node->right != NULL)
+				delete_tree(node->right);
+			delete node;
 		}
 	};
 
