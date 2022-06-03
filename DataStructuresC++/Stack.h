@@ -35,7 +35,9 @@ public:
 			return T();
 		}
 		T result = head->data;
+		Node<T>* cur = head;
 		head = head->next;
+		delete cur;
 		return result;
 	}
 
@@ -69,6 +71,27 @@ public:
 			cur_node = *(cur_node.next);
 		}
 		return elems;
+	}
+
+	int find(const T& data) const {
+		if (length() == 0) {
+			throw std::runtime_error("Error: stack is empty, there is no content to search");
+			return -1;
+		}
+		int index = 0;
+		bool found = false;
+		Node<T> cur_node = *head;
+		while (cur_node.next != NULL) {
+			if (cur_node.data == data) {
+				found = true;
+				break;
+			}
+			index++;
+			cur_node = *(cur_node.next);
+		}
+		if (found == true)
+			return index;
+		else return -1;
 	}
 
 	void display() const {

@@ -32,9 +32,11 @@ public:
 			throw std::runtime_error("Error: queue is empty, there is nothing to dequeue");
 			return T();
 		}
-		Node<T> first = *(head->next);
-		head->next = first.next;
-		return first.data;
+		Node<T>* first = (head->next);
+		head->next = first->next;
+		T data = first->data;
+		delete first;
+		return data;
 	}
 
 	T peek() const {
@@ -61,6 +63,27 @@ public:
 				cur_node = *(cur_node.next);
 		}
 		return false;
+	}
+
+	int find(const T& data) const {
+		if (length() == 0) {
+			throw std::runtime_error("Error: queue is empty, there is no content to search");
+			return -1;
+		}
+		int index = 0;
+		bool found = false;
+		Node<T> cur_node = *head;
+		while (cur_node.next != NULL) {
+			cur_node = *(cur_node.next);
+			if (cur_node.data == data) {
+				found = true;
+				break;
+			}
+			index++;
+		}
+		if (found == true)
+			return index;
+		else return -1;
 	}
 
 	std::vector<T> contents() const {

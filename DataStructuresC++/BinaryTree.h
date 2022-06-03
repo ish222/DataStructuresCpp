@@ -27,7 +27,7 @@ namespace BT {
 				new_node->data = data;
 				current_head->left = new_node;
 			}
-			else throw std::invalid_argument("Left node is already initialised, use change_left function to change left node.");
+			else throw std::runtime_error("Left node is already initialised, use change_left function to change left node.");
 		}
 
 		void new_right(const T& data) {
@@ -36,31 +36,37 @@ namespace BT {
 				new_node->data = data;
 				current_head->right = new_node;
 			}
-			else throw std::invalid_argument("Right node is already initialised, use change_right function to change right node.");
+			else throw std::runtime_error("Right node is already initialised, use change_right function to change right node.");
+		}
+
+		void change_data(const T& data) {
+			if (current_head != NULL)
+				current_head->data = data;
+			else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
 		}
 
 		void change_left(const T& data) {
 			if (current_head->left != NULL)
 				current_head->left->data = data;
-			else throw std::invalid_argument("Left node is uninitialised, use new_left function to add a left node.");
+			else throw std::runtime_error("Left node is uninitialised, use new_left function to add a left node.");
 		}
 
 		void change_right(const T& data) {
 			if (current_head->right != NULL)
 				current_head->right->data = data;
-			else throw std::invalid_argument("Right node is uninitialised, use new_right function to add a right node.");
+			else throw std::runtime_error("Right node is uninitialised, use new_right function to add a right node.");
 		}
 
 		void advance_left() {
 			if (current_head->left != NULL)
 				current_head = current_head->left;
-			else throw std::invalid_argument("Left node is uninitialised.");
+			else throw std::runtime_error("Left node is uninitialised.");
 		}
 
 		void advance_right() {
 			if (current_head->right != NULL)
 				current_head = current_head->right;
-			else throw std::invalid_argument("Right node is uninitialised.");
+			else throw std::runtime_error("Right node is uninitialised.");
 		}
 
 		void goto_root() {
@@ -143,7 +149,7 @@ namespace BT {
 
 		void remove_left() {
 			if (current_head->left != NULL)
-				delete current_head->left;
+				delete_tree(current_head->left);
 			else {
 				throw std::runtime_error("Error: Left node is empty, there is nothing to remove");
 			}
@@ -151,7 +157,7 @@ namespace BT {
 
 		void remove_right() {
 			if (current_head->right != NULL)
-				delete current_head->right;
+				delete_tree(current_head->right);
 			else {
 				throw std::runtime_error("Error: Right node is empty, there is nothing to remove");
 			}
