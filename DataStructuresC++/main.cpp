@@ -7,6 +7,7 @@
 #include "Queue.h"
 #include "Stack.h"
 #include "BinaryTree.h"
+#include "Graph.h"
 
 template<typename T>
 void printvec(std::vector<T> data) {
@@ -87,7 +88,18 @@ int main() {
 
 		tree.clear();
 		std::cout << "\nTree height after clearing: " << tree.max_height();
-		std::cout << std::endl;
+		std::cout << "\n\n";
+
+		GP::Graph graph(5);
+		graph.add_node(10);
+		graph.add_node(15);
+		graph.add_node(20);
+		graph.add_edge('A', 'B');
+		graph.add_edge('B', 'C');
+		graph.add_edge('A', 'D');
+		graph.add_edge('C', 'D');
+		graph.add_edge('B', 'D');
+		graph.print();
 
 	}
 
