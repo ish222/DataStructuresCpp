@@ -8,8 +8,8 @@ namespace BT {
 	template<typename T>
 	struct Node {
 		T data;
-		Node<T>* left = NULL;
-		Node<T>* right = NULL;
+		Node<T>* left = nullptr;
+		Node<T>* right = nullptr;
 	};
 
 	template<typename T>
@@ -22,7 +22,7 @@ namespace BT {
 		}
 
 		void new_left(const T& data) {
-			if (current_head->left == NULL) {
+			if (current_head->left == nullptr) {
 				Node<T>* new_node = new Node<T>();
 				new_node->data = data;
 				current_head->left = new_node;
@@ -31,7 +31,7 @@ namespace BT {
 		}
 
 		void new_right(const T& data) {
-			if (current_head->right == NULL) {
+			if (current_head->right == nullptr) {
 				Node<T>* new_node = new Node<T>();
 				new_node->data = data;
 				current_head->right = new_node;
@@ -40,31 +40,31 @@ namespace BT {
 		}
 
 		void change_data(const T& data) {
-			if (current_head != NULL)
+			if (current_head != nullptr)
 				current_head->data = data;
 			else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
 		}
 
 		void change_left(const T& data) {
-			if (current_head->left != NULL)
+			if (current_head->left != nullptr)
 				current_head->left->data = data;
 			else throw std::runtime_error("Left node is uninitialised, use new_left function to add a left node.");
 		}
 
 		void change_right(const T& data) {
-			if (current_head->right != NULL)
+			if (current_head->right != nullptr)
 				current_head->right->data = data;
 			else throw std::runtime_error("Right node is uninitialised, use new_right function to add a right node.");
 		}
 
 		void advance_left() {
-			if (current_head->left != NULL)
+			if (current_head->left != nullptr)
 				current_head = current_head->left;
 			else throw std::runtime_error("Left node is uninitialised.");
 		}
 
 		void advance_right() {
-			if (current_head->right != NULL)
+			if (current_head->right != nullptr)
 				current_head = current_head->right;
 			else throw std::runtime_error("Right node is uninitialised.");
 		}
@@ -82,7 +82,7 @@ namespace BT {
 		}
 
 		static T get_data(BinaryTree<T>* node) {
-			if (node->current_head != NULL)
+			if (node->current_head != nullptr)
 				return node->current_head->data;
 			else {
 				throw std::runtime_error("Error: Binary tree object provided is empty");
@@ -102,8 +102,12 @@ namespace BT {
 			return max_height() == 0;
 		}
 
+		operator bool() const {
+			return (is_empty() != 0);
+		}
+
 		T show_left() const {
-			if(current_head->left != NULL)
+			if(current_head->left != nullptr)
 				return current_head->left->data;
 			else {
 				throw std::runtime_error("Error: left node is empty");
@@ -112,7 +116,7 @@ namespace BT {
 		}
 
 		T show_right() const {
-			if (current_head->right != NULL)
+			if (current_head->right != nullptr)
 				return current_head->right->data;
 			else {
 				throw std::runtime_error("Error: right node is empty");
@@ -148,7 +152,7 @@ namespace BT {
 		}
 
 		void remove_left() {
-			if (current_head->left != NULL)
+			if (current_head->left != nullptr)
 				delete_tree(current_head->left);
 			else {
 				throw std::runtime_error("Error: Left node is empty, there is nothing to remove");
@@ -156,7 +160,7 @@ namespace BT {
 		}
 
 		void remove_right() {
-			if (current_head->right != NULL)
+			if (current_head->right != nullptr)
 				delete_tree(current_head->right);
 			else {
 				throw std::runtime_error("Error: Right node is empty, there is nothing to remove");
@@ -176,7 +180,7 @@ namespace BT {
 		}
 
 		~BinaryTree() {
-			if (root != NULL)
+			if (root != nullptr)
 				clear(true);
 			else delete root;
 		}
@@ -185,7 +189,7 @@ namespace BT {
 		Node<T>* current_head;
 
 		std::vector<T>& PreOrder(Node<T>* node, std::vector<T>& data) {
-			if (node != NULL) {
+			if (node != nullptr) {
 				data.push_back(node->data);
 				PreOrder(node->left, data);
 				PreOrder(node->right, data);
@@ -194,7 +198,7 @@ namespace BT {
 		}
 
 		std::vector<T>& InOrder(Node<T>* node, std::vector<T>& data) {
-			if (node != NULL) {
+			if (node != nullptr) {
 				InOrder(node->left, data);
 				data.push_back(node->data);
 				InOrder(node->right, data);
@@ -203,7 +207,7 @@ namespace BT {
 		}
 
 		std::vector<T>& PostOrder(Node<T>* node, std::vector<T>& data) {
-			if (node != NULL) {
+			if (node != nullptr) {
 				PostOrder(node->left, data);
 				PostOrder(node->right, data);
 				data.push_back(node->data);
@@ -212,7 +216,7 @@ namespace BT {
 		}
 
 		int calc_max_height(Node<T>* node) {
-			if (node == NULL)
+			if (node == nullptr)
 				return -1;
 			int l_height = calc_max_height(node->left);
 			int r_height = calc_max_height(node->right);
@@ -222,9 +226,9 @@ namespace BT {
 		}
 
 		void delete_tree(Node<T>* node) {
-			if (node->left != NULL)
+			if (node->left != nullptr)
 				delete_tree(node->left);
-			if (node->right != NULL)
+			if (node->right != nullptr)
 				delete_tree(node->right);
 			delete node;
 		}

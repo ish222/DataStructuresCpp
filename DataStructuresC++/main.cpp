@@ -90,16 +90,24 @@ int main() {
 		std::cout << "\nTree height after clearing: " << tree.max_height();
 		std::cout << "\n\n";
 
-		GP::Graph graph(5);
+		GP::Graph<int> graph(5);
 		graph.add_node(10);
 		graph.add_node(15);
 		graph.add_node(20);
+		graph.add_node(30);
 		graph.add_edge('A', 'B');
 		graph.add_edge('B', 'C');
 		graph.add_edge('A', 'D');
+		graph.add_edge('A', 'C');
 		graph.add_edge('C', 'D');
 		graph.add_edge('B', 'D');
+		graph.add_edge('A', 'E');
+		graph.add_edge('E', 'B');
 		graph.print();
+		std::cout << "\n";
+		graph.remove('C');
+		graph.print();
+		std::cout << "\n\n";
 
 	}
 

@@ -52,11 +52,15 @@ public:
 	int length() const {
 		Node<T> cur_node = *head;
 		int total = 0;
-		while (cur_node.next != NULL) {
+		while (cur_node.next != nullptr) {
 			total++;
 			cur_node = *(cur_node.next);
 		}
 		return total;
+	}
+
+	operator bool() const {
+		return (length() != 0);
 	}
 
 	std::vector<T> contents() const {
@@ -66,7 +70,7 @@ public:
 		}
 		std::vector<T> elems;
 		Node<T> cur_node = *head;
-		while (cur_node.next != NULL) {
+		while (cur_node.next != nullptr) {
 			elems.push_back(cur_node.data);
 			cur_node = *(cur_node.next);
 		}
@@ -81,7 +85,7 @@ public:
 		int index = 0;
 		bool found = false;
 		Node<T> cur_node = *head;
-		while (cur_node.next != NULL) {
+		while (cur_node.next != nullptr) {
 			if (cur_node.data == data) {
 				found = true;
 				break;
@@ -111,8 +115,8 @@ public:
 			return;
 		}
 		Node<T>* cur_node = head;
-		Node<T>* mext = NULL;
-		while (cur_node->next != NULL) {
+		Node<T>* mext = nullptr;
+		while (cur_node->next != nullptr) {
 			cur_node = cur_node->next;
 			delete head;
 			head = cur_node;

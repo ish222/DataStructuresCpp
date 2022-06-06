@@ -33,7 +33,7 @@ public:
 		}
 		std::vector<T> elems;
 		Node<T> cur_node = *head;
-		while (cur_node.next != NULL) {
+		while (cur_node.next != nullptr) {
 			cur_node = *(cur_node.next);
 			elems.push_back(cur_node.data);
 		}
@@ -48,7 +48,7 @@ public:
 		int index = 0;
 		bool found = false;
 		Node<T> cur_node = *head;
-		while (cur_node.next != NULL) {
+		while (cur_node.next != nullptr) {
 			cur_node = *(cur_node.next);
 			if (cur_node.data == data) {
 				found = true;
@@ -75,11 +75,15 @@ public:
 	int length() const {
 		Node<T> cur_node = *head;
 		int total = 0;
-		while (cur_node.next != NULL) {
+		while (cur_node.next != nullptr) {
 			total++;
 			cur_node = *(cur_node.next);
 		}
 		return total;
+	}
+
+	operator bool() const {
+		return (length() != 0);
 	}
 
 	void erase(const int& index) {
@@ -94,7 +98,7 @@ public:
 			cur_node = cur_node->next;
 			if (cur_index == index) {
 				last_node->next = cur_node->next;
-				if (last_node->next == NULL) {
+				if (last_node->next == nullptr) {
 					tail = last_node;
 				}
 				delete cur_node;
@@ -110,7 +114,7 @@ public:
 			return;
 		}
 		Node<T>* cur_node = head;
-		while (cur_node != NULL) {
+		while (cur_node != nullptr) {
 			cur_node = cur_node->next;
 			delete head;
 			head = cur_node;
@@ -145,9 +149,9 @@ public:
 		}
 		Node<T>* cur_node = head->next;
 		tail = head->next;
-		Node<T>* last = NULL;
-		Node<T>* next = NULL;
-		while (cur_node != NULL) {
+		Node<T>* last = nullptr;
+		Node<T>* next = nullptr;
+		while (cur_node != nullptr) {
 			next = cur_node->next;
 			cur_node->next = last;
 			last = cur_node;

@@ -5,65 +5,138 @@
 
 namespace GP {
 
+	template <typename T, typename U>
 	struct Node {
-		int data;
-		char id;
+		T data;
+		U id;
 	};
 
+	template <typename T, typename U = char>
 	class Graph {
 	public:
 		Graph(const int& data) {
-			Node* new_node = new Node();
+			Node<T, U>* new_node = new Node<T, U>();
 			new_node->data = data;
 			node_num = 0;
 			new_node->id = 65+node_num;
 			node_list.push_back(new_node);
-			adj_list.push_back(std::vector<Node*>{new_node});
+			adj_list.push_back(std::vector<Node<T, U>*>{new_node});
 		}
 
 		void add_node(const int& data) {
-			Node* new_node = new Node();
+			Node<T, U>* new_node = new Node<T, U>();
 			new_node->data = data;
 			node_num++;
 			new_node->id = 65+node_num;
 			node_list.push_back(new_node);
-			adj_list.push_back(std::vector<Node*>{new_node});
+			adj_list.push_back(std::vector<Node<T, U>*>{new_node});
 		}
 
-		void add_edge(char last, char next) {
-			Node* last_node = NULL;
-			Node* next_node = NULL;
-			for (Node* node : node_list) {
+		void add_edge(const char& last, const char& next) {
+			Node<T, U>* last_node = nullptr;
+			Node<T, U>* next_node = nullptr;
+			for (Node<T, U>* node : node_list) {
 				if (node->id == last)
 					last_node = node;
 				else if (node->id == next)
 					next_node = node;
 			}
-			if (last_node != NULL && next_node != NULL) {
+			if (last_node != nullptr && next_node != nullptr) {
 				adj_list[(int)last - 65].push_back(next_node);
+			}
+			else {
+				throw std::runtime_error("Invalid node IDs");
 			}
 		}
 
-		std::vector<int> contents() {
+		void change(const U& id, const T& data) {
+			bool found = false;
+			for (Node<T, U>* node : node_list) {
+				if (node->id == id) {
+					node->data = data;
+					found = true;
+				}	
+			}
+			if (found == false)
+				throw std::runtime_error("Invalid node ID");
+		}
+
+		int num_node() const {
+			return node_list.size();
+		}
+
+		bool empty() const {
+			return node_list.size() == 0;
+		}
+
+		operator bool() const {
+			return (empty() != 0);
+		}
+
+		bool find(const char& id) const {
+			for (Node<T, U>* node : node_list) {
+				if (node->id == id)
+					return true;
+			}
+			return false;
+		}
+
+		std::vector<int> contents() const {
 			std::vector<int> contents = {};
-			for (Node* node : node_list) {
+			for (Node<T, U>* node : node_list) {
 				contents.push_back(node->data);
 			}
 			return contents;
 		}
 
-		void print() {
-			for (std::vector<Node*> links : adj_list) {
-				for (Node* node : links) {
+		void print() const {
+			for (std::vector<Node<T, U>*> links : adj_list) {
+				for (Node<T, U>* node : links) {
 					std::cout << node->id << " : " << node->data << "\t->\t";
 				}
-				std::cout << "\n";
+				std::cout << "END\n";
 			}
 		}
 
+		void remove(const char& id) {
+			Node<T, U>* node = nullptr;
+			for (int i = 0; i < node_list.size(); i++) {
+				if (node_list[i]->id == id) {
+					node = node_list[i];
+					adj_list.erase(adj_list.begin() + i);
+					node_list.erase(node_list.begin() + i);
+					break;
+				}
+			}
+			for (std::vector<Node<T, U>*>& links : adj_list) {
+				for (int i = 0; i < links.size(); i++) {
+					if (links[i]->id == id) {
+						links.erase(links.begin() + i);
+					}
+				}
+			}
+			delete node;
+		}
+
+		void clear(bool destroy = false) {
+			for (Node<T, U>* node : node_list) {
+				delete node;
+			}
+			node_list.clear();
+			adj_list.clear();
+			if (destroy == false) {
+				Graph(0);
+			}
+		}
+
+		~Graph() {
+			if (node_list.empty() == false)
+				clear(true);
+		}
+
 	private:
-		std::vector<std::vector<Node*>> adj_list;
-		std::vector<Node*> node_list;
+		std::vector<std::vector<Node<T, U>*>> adj_list;
+		std::vector<Node<T, U>*> node_list;
 		int node_num;
 	};
 
