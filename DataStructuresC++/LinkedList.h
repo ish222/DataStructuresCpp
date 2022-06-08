@@ -26,6 +26,31 @@ public:
 		tail = new_node;
 	}
 
+	void insert(const T& data, const int& index) {
+		if (index > length() || index < 0)
+			throw std::invalid_argument("Invalid index");
+		Node<T>* new_node = new Node<T>();
+		new_node->data = data;
+		if (head->next == nullptr && index == 0) {
+			head->next = new_node;
+			tail = new_node;
+			return;
+		}
+		int _index = 0;
+		Node<T>* cur_node = head;
+		Node<T>* last_node = nullptr;
+		while (1) {
+			last_node = cur_node;
+			cur_node = cur_node->next;
+			if (_index == index) {
+				last_node->next = new_node;
+				new_node->next = cur_node;
+				return;
+			}
+			_index++;
+		}
+	}
+
 	std::vector<T> contents() const {
 		if (length() == 0) {
 			throw std::runtime_error("Error: linked list is empty");

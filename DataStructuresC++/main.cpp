@@ -109,6 +109,13 @@ int main() {
 		graph.print();
 		std::cout << "\n\n";
 
+		Queue<int> PQueue(50, 2);
+		PQueue.enqueue(15);
+		PQueue.enqueue(12);
+		PQueue.enqueue(20);
+		PQueue.enqueue(7);
+		PQueue.display();
+
 	}
 
 	catch (std::invalid_argument& e) {

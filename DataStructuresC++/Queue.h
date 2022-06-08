@@ -14,19 +14,45 @@ public:
 	Queue() {
 		head = new Node<T>();
 		tail = head;
+		this->priority_val = None;
 	}
 
-	Queue(const T& data) {
+	Queue(const T& data, int priority = None) {
 		head = new Node<T>();
 		tail = head;
+		this->priority_val = priority;
 		enqueue(data);
 	}
 
 	void enqueue(const T& data) {
-		Node<T>* new_node = new Node<T>();
-		new_node->data = data;
-		tail->next = new_node;
-		tail = new_node;
+		if (priority_val == None || head->next == nullptr || head == nullptr) {
+			Node<T>* new_node = new Node<T>();
+			new_node->data = data;
+			tail->next = new_node;
+			tail = new_node;
+			return;
+		}
+		else {
+			Node<T>* cur_node = head->next;
+			int index = 0;
+			switch (priority_val) {
+			case Ascending:
+				while (cur_node->data < data && cur_node->next != nullptr) {
+					cur_node = cur_node->next;
+					index++;
+				}
+				insert(data, index);
+				break;
+
+			case Descending:
+				while (cur_node->data > data && cur_node->next != nullptr) {
+					cur_node = cur_node->next;
+					index++;
+				}
+				insert(data, index);
+				break;
+			}
+		}
 	}
 
 	T dequeue() {
@@ -88,6 +114,31 @@ public:
 		else return -1;
 	}
 
+	void insert(const T& data,  const int& index) {
+		if(index > length() || index < 0)
+			throw std::invalid_argument("Invalid index");
+		Node<T>* new_node = new Node<T>();
+		new_node->data = data;
+		if (head->next == nullptr && index == 0) {
+			head->next = new_node;
+			tail = new_node;
+			return;
+		}
+		int _index = 0;
+		Node<T>* cur_node = head;
+		Node<T>* last_node = nullptr;
+		while (1) {
+			last_node = cur_node;
+			cur_node = cur_node->next;
+			if (_index == index) {
+				last_node->next = new_node;
+				new_node->next = cur_node;
+				return;
+			}
+			_index++;
+		}
+	}
+
 	std::vector<T> contents() const {
 		if (length() == 0) {
 			throw std::runtime_error("Error: queue is empty, there is no content");
@@ -144,5 +195,11 @@ public:
 private:
 	Node<T>* head;
 	Node<T>* tail;
+	int priority_val;
+	enum Priority {
+		None,
+		Ascending,
+		Descending
+	};
 };
 
