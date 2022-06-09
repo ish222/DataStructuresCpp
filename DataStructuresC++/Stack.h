@@ -10,17 +10,19 @@ class Stack
 {
 public:
 	Stack() {
-		head = new Node<T>();
+		head = nullptr;
 	}
 
 	Stack(const T& data) {
-		head = new Node<T>();
-		push(data);
+		head = new Node<T>(data);
 	}
 
 	void push(const T& data) {
-		Node<T>* new_node = new Node<T>();
-		new_node->data = data;
+		Node<T>* new_node = new Node<T>(data);
+		if (head == nullptr) {
+			head = new_node;
+			return;
+		}
 		new_node->next = head;
 		head = new_node;
 	}
@@ -30,7 +32,7 @@ public:
 	}
 
 	T pop() {
-		if (is_empty()) {
+		if (head == nullptr) {
 			throw std::invalid_argument("Stack is empty, there is nothing to pop.");
 			return T();
 		}
@@ -42,7 +44,7 @@ public:
 	}
 
 	T peek() const {
-		if (is_empty()) {
+		if (head == nullptr) {
 			throw std::invalid_argument("Stack is empty, there is nothing to peek.");
 			return T();
 		}
@@ -50,48 +52,50 @@ public:
 	}
 
 	int length() const {
-		Node<T> cur_node = *head;
+		if (head == nullptr)
+			return 0;
+		Node<T>* cur_node = head;
 		int total = 0;
-		while (cur_node.next != nullptr) {
+		while (cur_node != nullptr) {
+			cur_node = cur_node->next;
 			total++;
-			cur_node = *(cur_node.next);
 		}
 		return total;
 	}
 
 	operator bool() const {
-		return (length() != 0);
+		return (head != nullptr);
 	}
 
 	std::vector<T> contents() const {
-		if (length() == 0) {
+		if (head == nullptr) {
 			throw std::runtime_error("Error: stack is empty, there is no content");
 			return std::vector<T>();
 		}
 		std::vector<T> elems;
-		Node<T> cur_node = *head;
-		while (cur_node.next != nullptr) {
-			elems.push_back(cur_node.data);
-			cur_node = *(cur_node.next);
+		Node<T>* cur_node = head;
+		while (cur_node != nullptr) {
+			elems.push_back(cur_node->data);
+			cur_node = cur_node->next;
 		}
 		return elems;
 	}
 
 	int find(const T& data) const {
-		if (length() == 0) {
+		if (head == nullptr) {
 			throw std::runtime_error("Error: stack is empty, there is no content to search");
 			return -1;
 		}
 		int index = 0;
 		bool found = false;
-		Node<T> cur_node = *head;
-		while (cur_node.next != nullptr) {
-			if (cur_node.data == data) {
+		Node<T>* cur_node = head;
+		while (cur_node != nullptr) {
+			if (cur_node->data == data) {
 				found = true;
 				break;
 			}
+			cur_node = cur_node->next;
 			index++;
-			cur_node = *(cur_node.next);
 		}
 		if (found == true)
 			return index;
@@ -99,38 +103,34 @@ public:
 	}
 
 	void display() const {
-		if (length() == 0) {
+		if (head == nullptr) {
 			throw std::runtime_error("Error: stack is empty, there is nothing to display");
 			return;
 		}
 		std::vector<T> data = contents();
 		for (T& i : data) {
-			std::cout << i << "\n";
+			std::cout << i << "\t";
 		}
+		std::cout << "\n";
 	}
 
-	void clear(bool destroy = false) {
-		if (length() == 0) {
+	void clear() {
+		if (head == nullptr) {
 			throw std::runtime_error("Error: stack is empty and so cannot be cleared");
 			return;
 		}
 		Node<T>* cur_node = head;
-		Node<T>* mext = nullptr;
-		while (cur_node->next != nullptr) {
+		while (cur_node != nullptr) {
 			cur_node = cur_node->next;
 			delete head;
 			head = cur_node;
 		}
-
-		if (destroy == false)
-			this->head = new Node<T>();
+		head = nullptr;
 	}
 
 	~Stack() {
 		if (length() != 0)
-			clear(true);
-		else delete head;
-
+			clear();
 	}
 
 private:

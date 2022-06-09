@@ -28,11 +28,11 @@ int main() {
 		std::cout << list.length() << std::endl;
 		list.erase(2);
 		list.display();
-		std::cout << list[0] <<"\n";
+		std::cout << list[0] <<"\n\n";
 
 		list.reverse_order();
-		std::cout << "\n";
 		list.display();
+		std::cout << "\n";
 
 		LinkedList<float> list2;
 		list2.append(1.90f);
@@ -50,10 +50,11 @@ int main() {
 		queue.enqueue("my ");
 		queue.enqueue("name ");
 		queue.enqueue("is ");
-		std::cout << queue.peek() << "\n";
+		std::cout << "Peeking Queue: " << queue.peek() << "\n";
 		queue.enqueue("Bart");
 		queue.dequeue();
-		std::cout << queue.peek() << "\n";
+		std::cout << "length = " << queue.length() << "\n";
+		std::cout << "Peeking Queue: " << queue.peek() << "\n";
 		queue.display();
 		std::cout << queue.contains("is ") << "\n";
 		std::cout << queue.length() << "\n\n";
@@ -109,7 +110,7 @@ int main() {
 		graph.print();
 		std::cout << "\n\n";
 
-		Queue<int> PQueue(50, 2);
+		Queue<int> PQueue(3, 1);
 		PQueue.enqueue(15);
 		PQueue.enqueue(12);
 		PQueue.enqueue(20);
