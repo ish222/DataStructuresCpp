@@ -229,7 +229,7 @@ public:
 	}
 
 	~LinkedList() {
-		if (length() != 0)
+		if (head != nullptr)
 			clear();
 	}
 

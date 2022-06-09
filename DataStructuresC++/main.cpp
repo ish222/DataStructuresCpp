@@ -8,6 +8,7 @@
 #include "Stack.h"
 #include "BinaryTree.h"
 #include "Graph.h"
+#include "Map.h"
 
 template<typename T>
 void printvec(std::vector<T> data) {
@@ -88,6 +89,7 @@ int main() {
 		std::cout << tree.max_height() << std::endl;
 
 		tree.clear();
+		tree.change_data(10);
 		std::cout << "\nTree height after clearing: " << tree.max_height();
 		std::cout << "\n\n";
 
@@ -116,7 +118,15 @@ int main() {
 		PQueue.enqueue(20);
 		PQueue.enqueue(7);
 		PQueue.display();
+		std::cout << "\n\n";
 
+		Map::Map<int> map;
+		map.add("A", 15);
+		map.add("B", 25);
+		map.add("C", 6);
+		map.add("D", 53);
+		map.add("E", 152);
+		map.print();
 	}
 
 	catch (std::invalid_argument& e) {

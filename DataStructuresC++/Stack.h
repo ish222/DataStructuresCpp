@@ -97,7 +97,7 @@ public:
 			cur_node = cur_node->next;
 			index++;
 		}
-		if (found == true)
+		if (found)
 			return index;
 		else return -1;
 	}
@@ -129,7 +129,7 @@ public:
 	}
 
 	~Stack() {
-		if (length() != 0)
+		if (head != nullptr)
 			clear();
 	}
 

@@ -2,8 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-#include <type_traits>
-#include <functional>
 
 #include "Node.h"
 
@@ -121,7 +119,7 @@ public:
 			cur_node = cur_node->next;
 			index++;
 		}
-		if (found == true)
+		if (found)
 			return index;
 		else return -1;
 	}

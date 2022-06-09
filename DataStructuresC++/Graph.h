@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include <algorithm>
+//#include <algorithm>
 
 namespace GP {
 
@@ -9,26 +9,24 @@ namespace GP {
 	struct Node {
 		T data;
 		U id;
+
+		Node(T data, U id) : data(data), id(id) {}
 	};
 
 	template <typename T, typename U = char>
 	class Graph {
 	public:
 		Graph(const int& data, bool directed = true) {
-			Node<T, U>* new_node = new Node<T, U>();
-			new_node->data = data;
-			node_num = 0;
-			new_node->id = 65+node_num;
+			Node<T, U>* new_node = new Node<T, U>(data, 'A');
+			node_num = 1;
 			node_list.push_back(new_node);
 			adj_list.push_back(std::vector<Node<T, U>*>{new_node});
 			this->directed = directed;
 		}
 
 		void add_node(const int& data) {
-			Node<T, U>* new_node = new Node<T, U>();
-			new_node->data = data;
+			Node<T, U>* new_node = new Node<T, U>(data, 'A'+node_num);
 			node_num++;
-			new_node->id = 65+node_num;
 			node_list.push_back(new_node);
 			adj_list.push_back(std::vector<Node<T, U>*>{new_node});
 		}
@@ -43,9 +41,9 @@ namespace GP {
 					next_node = node;
 			}
 			if (last_node != nullptr && next_node != nullptr) {
-				adj_list[(int)last - 65].push_back(next_node);
+				adj_list[(int)(last - 'A')].push_back(next_node);
 				if (!directed) {
-					adj_list[(int)next - 65].push_back(last_node);
+					adj_list[(int)(next - 'A')].push_back(last_node);
 				}
 			}
 			else {

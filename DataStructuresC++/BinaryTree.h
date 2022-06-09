@@ -10,21 +10,21 @@ namespace BT {
 		T data;
 		Node<T>* left = nullptr;
 		Node<T>* right = nullptr;
+
+		Node(T data) : data(data) {}
 	};
 
 	template<typename T>
 	class BinaryTree {
 	public:
 		BinaryTree(const T& data) {
-			root = new Node<T>();
-			root->data = data;
+			root = new Node<T>(data);
 			current_head = root;
 		}
 
 		void new_left(const T& data) {
 			if (current_head->left == nullptr) {
-				Node<T>* new_node = new Node<T>();
-				new_node->data = data;
+				Node<T>* new_node = new Node<T>(data);
 				current_head->left = new_node;
 			}
 			else throw std::runtime_error("Left node is already initialised, use change_left function to change left node.");
@@ -32,8 +32,7 @@ namespace BT {
 
 		void new_right(const T& data) {
 			if (current_head->right == nullptr) {
-				Node<T>* new_node = new Node<T>();
-				new_node->data = data;
+				Node<T>* new_node = new Node<T>(data);
 				current_head->right = new_node;
 			}
 			else throw std::runtime_error("Right node is already initialised, use change_right function to change right node.");
@@ -42,6 +41,10 @@ namespace BT {
 		void change_data(const T& data) {
 			if (current_head != nullptr)
 				current_head->data = data;
+			else if (current_head == root && root == nullptr) {
+				Node<T>* new_node = new Node<T>(data);
+				root = new_node;
+			}
 			else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
 		}
 
@@ -91,6 +94,8 @@ namespace BT {
 		}
 
 		int max_height() {
+			if (root == nullptr)
+				return -1;
 			return calc_max_height(root);
 		}
 
@@ -167,22 +172,19 @@ namespace BT {
 			}
 		}
 
-		void clear(bool destroy = false) {
-			if (max_height() == 0 && destroy == false) {
+		void clear() {
+			if (max_height() == -1) {
 				throw std::runtime_error("Error: Binary tree is empty, there is nothing to remove");
 				return;
 			}
 			delete_tree(root);
-			if (destroy == false) {
-				this->root = new Node<T>();
-				this->current_head = root;
-			}
+			root = nullptr;
+			current_head = root;
 		}
 
 		~BinaryTree() {
 			if (root != nullptr)
-				clear(true);
-			else delete root;
+				clear();
 		}
 	private:
 		Node<T>* root;
