@@ -186,6 +186,7 @@ namespace BT {
 			if (root != nullptr)
 				clear();
 		}
+
 	private:
 		Node<T>* root;
 		Node<T>* current_head;

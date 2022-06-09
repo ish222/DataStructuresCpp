@@ -9,6 +9,7 @@
 #include "BinaryTree.h"
 #include "Graph.h"
 #include "Map.h"
+#include "BinarySearchTree.h"
 
 template<typename T>
 void printvec(std::vector<T> data) {
@@ -127,6 +128,16 @@ int main() {
 		map.add("D", 53);
 		map.add("E", 152);
 		map.print();
+		std::cout << "\n\n";
+
+		BST::BinarySearchTree<double> bst(2.5);
+		bst.add(1.9);
+		bst.add(5.6);
+		bst.add(8.3);
+		bst.add(1.2);
+		bst.add(12.9);
+		std::vector<double> res = bst.contents_InOrder();
+		printvec(res);
 	}
 
 	catch (std::invalid_argument& e) {
