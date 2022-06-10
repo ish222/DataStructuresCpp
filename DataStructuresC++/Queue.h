@@ -161,6 +161,34 @@ public:
 		}
 	}
 
+	void erase(const int& index) {
+		if (index >= length() || index < 0) {
+			throw std::invalid_argument("Invalid index");
+			return;
+		}
+		if (index == 0) {
+			Node<T>* head_cpy = head;
+			head = head->next;
+			delete head_cpy;
+			return;
+		}
+		int cur_index = 1;
+		Node<T>* cur_node = head;
+		while (1) {
+			Node<T>* last_node = cur_node;
+			cur_node = cur_node->next;
+			if (cur_index == index) {
+				last_node->next = cur_node->next;
+				if (last_node->next == nullptr) {
+					tail = last_node;
+				}
+				delete cur_node;
+				return;
+			}
+			cur_index++;
+		}
+	}
+
 	std::vector<T> contents() const {
 		if (head == nullptr) {
 			throw std::runtime_error("Error: queue is empty, there is no content");

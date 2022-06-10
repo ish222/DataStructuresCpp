@@ -136,6 +136,7 @@ int main() {
 		bst.add(8.3);
 		bst.add(1.2);
 		bst.add(12.9);
+		bst.remove(5.6);
 		std::vector<double> res = bst.contents_InOrder();
 		printvec(res);
 	}

@@ -76,6 +76,48 @@ namespace BST {
 			return PostOrder(root, temp);
 		}
 
+		void remove(const T& val) {
+			Node<T>* node = find_node(val, root);
+			if (node == nullptr) {
+				throw std::runtime_error("Error: value not found, so cannot be deleted");
+				return;
+			}
+			else if (node->left == nullptr && node->right == nullptr) {
+				delete node;
+				if (left)
+					current_head->left = nullptr;
+				else current_head->right = nullptr;
+				return;
+			}
+			else if (node->left == nullptr) {
+				Node<T>* node_cpy = node;
+				node = node->right;
+				delete node_cpy;
+				if (left)
+					current_head->left = node;
+				else current_head->right = node;
+				return;
+			}
+			else if (node->right == nullptr) {
+				Node<T>* node_cpy = node;
+				node = node->left;
+				delete node;
+				if (left)
+					current_head->left = node;
+				else current_head->right = node;
+				return;
+			}
+			else {
+				Node<T>* replace = min_value(node->right);
+				node->data = replace->data;
+				delete replace;
+				if (left)
+					current_head->left = nullptr;
+				else current_head->right = nullptr;
+			}
+
+		}
+
 		void clear() {
 			if (height() == -1) {
 				throw std::runtime_error("Error: Binary search tree is empty, there is nothing to remove");
@@ -110,6 +152,15 @@ namespace BST {
 				return find_node(data, node->right);
 			}
 			else return node;
+		}
+
+		Node<T>* min_value(Node<T>* node) {
+			Node<T>* cur = node;
+			while (cur->left != nullptr) {
+				current_head = cur;
+				cur = cur->left;
+			}
+			return cur;
 		}
 
 		std::vector<T>& PreOrder(Node<T>* node, std::vector<T>& data) {

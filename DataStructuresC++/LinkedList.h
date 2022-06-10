@@ -128,7 +128,7 @@ public:
 	}
 
 	void erase(const int& index) {
-		if (index >= length()) {
+		if (index >= length() || index < 0) {
 			throw std::invalid_argument("Invalid index");
 			return;
 		}
