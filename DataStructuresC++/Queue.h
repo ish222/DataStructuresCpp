@@ -112,7 +112,7 @@ public:
 		bool found = false;
 		Node<T>* cur_node = head;
 		while (cur_node->next != nullptr) {
-			if (cur_node.data == data) {
+			if (cur_node->data == data) {
 				found = true;
 				break;
 			}
