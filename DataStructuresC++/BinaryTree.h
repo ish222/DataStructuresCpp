@@ -228,7 +228,7 @@ namespace BT {
 			else return r_height + 1;
 		}
 
-		void delete_tree(Node<T>* node) {
+		void delete_tree(Node<T>*& node) {
 			if (node->left != nullptr)
 				delete_tree(node->left);
 			if (node->right != nullptr)
