@@ -10,6 +10,8 @@
 #include "Graph.h"
 #include "Map.h"
 #include "BinarySearchTree.h"
+#include "Tree.h"
+#include "Vector.h"
 
 template<typename T>
 void printvec(std::vector<T> data) {
@@ -71,27 +73,27 @@ int main() {
 		std::cout << stack.peek() << "\n";
 		std::cout << stack.length() << "\n\n";
 
-		BT::BinaryTree<int> tree = BT::BinaryTree(5);
-		tree.new_left(10);
-		tree.new_right(15);
-		tree.advance_left();
-		tree.new_left(20);
-		tree.new_right(25);
-		tree.goto_root();
-		tree.advance_right();
-		tree.new_left(30);
-		tree.new_right(35);
-		std::vector<int> data = tree.contents_InOrder();
+		BT::BinaryTree<int> Btree = BT::BinaryTree(5);
+		Btree.new_left(10);
+		Btree.new_right(15);
+		Btree.advance_left();
+		Btree.new_left(20);
+		Btree.new_right(25);
+		Btree.goto_root();
+		Btree.advance_right();
+		Btree.new_left(30);
+		Btree.new_right(35);
+		std::vector<int> data = Btree.contents_InOrder();
 		printvec(data);
-		data = tree.contents_PostOrder();
+		data = Btree.contents_PostOrder();
 		printvec(data);
-		data = tree.contents_PreOrder();
+		data = Btree.contents_PreOrder();
 		printvec(data);
-		std::cout << tree.max_height() << std::endl;
+		std::cout << Btree.max_height() << std::endl;
 
-		tree.clear();
-		tree.change_data(10);
-		std::cout << "\nTree height after clearing: " << tree.max_height();
+		Btree.clear();
+		Btree.change_data(10);
+		std::cout << "\nTree height after clearing: " << Btree.max_height();
 		std::cout << "\n\n";
 
 		GP::Graph<int> graph(5);
@@ -139,6 +141,49 @@ int main() {
 		bst.remove(5.6);
 		std::vector<double> res = bst.contents_InOrder();
 		printvec(res);
+		std::cout << "\n\n";
+
+
+		Tree::Tree<char> tree('A', true);
+		tree.add_child('C');
+		tree.add_child('B');
+		tree.add_child('G');
+		tree.add_child('M');
+		tree.goto_child(tree.find_child('G'));
+		tree.add_child('K');
+		tree.add_child('P');
+		tree.goto_root();
+		tree.goto_child(tree.find_child('B'));
+		tree.add_child('L');
+		tree.add_child('Z');
+		tree.goto_root();
+		tree.goto_child(tree.find_child('M'));
+		tree.add_child('X');
+		tree.add_child('Q');
+		tree.goto_child(tree.find_child('X'));
+		tree.add_child('F');
+		tree.add_child('O');
+		std::cout << "Max tree height: " << tree.max_height() << std::endl;
+		std::vector<char> t_res = tree.contents_InOrder();
+		printvec(t_res);
+		std::cout << "\n\n";
+
+		Vector::Vector<std::vector<int>> vector(3);
+		vector.push_back({ 2,3,4 });
+		vector.push_back({ 4 });
+		vector.push_back({6, 9});
+		for (size_t i = 0; i < vector.size(); ++i) {
+			printvec(vector[i]);
+		}
+		//Vector::Vector<int> vector;
+		//vector.push_back(2);
+		//vector.push_back(4);
+		//vector.push_back(8);
+		//vector.push_back(9);
+		//for (int i = 0; i < vector.size(); ++i)
+		//	std::cout << vector[i] << "\t";
+		std::cout << "\n\n";
+
 	}
 
 	catch (std::invalid_argument& e) {
