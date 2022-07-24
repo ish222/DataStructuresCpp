@@ -45,11 +45,16 @@ int main() {
 		list2.display();
 		std::cout << "\n";
 
-		LinkedList list3 = list + list2;
+		LinkedList<float> list3 = list + list2;
 		list3.display();
 		std::cout << "\n\n";
 
-		Queue<std::string> queue;
+        LinkedList<float> list4;
+        list4 = list3;
+        list4.display();
+        std::cout << "\n\n";
+
+        Queue<std::string> queue;
 		queue.enqueue("Hello ");
 		queue.enqueue("my ");
 		queue.enqueue("name ");
@@ -73,7 +78,7 @@ int main() {
 		std::cout << stack.peek() << "\n";
 		std::cout << stack.length() << "\n\n";
 
-		BT::BinaryTree<int> Btree = BT::BinaryTree(5);
+		BT::BinaryTree<int> Btree = BT::BinaryTree<int>(5);
 		Btree.new_left(10);
 		Btree.new_right(15);
 		Btree.advance_left();

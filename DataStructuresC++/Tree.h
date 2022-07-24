@@ -23,7 +23,7 @@ namespace Tree {
 			current_head = root;
 			this->ordered = ordered;  // Orders children in ascending values
 			if (ordered) {
-				static_assert(std::is_arithmetic_v<T>, "Ordered trees require arithmetic data objects");
+				static_assert(std::is_arithmetic<T>::value, "Ordered trees require arithmetic data objects");
 			}
 		}
 

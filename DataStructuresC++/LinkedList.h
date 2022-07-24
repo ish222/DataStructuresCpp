@@ -13,10 +13,56 @@ public:
 		tail = head;
 	}
 
-	LinkedList(const T& data) {
+	explicit LinkedList(const T& data) {
 		head = new Node<T>(data);
 		tail = head;
 	}
+
+    LinkedList(LinkedList<T>& other) {
+        head = new Node<T>(other.head->data);
+        tail = head;
+        Node<T>* other_node = other.head->next;
+        while (other_node) {
+            tail->next = new Node<T>(other_node->data);
+            tail = tail->next;
+            other_node = other_node->next;
+        }
+    }
+
+    LinkedList& operator=(const LinkedList<T>& other) {
+        if (this != &other) {
+            if (length() > 0)
+                clear();
+            head = new Node<T>(other.head->data);
+            tail = head;
+            Node<T>* other_node = other.head->next;
+            while (other_node) {
+                tail->next = new Node<T>(other_node->data);
+                tail = tail->next;
+                other_node = other_node->next;
+            }
+        }
+        return *this;
+    }
+
+    LinkedList(LinkedList&& other) noexcept {
+        head = other.head;
+        tail = other.tail;
+        other.head = nullptr;
+        other.tail = nullptr;
+    }
+
+    LinkedList& operator=(LinkedList&& other) noexcept {
+        if (this != &other) {
+            if (length() > 0)
+                clear();
+            head = other.head;
+            tail = other.tail;
+            other.head = nullptr;
+            other.tail = nullptr;
+        }
+        return *this;
+    }
 
 	void append(const T& data) {
 		Node<T>* new_node = new Node<T>(data);
@@ -81,7 +127,6 @@ public:
 	int find(const T& data) const {
 		if (length() == 0) {
 			throw std::runtime_error("Error: linkedlist is empty, there is no content to search");
-			return -1;
 		}
 		int index = 0;
 		bool found = false;
@@ -116,7 +161,7 @@ public:
 			return 0;
 		Node<T>* cur_node = head;
 		int total = 0;
-		while (cur_node != nullptr) {
+		while (cur_node) {
 			cur_node = cur_node->next;
 			total++;
 		}

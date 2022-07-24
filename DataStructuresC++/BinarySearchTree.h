@@ -14,7 +14,7 @@ namespace BST {
 		Node(T data) : data(data) {}
 	};
 
-	template<typename T, typename = typename std::enable_if_t<std::is_arithmetic_v<T>>>
+	template<typename T, typename = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 	class BinarySearchTree {
 	public:
 		BinarySearchTree(const T& data) {
@@ -26,7 +26,7 @@ namespace BST {
 		void add(const T& data) {
 			Node<T>* change = find_node(data, root);
 			if (change == nullptr && current_head != nullptr) {
-				change = new Node(data);
+				change = new Node<T>(data);
 				if (left)
 					current_head->left = change;
 				else current_head->right = change;
