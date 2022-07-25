@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <vector>
 #include <stdexcept>
@@ -6,246 +7,334 @@
 #include "Node.h"
 
 template<typename T>
-class Queue
-{
+class Queue {
 public:
-	Queue() {
-		head = nullptr;
-		tail = head;
-		this->priority_val = None;
-	}
+    Queue() : head(nullptr), tail(nullptr), priority_val(None), mLength(0) {}
 
-	Queue(const T& data, int priority = None) {
-		head = new Node<T>(data);
-		tail = head;
-		this->priority_val = priority;
-	}
+    explicit Queue(const T& data, int priority = None) {
+        head = new Node<T>(data);
+        tail = head;
+        mLength = 1;
+        priority_val = priority;
+    }
 
-	void enqueue(const T& data) {
-		if (head == nullptr) {
-			Node<T>* new_node = new Node<T>(data);
-			head = new_node;
-			tail = head;
-			return;
-		}
-		else if (priority_val == None || (priority_val == None && head == tail)) {
-			Node<T>* new_node = new Node<T>(data);
-			tail->next = new_node;
-			tail = new_node;
-			return;
-		}
-		else {
-			Node<T>* cur_node = head;
-			int index = 0;
-			switch (priority_val) {
-			case Ascending:
-				while (cur_node != nullptr && cur_node->data <= data) {
-					cur_node = cur_node->next;
-					index++;
-				}
-				insert(data, index);
-				break;
+    Queue(Queue<T>& other) {
+        head = new Node<T>(other.head->data);
+        mLength = other.mLength;
+        priority_val = other.priority_val;
+        tail = head;
+        Node<T>* other_node = other.head->next;
+        while (other_node) {
+            tail->next = new Node<T>(other_node->data);
+            tail = tail->next;
+            other_node = other_node->next;
+        }
+    }
 
-			case Descending:
-				while (cur_node != nullptr && cur_node->data >= data) {
-					cur_node = cur_node->next;
-					index++;
-				}
-				insert(data, index);
-				break;
-			}
-		}
-	}
+    Queue& operator=(const Queue<T>& other) {
+        if (this != &other) {
+            if (mLength > 0)
+                clear();
+            if (other.mLength) {
+                head = new Node<T>(other.head->data);
+                mLength = other.mLength;
+                priority_val = other.priority_val;
+                tail = head;
+                Node<T>* other_node = other.head->next;
+                while (other_node) {
+                    tail->next = new Node<T>(other_node->data);
+                    tail = tail->next;
+                    other_node = other_node->next;
+                }
+            } else {
+                head = nullptr;
+                tail = head;
+                mLength = 0;
+            }
+        }
+        return *this;
+    }
 
-	T dequeue() {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty, there is nothing to dequeue");
-			return T();
-		}
-		Node<T>* first = head;
-		head = head->next;
-		T data = first->data;
-		delete first;
-		return data;
-	}
+    Queue(Queue&& other) noexcept {
+        head = other.head;
+        tail = other.tail;
+        mLength = other.mLength;
+        priority_val = other.priority_val;
+        other.head = nullptr;
+        other.tail = nullptr;
+        other.mLength = 0;
+        other.priority_val = None;
+    }
 
-	T peek() const {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty, there is nothing to peek");
-			return T();
-		}
-		return head->data;
-	}
+    Queue& operator=(Queue&& other) noexcept {
+        if (this != &other) {
+            if (mLength > 0)
+                clear();
+            head = other.head;
+            tail = other.tail;
+            mLength = other.mLength;
+            priority_val = other.priority_val;
+            other.head = nullptr;
+            other.tail = nullptr;
+            other.mLength = 0;
+            other.priority_val = None;
+        }
+        return *this;
+    }
 
-	int length() const {
-		if (head == nullptr)
-			return 0;
-		Node<T>* cur_node = head;
-		int total = 0;
-		while (cur_node != nullptr) {
-			cur_node = cur_node->next;
-			total++;
-		}
-		return total;
-	}
+    void enqueue(const T& data) {
+        if (priority_val == None && mLength) {
+            Node<T>* new_node = new Node<T>(data);
+            tail->next = new_node;
+            tail = new_node;
+            ++mLength;
+            return;
+        }
+        if (mLength) {
+            Node<T>* cur_node = head;
+            size_t index = 0;
+            switch (priority_val) {
+                case Ascending:
+                    while (cur_node && cur_node->data <= data) {
+                        cur_node = cur_node->next;
+                        ++index;
+                    }
+                    insert(data, index);
+                    return;
 
-	bool contains(const T& data) const {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty");
-			return false;
-		}
-		Node<T>* cur_node = head;
-		while (cur_node->next != nullptr) {
-			if (cur_node->data == data)
-				return true;
-			cur_node = cur_node->next;
-		}
-		return false;
-	}
+                case Descending:
+                    while (cur_node && cur_node->data >= data) {
+                        cur_node = cur_node->next;
+                        ++index;
+                    }
+                    insert(data, index);
+                    return;
+            }
+        }
+        Node<T>* new_node = new Node<T>(data);
+        head = new_node;
+        tail = head;
+        mLength = 1;
+    }
 
-	int find(const T& data) const {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty, there is no content to search");
-			return -1;
-		}
-		int index = 0;
-		bool found = false;
-		Node<T>* cur_node = head;
-		while (cur_node->next != nullptr) {
-			if (cur_node->data == data) {
-				found = true;
-				break;
-			}
-			cur_node = cur_node->next;
-			index++;
-		}
-		if (found)
-			return index;
-		else return -1;
-	}
+    T dequeue() {
+        if (mLength) {
+            Node<T>* first = head;
+            head = head->next;
+            T data = first->data;
+            delete first;
+            --mLength;
+            return data;
+        }
+        throw std::runtime_error("Error: queue is empty, there is nothing to dequeue");
+    }
 
-	void insert(const T& data,  const int& index) {
-		if (index > length() || index < 0) {
-			throw std::invalid_argument("Invalid index");
-			return;
-		}
-		else if (head == nullptr) {
-			throw std::invalid_argument("Queue is empty and uninitialised, use enqueue instead");
-			return;
-		}
-		Node<T>* new_node = new Node<T>(data);
-		if (index == 0) {
-			new_node->next = head;
-			if (head == tail)
-				tail = new_node->next;
-			head = new_node;
-			return;
-		}
-		else if (index == length()) {
-			tail->next = new_node;
-			tail = new_node;
-			return;
-		}
-		int _index = 1;
-		Node<T>* cur_node = head;
-		Node<T>* last_node = nullptr;
-		while (1) {
-			last_node = cur_node;
-			cur_node = cur_node->next;
-			if (_index == index) {
-				last_node->next = new_node;
-				new_node->next = cur_node;
-				return;
-			}
-			_index++;
-		}
-	}
+    T peek() const {
+        if (mLength)
+            return head->data;
+        throw std::runtime_error("Error: queue is empty, there is nothing to peek");
+    }
 
-	void erase(const int& index) {
-		if (index >= length() || index < 0) {
-			throw std::invalid_argument("Invalid index");
-			return;
-		}
-		if (index == 0) {
-			Node<T>* head_cpy = head;
-			head = head->next;
-			delete head_cpy;
-			return;
-		}
-		int cur_index = 1;
-		Node<T>* cur_node = head;
-		while (1) {
-			Node<T>* last_node = cur_node;
-			cur_node = cur_node->next;
-			if (cur_index == index) {
-				last_node->next = cur_node->next;
-				if (last_node->next == nullptr) {
-					tail = last_node;
-				}
-				delete cur_node;
-				return;
-			}
-			cur_index++;
-		}
-	}
+    int length() const noexcept {
+        return mLength;
+    }
 
-	std::vector<T> contents() const {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty, there is no content");
-			return std::vector<T>();
-		}
-		std::vector<T> elems;
-		Node<T>* cur_node = head;
-		while (cur_node != nullptr) {
-			elems.push_back(cur_node->data);
-			cur_node = cur_node->next;
-		}
-		return elems;
-	}
+    operator bool() const noexcept {
+        return (bool) mLength;
+    }
 
-	void display() const {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty, there is nothing to display");
-			return;
-		}
-		std::vector<T> data = contents();
-		for (T& i : data) {
-			std::cout << i << "\t";
-		}
-		std::cout << "\n";
-	}
+    bool operator==(const T& other) const {
+        if (mLength != other.mLength)
+            return false;
+        Node<T>* cur = head;
+        Node<T>* other_cur = other.head;
+        while (cur) {
+            if (cur->data != other_cur->data)
+                return false;
+            cur = cur->next;
+            other_cur = other_cur->next;
+        }
+        return true;
+    }
 
-	void clear() {
-		if (head == nullptr) {
-			throw std::runtime_error("Error: queue is empty and so cannot be cleared");
-			return;
-		}
-		Node<T>* cur_node = head;
-		while (cur_node != nullptr) {
-			cur_node = cur_node->next;
-			delete head;
-			head = cur_node;
-		}
-		head = nullptr;
-	}
+    T get(const size_t& index) const {
+        if (index < mLength) {
+            if (index == 0)
+                return head->data;
+            size_t cur_index = 1;
+            Node<T>* cur_node = head;
+            while (1) {
+                Node<T>* last_node = cur_node;
+                cur_node = cur_node->next;
+                if (cur_index == index)
+                    return cur_node->data;
+                ++cur_index;
+            }
+        }
+        throw std::invalid_argument("Invalid index, out of range");
+    }
 
-	operator bool() const {
-		return (head != nullptr);
-	}
+    T operator[](const size_t& index) const {
+        if (index < mLength)
+            return get(index);
+        throw std::invalid_argument("Invalid index, out of range");
+    }
 
-	virtual ~Queue() {
-		if (length() != 0)
-			clear();
-	}
+    bool contains(const T& data) const {
+        if (mLength) {
+            Node<T>* cur_node = head;
+            while (cur_node) {
+                if (cur_node->data == data)
+                    return true;
+                cur_node = cur_node->next;
+            }
+            return false;
+        }
+        throw std::runtime_error("Error: queue is empty");
+    }
+
+    int find(const T& data) const {
+        if (mLength) {
+            int index = 0;
+            Node<T>* cur_node = head;
+            while (cur_node) {
+                if (cur_node->data == data)
+                    return index;
+                cur_node = cur_node->next;
+                ++index;
+            }
+            return -1;
+        }
+        throw std::runtime_error("Error: queue is empty, there is no content to search");
+    }
+
+    void insert(const T& data, const size_t& index) {
+        if (mLength && index <= mLength) {
+            Node<T>* new_node = new Node<T>(data);
+            if (index == 0) {
+                new_node->next = head;
+                if (head == tail)
+                    tail = new_node->next;
+                head = new_node;
+                ++mLength;
+                return;
+            }
+            if (index == mLength) {
+                tail->next = new_node;
+                tail = new_node;
+                ++mLength;
+                return;
+            }
+            size_t _index = 1;
+            Node<T>* cur_node = head;
+            Node<T>* last_node = nullptr;
+            while (1) {
+                last_node = cur_node;
+                cur_node = cur_node->next;
+                if (_index == index) {
+                    last_node->next = new_node;
+                    new_node->next = cur_node;
+                    ++mLength;
+                    return;
+                }
+                ++_index;
+            }
+        }
+        if (index > mLength)
+            throw std::invalid_argument("Invalid index, out of range");
+        throw std::invalid_argument("Queue is empty and uninitialised, use enqueue instead");
+    }
+
+    Queue<T> operator+(Queue<T>& right) {
+        if (right.mLength) {
+            std::vector<T> data = contents();
+            std::vector<T> right_data = right.contents();
+            for (T& i: right_data)
+                data.push_back(i);
+            Queue<T>* res = new Queue<T>();
+            for (const T& i: data)
+                res->enqueue(i);
+            return *res;
+        }
+        return *this;
+    }
+
+    void erase(const size_t& index) {
+        if (index < mLength) {
+            if (index == 0) {
+                Node<T>* head_cpy = head;
+                head = head->next;
+                delete head_cpy;
+                return;
+            }
+            size_t cur_index = 1;
+            Node<T>* cur_node = head;
+            while (1) {
+                Node<T>* last_node = cur_node;
+                cur_node = cur_node->next;
+                if (cur_index == index) {
+                    last_node->next = cur_node->next;
+                    if (last_node->next == nullptr) {
+                        tail = last_node;
+                    }
+                    delete cur_node;
+                    return;
+                }
+                ++cur_index;
+            }
+        }
+        throw std::invalid_argument("Invalid index, out of range");
+    }
+
+    std::vector<T> contents() const {
+        if (mLength) {
+            std::vector<T> elems(mLength);
+            Node<T>* cur_node = head;
+            for (size_t i = 0; i < mLength; ++i) {
+                elems[i] = cur_node->data;
+                cur_node = cur_node->next;
+            }
+            return elems;
+        }
+        throw std::runtime_error("Error: queue is empty, there is no content");
+    }
+
+    void display() const {
+        if (mLength) {
+            std::vector<T> data = contents();
+            for (const T& i: data) {
+                std::cout << i << "\t";
+            }
+            std::cout << "\n";
+        } else throw std::runtime_error("Error: queue is empty, there is nothing to display");
+    }
+
+    void clear() {
+        if (mLength) {
+            Node<T>* cur_node = head;
+            while (cur_node) {
+                cur_node = cur_node->next;
+                delete head;
+                head = cur_node;
+            }
+            head = nullptr;
+        } else throw std::runtime_error("Error: queue is empty and so cannot be cleared");
+    }
+
+    virtual ~Queue() {
+        if (mLength)
+            clear();
+    }
 
 private:
-	Node<T>* head;
-	Node<T>* tail;
-	int priority_val;
-	enum Priority {
-		None=0,
-		Ascending,
-		Descending
-	};
+    Node<T>* head;
+    Node<T>* tail;
+    int priority_val;
+    size_t mLength;
+    enum Priority {
+        None = 0,
+        Ascending,
+        Descending
+    };
 };
 
