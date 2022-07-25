@@ -8,18 +8,17 @@
 template<typename T>
 class LinkedList {
 public:
-	LinkedList() {
-		head = nullptr;
-		tail = head;
-	}
+	LinkedList() : head(nullptr), tail(nullptr), mLength(0) {}
 
 	explicit LinkedList(const T& data) {
 		head = new Node<T>(data);
 		tail = head;
+        mLength = 1;
 	}
 
     LinkedList(LinkedList<T>& other) {
         head = new Node<T>(other.head->data);
+        mLength = other.mLength;
         tail = head;
         Node<T>* other_node = other.head->next;
         while (other_node) {
@@ -31,9 +30,10 @@ public:
 
     LinkedList& operator=(const LinkedList<T>& other) {
         if (this != &other) {
-            if (length() > 0)
+            if (mLength > 0)
                 clear();
             head = new Node<T>(other.head->data);
+            mLength = other.mLength;
             tail = head;
             Node<T>* other_node = other.head->next;
             while (other_node) {
@@ -48,25 +48,30 @@ public:
     LinkedList(LinkedList&& other) noexcept {
         head = other.head;
         tail = other.tail;
+        mLength = other.mLength;
         other.head = nullptr;
         other.tail = nullptr;
+        other.mLength = 0;
     }
 
     LinkedList& operator=(LinkedList&& other) noexcept {
         if (this != &other) {
-            if (length() > 0)
+            if (mLength > 0)
                 clear();
             head = other.head;
             tail = other.tail;
+            mLength = other.mLength;
             other.head = nullptr;
             other.tail = nullptr;
+            other.mLength = 0;
         }
         return *this;
     }
 
 	void append(const T& data) {
 		Node<T>* new_node = new Node<T>(data);
-		if (head == nullptr) {
+        ++mLength;
+        if (head == nullptr) {
 			head = new_node;
 			tail = head;
 			return;
@@ -75,27 +80,28 @@ public:
 		tail = new_node;
 	}
 
-	void insert(const T& data, const int& index) {
-		if (index > length() || index < 0) {
+    void push_back(const T& data) {
+        append(data);
+    }
+
+	void insert(const T& data, const size_t& index) {
+		if (index > mLength)
 			throw std::invalid_argument("Invalid index");
-			return;
-		}
-		else if (head == nullptr) {
+		else if (head == nullptr)
 			throw std::invalid_argument("Linked list is empty and uninitialised, use append instead");
-			return;
-		}
 		Node<T>* new_node = new Node<T>(data);
+        ++mLength;
 		if (index == 0) {
 			new_node->next = head;
 			head = new_node;
 			return;
 		}
-		else if (index == length()) {
+		else if (index == mLength) {
 			tail->next = new_node;
 			tail = new_node;
 			return;
 		}
-		int _index = 1;
+		size_t _index = 1;
 		Node<T>* cur_node = head;
 		Node<T>* last_node = nullptr;
 		while (1) {
@@ -106,15 +112,17 @@ public:
 				new_node->next = cur_node;
 				return;
 			}
-			_index++;
+			++_index;
 		}
 	}
 
+    void push_front(const T& data) {
+        insert(data, 0);
+    }
+
 	std::vector<T> contents() const {
-		if (head == nullptr) {
+		if (head == nullptr)
 			throw std::runtime_error("Error: linked list is empty");
-			return std::vector<T>();
-		}
 		std::vector<T> elems;
 		Node<T>* cur_node = head;
 		while (cur_node != nullptr) {
@@ -125,9 +133,8 @@ public:
 	}
 
 	int find(const T& data) const {
-		if (length() == 0) {
+		if (mLength == 0)
 			throw std::runtime_error("Error: linkedlist is empty, there is no content to search");
-		}
 		int index = 0;
 		bool found = false;
 		Node<T>* cur_node = head;
@@ -137,7 +144,7 @@ public:
 				break;
 			}
 			cur_node = cur_node->next;
-			index++;
+			++index;
 		}
 		if (found)
 			return index;
@@ -145,45 +152,51 @@ public:
 	}
 
 	void display() const {
-		if (length() == 0) {
+		if (mLength == 0)
 			throw std::runtime_error("Error: linked list is empty");
-			return;
-		}
 		std::vector<T> vals = contents();
-		for (T& i : vals) {
+		for (T& i : vals)
 			std::cout << i << "\t";
-		}
 		std::cout << "\n";
 	}
 
-	int length() const {
-		if (head == nullptr)
-			return 0;
-		Node<T>* cur_node = head;
-		int total = 0;
-		while (cur_node) {
-			cur_node = cur_node->next;
-			total++;
-		}
-		return total;
+	size_t length() const {
+		return mLength;
 	}
 
-	operator bool() const {
+	operator bool() const noexcept {
 		return (head != nullptr);
 	}
 
-	void erase(const int& index) {
-		if (index >= length() || index < 0) {
+    bool operator==(const LinkedList<T>& other) const {
+        if (mLength != other.mLength)
+            return false;
+        Node<T>* cur = head;
+        Node<T>* other_cur = other.head;
+        while (cur) {
+            if (cur->data != other_cur->data)
+                return false;
+            cur = cur->next;
+            other_cur = other_cur->next;
+        }
+        return true;
+    }
+
+    bool operator!=(const LinkedList<T>& other) const {
+        return !(*this == other);
+    }
+
+	void erase(const size_t& index) {
+		if (index >= mLength)
 			throw std::invalid_argument("Invalid index");
-			return;
-		}
 		if (index == 0) {
 			Node<T>* head_cpy = head;
 			head = head->next;
 			delete head_cpy;
+            --mLength;
 			return;
 		}
-		int cur_index = 1;
+		size_t cur_index = 1;
 		Node<T>* cur_node = head;
 		while (1) {
 			Node<T>* last_node = cur_node;
@@ -194,17 +207,16 @@ public:
 					tail = last_node;
 				}
 				delete cur_node;
+                --mLength;
 				return;
 			}
-			cur_index++;
+			++cur_index;
 		}
 	}
 
 	void clear() {
-		if (length() == 0) {
+		if (mLength == 0)
 			throw std::runtime_error("Error: linked list is empty and so cannot be cleared.");
-			return;
-		}
 		Node<T>* cur_node = head;
 		while (cur_node != nullptr) {
 			cur_node = cur_node->next;
@@ -212,32 +224,53 @@ public:
 			head = cur_node;
 		}
 		head = nullptr;
+        tail = head;
+        mLength = 0;
 	}
 
-	T get(const int& index) const {
-		if (index >= length() || index < 0) {
+	T get(const size_t& index) const {
+		if (index >= mLength || index < 0)
 			throw std::invalid_argument("Invalid index");
-			return T();
-		}
 		else if (index == 0)
 			return head->data;
-		int cur_index = 1;
+		size_t cur_index = 1;
 		Node<T>* cur_node = head;
 		while (1) {
 			Node<T>* last_node = cur_node;
 			cur_node = cur_node->next;
-			if (cur_index == index) {
+			if (cur_index == index)
 				return cur_node->data;
-			}
-			cur_index++;
+			++cur_index;
 		}
 	}
 
+    T front() const {
+        if (head == nullptr)
+            throw std::runtime_error("List is empty, there is nothing at front");
+        return head->data;
+    }
+
+    T back() const {
+        if (tail == nullptr)
+            throw std::runtime_error("List is empty, there is nothing at back");
+        return tail->data;
+    }
+
+    void pop_front() {
+        if (head == nullptr)
+            throw std::runtime_error("List is empty, there is nothing to pop front");
+        erase(0);
+    }
+
+    void pop_back() {
+        if (tail == nullptr)
+            throw std::runtime_error("List is empty, there is nothing to pop back");
+        erase(length()-1);
+    }
+
 	void reverse_order() {
-		if (length() == 0) {
+		if (mLength == 0)
 			throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
-			return;
-		}
 		Node<T>* cur_node = head;
 		tail = head;
 		Node<T>* last = nullptr;
@@ -251,25 +284,20 @@ public:
 		head = last;
 	}
 
-	T operator[](const int& index) const {
-		if (index >= length()) {
+	T operator[](const size_t& index) const {
+		if (index >= mLength)
 			throw std::invalid_argument("Invalid index");
-			return T();
-		}
-		T ret = get(index);
-		return ret;
+		return get(index);
 	}
 
 	LinkedList<T> operator+(LinkedList<T>& right) {
 		std::vector<T> data = contents();
 		std::vector<T> right_data = right.contents();
-		for (T& i : right_data) {
+		for (T& i : right_data)
 			data.push_back(i);
-		}
 		LinkedList<T>* res = new LinkedList<T>();
-		for (T& i : data) {
+		for (const T& i : data)
 			res->append(i);
-		}
 		return *res;
 	}
 
@@ -281,4 +309,5 @@ public:
 private:
 	Node<T>* head;
 	Node<T>* tail;
+    size_t mLength;
 };
