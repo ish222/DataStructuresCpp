@@ -4,28 +4,26 @@
 #include <vector>
 #include <stdexcept>
 
-#include "Node.h"
-
 template<typename T>
 class Queue {
 public:
     Queue() : head(nullptr), tail(nullptr), priority_val(None), mLength(0) {}
 
     explicit Queue(const T& data, int priority = None) {
-        head = new Node<T>(data);
+        head = new Node(data);
         tail = head;
         mLength = 1;
         priority_val = priority;
     }
 
     Queue(Queue<T>& other) {
-        head = new Node<T>(other.head->data);
+        head = new Node(other.head->data);
         mLength = other.mLength;
         priority_val = other.priority_val;
         tail = head;
-        Node<T>* other_node = other.head->next;
+        Node* other_node = other.head->next;
         while (other_node) {
-            tail->next = new Node<T>(other_node->data);
+            tail->next = new Node(other_node->data);
             tail = tail->next;
             other_node = other_node->next;
         }
@@ -36,17 +34,18 @@ public:
             if (mLength > 0)
                 clear();
             if (other.mLength) {
-                head = new Node<T>(other.head->data);
+                head = new Node(other.head->data);
                 mLength = other.mLength;
                 priority_val = other.priority_val;
                 tail = head;
-                Node<T>* other_node = other.head->next;
+                Node* other_node = other.head->next;
                 while (other_node) {
-                    tail->next = new Node<T>(other_node->data);
+                    tail->next = new Node(other_node->data);
                     tail = tail->next;
                     other_node = other_node->next;
                 }
-            } else {
+            }
+            else {
                 head = nullptr;
                 tail = head;
                 mLength = 0;
@@ -84,14 +83,14 @@ public:
 
     void enqueue(const T& data) {
         if (priority_val == None && mLength) {
-            Node<T>* new_node = new Node<T>(data);
+            Node* new_node = new Node(data);
             tail->next = new_node;
             tail = new_node;
             ++mLength;
             return;
         }
         if (mLength) {
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             size_t index = 0;
             switch (priority_val) {
                 case Ascending:
@@ -111,7 +110,7 @@ public:
                     return;
             }
         }
-        Node<T>* new_node = new Node<T>(data);
+        Node* new_node = new Node(data);
         head = new_node;
         tail = head;
         mLength = 1;
@@ -119,7 +118,7 @@ public:
 
     T dequeue() {
         if (mLength) {
-            Node<T>* first = head;
+            Node* first = head;
             head = head->next;
             T data = first->data;
             delete first;
@@ -139,15 +138,19 @@ public:
         return mLength;
     }
 
+    bool empty() const noexcept {
+        return mLength == 0;
+    }
+
     operator bool() const noexcept {
         return (bool) mLength;
     }
 
-    bool operator==(const T& other) const {
+    bool operator==(const Queue<T>& other) const {
         if (mLength != other.mLength)
             return false;
-        Node<T>* cur = head;
-        Node<T>* other_cur = other.head;
+        Node* cur = head;
+        Node* other_cur = other.head;
         while (cur) {
             if (cur->data != other_cur->data)
                 return false;
@@ -162,9 +165,9 @@ public:
             if (index == 0)
                 return head->data;
             size_t cur_index = 1;
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             while (1) {
-                Node<T>* last_node = cur_node;
+                Node* last_node = cur_node;
                 cur_node = cur_node->next;
                 if (cur_index == index)
                     return cur_node->data;
@@ -180,9 +183,15 @@ public:
         throw std::invalid_argument("Invalid index, out of range");
     }
 
+    T& operator[](const size_t& index) {
+        if (index < mLength)
+            return ref_get(index);
+        throw std::invalid_argument("Invalid index, out of range");
+    }
+
     bool contains(const T& data) const {
         if (mLength) {
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             while (cur_node) {
                 if (cur_node->data == data)
                     return true;
@@ -196,7 +205,7 @@ public:
     int find(const T& data) const {
         if (mLength) {
             int index = 0;
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             while (cur_node) {
                 if (cur_node->data == data)
                     return index;
@@ -210,7 +219,7 @@ public:
 
     void insert(const T& data, const size_t& index) {
         if (mLength && index <= mLength) {
-            Node<T>* new_node = new Node<T>(data);
+            Node* new_node = new Node(data);
             if (index == 0) {
                 new_node->next = head;
                 if (head == tail)
@@ -226,8 +235,8 @@ public:
                 return;
             }
             size_t _index = 1;
-            Node<T>* cur_node = head;
-            Node<T>* last_node = nullptr;
+            Node* cur_node = head;
+            Node* last_node = nullptr;
             while (1) {
                 last_node = cur_node;
                 cur_node = cur_node->next;
@@ -262,15 +271,15 @@ public:
     void erase(const size_t& index) {
         if (index < mLength) {
             if (index == 0) {
-                Node<T>* head_cpy = head;
+                Node* head_cpy = head;
                 head = head->next;
                 delete head_cpy;
                 return;
             }
             size_t cur_index = 1;
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             while (1) {
-                Node<T>* last_node = cur_node;
+                Node* last_node = cur_node;
                 cur_node = cur_node->next;
                 if (cur_index == index) {
                     last_node->next = cur_node->next;
@@ -289,7 +298,7 @@ public:
     std::vector<T> contents() const {
         if (mLength) {
             std::vector<T> elems(mLength);
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             for (size_t i = 0; i < mLength; ++i) {
                 elems[i] = cur_node->data;
                 cur_node = cur_node->next;
@@ -306,19 +315,21 @@ public:
                 std::cout << i << "\t";
             }
             std::cout << "\n";
-        } else throw std::runtime_error("Error: queue is empty, there is nothing to display");
+        }
+        else throw std::runtime_error("Error: queue is empty, there is nothing to display");
     }
 
     void clear() {
         if (mLength) {
-            Node<T>* cur_node = head;
+            Node* cur_node = head;
             while (cur_node) {
                 cur_node = cur_node->next;
                 delete head;
                 head = cur_node;
             }
             head = nullptr;
-        } else throw std::runtime_error("Error: queue is empty and so cannot be cleared");
+        }
+        else throw std::runtime_error("Error: queue is empty and so cannot be cleared");
     }
 
     virtual ~Queue() {
@@ -327,8 +338,15 @@ public:
     }
 
 private:
-    Node<T>* head;
-    Node<T>* tail;
+    struct Node {
+        T data;
+        Node* next = nullptr;
+
+        explicit Node(T data) : data(data) {}
+    };
+
+    Node* head;
+    Node* tail;
     int priority_val;
     size_t mLength;
     enum Priority {
@@ -336,5 +354,22 @@ private:
         Ascending,
         Descending
     };
+
+    T& ref_get(const size_t& index) {
+        if (index < mLength) {
+            if (index == 0)
+                return head->data;
+            size_t cur_index = 1;
+            Node* cur_node = head;
+            while (1) {
+                Node* last_node = cur_node;
+                cur_node = cur_node->next;
+                if (cur_index == index)
+                    return cur_node->data;
+                ++cur_index;
+            }
+        }
+        throw std::invalid_argument("Invalid index, out of range");
+    }
 };
 
