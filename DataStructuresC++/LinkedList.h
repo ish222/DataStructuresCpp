@@ -103,16 +103,27 @@ public:
     }
 
     bool operator!=(const ListIterator& other) const noexcept {
-        return !(mPtr == other.mPtr);
+        return mPtr != other.mPtr;
     }
 
-    ListIterator& advance() {
+    void advance() {
+#ifdef DEBUG
+        if (mPtr)
+#endif
         mPtr = mPtr->next;
-        return *this;
+#ifdef DEBUG
+        else throw std::runtime_error("Cannot advance list iterator past end of list");
+#endif
     }
 
-    ValueType& operator*() {
+    ValueType& operator*() const {
+#ifdef DEBUG
+        if (mPtr)
+#endif
         return mPtr->data;
+#ifdef DEBUG
+        throw std::runtime_error("Iterator does not point to a valid position, cannot dereference");
+#endif
     }
 
 private:
