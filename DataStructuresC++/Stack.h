@@ -99,15 +99,15 @@ public:
         throw std::invalid_argument("Stack is empty, there is nothing to peek.");
     }
 
-    int length() const {
+    int length() const noexcept {
         return mLength;
     }
 
-    bool empty() const {
+    bool empty() const noexcept {
         return mLength == 0;
     }
 
-    operator bool() const {
+    explicit operator bool() const noexcept {
         return (bool) mLength;
     }
 
