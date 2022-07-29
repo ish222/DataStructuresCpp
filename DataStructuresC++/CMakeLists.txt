@@ -4,4 +4,6 @@ PROJECT(DATA_STRUCTURES_CPP)
 
 SET(CMAKE_CXX_STANDARD 14)
 
-ADD_EXECUTABLE(DATA_STRUCTURES_CPP main.cpp BinarySearchTree.h BinaryTree.h Graph.h LinkedList.h Map.h Node.h Queue.h Stack.h Tree.h Vector.h)
+add_compile_definitions("DEBUG=$<CONFIG:Debug>")
+add_compile_definitions("RELEASE=$<CONFIG:Release>")
+ADD_EXECUTABLE(${PROJECT_NAME} main.cpp BinarySearchTree.h BinaryTree.h Graph.h LinkedList.h Map.h Queue.h Stack.h Tree.h Vector.h SortingAlgorithms.h)

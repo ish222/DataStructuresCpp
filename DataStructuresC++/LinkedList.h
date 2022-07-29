@@ -40,8 +40,8 @@ public:
 #ifdef DEBUG
         if (mPtr) {
 #endif
-        mPtr = mPtr->next;
-        return *this;
+            mPtr = mPtr->next;
+            return *this;
 #ifdef DEBUG
         }
         throw std::out_of_range("Cannot increment list iterator past end of list");
@@ -52,13 +52,17 @@ public:
 #ifdef DEBUG
         if (mPtr) {
 #endif
-        ListIterator temp(*this);
-        ++*this;
-        return temp;
+            ListIterator temp(*this);
+            ++*this;
+            return temp;
 #ifdef DEBUG
         }
         throw std::out_of_range("Cannot increment list iterator past end of list");
 #endif
+    }
+
+    ListIterator& advance() {
+        return ++*this;
     }
 
     ListIterator operator+(const size_t& amount) {
@@ -106,24 +110,18 @@ public:
         return mPtr != other.mPtr;
     }
 
-    void advance() {
-#ifdef DEBUG
-        if (mPtr)
-#endif
-        mPtr = mPtr->next;
-#ifdef DEBUG
-        else throw std::runtime_error("Cannot advance list iterator past end of list");
-#endif
-    }
-
     ValueType& operator*() const {
 #ifdef DEBUG
         if (mPtr)
 #endif
-        return mPtr->data;
+            return mPtr->data;
 #ifdef DEBUG
         throw std::runtime_error("Iterator does not point to a valid position, cannot dereference");
 #endif
+    }
+
+    size_t _size() const noexcept {
+        return LinkedList::mLength;
     }
 
 private:
@@ -233,31 +231,31 @@ public:
 #ifdef DEBUG
         if (mLength && index <= mLength) {
 #endif
-        Node* new_node = new Node(data);
-        ++mLength;
-        if (index == 0) {
-            new_node->next = head;
-            head = new_node;
-            return;
-        }
-        if (index == mLength) {
-            tail->next = new_node;
-            tail = new_node;
-            return;
-        }
-        size_t _index = 1;
-        Node* cur_node = head;
-        Node* last_node;
-        while (true) {
-            last_node = cur_node;
-            cur_node = cur_node->next;
-            if (_index == index) {
-                last_node->next = new_node;
-                new_node->next = cur_node;
+            Node* new_node = new Node(data);
+            ++mLength;
+            if (index == 0) {
+                new_node->next = head;
+                head = new_node;
                 return;
             }
-            ++_index;
-        }
+            if (index == mLength) {
+                tail->next = new_node;
+                tail = new_node;
+                return;
+            }
+            size_t _index = 1;
+            Node* cur_node = head;
+            Node* last_node;
+            while (true) {
+                last_node = cur_node;
+                cur_node = cur_node->next;
+                if (_index == index) {
+                    last_node->next = new_node;
+                    new_node->next = cur_node;
+                    return;
+                }
+                ++_index;
+            }
 #ifdef DEBUG
         }
         if (index > mLength)
@@ -274,13 +272,13 @@ public:
 #ifdef DEBUG
         if (mLength) {
 #endif
-        std::vector<T> elems(mLength);
-        Node* cur_node = head;
-        for (int i = 0; i < mLength; ++i) {
-            elems[i] = cur_node->data;
-            cur_node = cur_node->next;
-        }
-        return elems;
+            std::vector<T> elems(mLength);
+            Node* cur_node = head;
+            for (int i = 0; i < mLength; ++i) {
+                elems[i] = cur_node->data;
+                cur_node = cur_node->next;
+            }
+            return elems;
 #ifdef DEBUG
         }
         throw std::runtime_error("Error: Linked list is empty");
@@ -291,15 +289,15 @@ public:
 #ifdef DEBUG
         if (mLength) {
 #endif
-        int index = 0;
-        Node* cur_node = head;
-        while (cur_node) {
-            if (cur_node->data == data)
-                return index;
-            cur_node = cur_node->next;
-            ++index;
-        }
-        return -1;
+            int index = 0;
+            Node* cur_node = head;
+            while (cur_node) {
+                if (cur_node->data == data)
+                    return index;
+                cur_node = cur_node->next;
+                ++index;
+            }
+            return -1;
 #ifdef DEBUG
         }
         throw std::runtime_error("Error: Linked list is empty, there is no content to search");
@@ -310,10 +308,10 @@ public:
 #ifdef DEBUG
         if (mLength) {
 #endif
-        std::vector<T> vals = contents();
-        for (const T& i: vals)
-            std::cout << i << "\t";
-        std::cout << "\n";
+            std::vector<T> vals = contents();
+            for (const T& i: vals)
+                std::cout << i << "\t";
+            std::cout << "\n";
 #ifdef DEBUG
         }
         else throw std::runtime_error("Error: Linked list is empty");
@@ -350,29 +348,29 @@ public:
 #ifdef DEBUG
         if (mLength && index < mLength) {
 #endif
-        if (index == 0) {
-            Node* head_cpy = head;
-            head = head->next;
-            delete head_cpy;
-            --mLength;
-            return;
-        }
-        size_t cur_index = 1;
-        Node* cur_node = head;
-        while (true) {
-            Node* last_node = cur_node;
-            cur_node = cur_node->next;
-            if (cur_index == index) {
-                last_node->next = cur_node->next;
-                if (last_node->next == nullptr) {
-                    tail = last_node;
-                }
-                delete cur_node;
+            if (index == 0) {
+                Node* head_cpy = head;
+                head = head->next;
+                delete head_cpy;
                 --mLength;
                 return;
             }
-            ++cur_index;
-        }
+            size_t cur_index = 1;
+            Node* cur_node = head;
+            while (true) {
+                Node* last_node = cur_node;
+                cur_node = cur_node->next;
+                if (cur_index == index) {
+                    last_node->next = cur_node->next;
+                    if (last_node->next == nullptr) {
+                        tail = last_node;
+                    }
+                    delete cur_node;
+                    --mLength;
+                    return;
+                }
+                ++cur_index;
+            }
 #ifdef DEBUG
         }
         if (index >= mLength)
@@ -385,15 +383,15 @@ public:
 #ifdef DEBUG
         if (mLength) {
 #endif
-        Node* cur_node = head;
-        while (cur_node) {
-            cur_node = cur_node->next;
-            delete head;
-            head = cur_node;
-        }
-        head = nullptr;
-        tail = head;
-        mLength = 0;
+            Node* cur_node = head;
+            while (cur_node) {
+                cur_node = cur_node->next;
+                delete head;
+                head = cur_node;
+            }
+            head = nullptr;
+            tail = head;
+            mLength = 0;
 #ifdef DEBUG
         }
         else throw std::runtime_error("Error: linked list is empty and so cannot be cleared.");
@@ -404,17 +402,17 @@ public:
 #ifdef DEBUG
         if (index < mLength) {
 #endif
-        if (index == 0)
-            return head->data;
-        size_t cur_index = 1;
-        Node* cur_node = head;
-        while (1) {
-            Node* last_node = cur_node;
-            cur_node = cur_node->next;
-            if (cur_index == index)
-                return cur_node->data;
-            ++cur_index;
-        }
+            if (index == 0)
+                return head->data;
+            size_t cur_index = 1;
+            Node* cur_node = head;
+            while (1) {
+                Node* last_node = cur_node;
+                cur_node = cur_node->next;
+                if (cur_index == index)
+                    return cur_node->data;
+                ++cur_index;
+            }
 #ifdef DEBUG
         }
         throw std::invalid_argument("Invalid index, out of range");
@@ -425,7 +423,7 @@ public:
 #ifdef DEBUG
         if (mLength)
 #endif
-        return head->data;
+            return head->data;
         throw std::runtime_error("List is empty, there is nothing at front");
     }
 
@@ -433,7 +431,7 @@ public:
 #ifdef DEBUG
         if (mLength)
 #endif
-        return tail->data;
+            return tail->data;
         throw std::runtime_error("List is empty, there is nothing at back");
     }
 
@@ -441,7 +439,7 @@ public:
 #ifdef DEBUG
         if (mLength)
 #endif
-        erase(0);
+            erase(0);
 #ifdef DEBUG
         else throw std::runtime_error("List is empty, there is nothing to pop front");
 #endif
@@ -451,7 +449,7 @@ public:
 #ifdef DEBUG
         if (mLength)
 #endif
-        erase(mLength - 1);
+            erase(mLength - 1);
 #ifdef DEBUG
         else throw std::runtime_error("List is empty, there is nothing to pop back");
 #endif
@@ -461,17 +459,17 @@ public:
 #ifdef DEBUG
         if (mLength) {
 #endif
-        Node* cur_node = head;
-        tail = head;
-        Node* last = nullptr;
-        Node* next;
-        while (cur_node) {
-            next = cur_node->next;
-            cur_node->next = last;
-            last = cur_node;
-            cur_node = next;
-        }
-        head = last;
+            Node* cur_node = head;
+            tail = head;
+            Node* last = nullptr;
+            Node* next;
+            while (cur_node) {
+                next = cur_node->next;
+                cur_node->next = last;
+                last = cur_node;
+                cur_node = next;
+            }
+            head = last;
 #ifdef DEBUG
         }
         else throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
@@ -482,7 +480,7 @@ public:
 #ifdef DEBUG
         if (index < mLength)
 #endif
-        return get(index);
+            return get(index);
         throw std::invalid_argument("Invalid index, out of range");
     }
 
@@ -490,7 +488,7 @@ public:
 #ifdef DEBUG
         if (index < mLength)
 #endif
-        return ref_get(index);
+            return ref_get(index);
         throw std::invalid_argument("Invalid index, out of range");
     }
 
@@ -508,11 +506,11 @@ public:
         return *this;
     }
 
-    Iterator begin() const {
+    Iterator begin() const noexcept {
         return Iterator(head);
     }
 
-    Iterator end() const {
+    Iterator end() const noexcept {
         return Iterator(nullptr);
     }
 
@@ -537,17 +535,17 @@ private:
 #ifdef DEBUG
         if (index < mLength) {
 #endif
-        if (index == 0)
-            return head->data;
-        size_t cur_index = 1;
-        Node* cur_node = head;
-        while (true) {
-            Node* last_node = cur_node;
-            cur_node = cur_node->next;
-            if (cur_index == index)
-                return cur_node->data;
-            ++cur_index;
-        }
+            if (index == 0)
+                return head->data;
+            size_t cur_index = 1;
+            Node* cur_node = head;
+            while (true) {
+                Node* last_node = cur_node;
+                cur_node = cur_node->next;
+                if (cur_index == index)
+                    return cur_node->data;
+                ++cur_index;
+            }
 #ifdef DEBUG
         }
         throw std::invalid_argument("Invalid index, out of range");

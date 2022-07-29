@@ -142,7 +142,7 @@ public:
         return mLength == 0;
     }
 
-    operator bool() const noexcept {
+    explicit operator bool() const noexcept {
         return (bool) mLength;
     }
 
