@@ -12,6 +12,7 @@
 #include "BinarySearchTree.h"
 #include "Tree.h"
 #include "Vector.h"
+#include "SortingAlgorithms.h"
 
 template<typename T>
 void printvec(std::vector<T> data) {
@@ -23,11 +24,12 @@ void printvec(std::vector<T> data) {
 
 int main() {
     try {
-        LinkedList<float> list(2.31f);
+        LinkedList<float> list(12.31f);
         list.append(3.13f);
         list.append(5.87f);
-        list.append(15.55f);
-        list.append(45.90f);
+        list.append(65.55f);
+        list.append(1.90f);
+        Algorithm::insertion_sort(list, [](float x, float y) { return x < y; });
         list.display();
         std::cout << list.length() << std::endl;
         list.erase(2);
