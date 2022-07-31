@@ -12,10 +12,11 @@
 #include "BinarySearchTree.h"
 #include "Tree.h"
 #include "Vector.h"
+#include "DoublyLinkedList.h"
 #include "SortingAlgorithms.h"
 
 template<typename T>
-void printvec(std::vector<T> data) {
+static void printvec(std::vector<T> data) {
     for (T& i: data) {
         std::cout << i << " ";
     }
@@ -184,13 +185,23 @@ int main() {
         printvec(t_res);
         std::cout << "\n\n";
 
-        Vector::Vector<std::vector<int>> vector(3);
-        vector.push_back({2, 3, 4});
-        vector.push_back({4});
-        vector.push_back({6, 9});
-        for (size_t i = 0; i < vector.size(); ++i) {
-            printvec(vector[i]);
-        }
+        DoublyLinkedList<double> double_list(24.6);
+        double_list.append(10.5);
+        double_list.append(105.9);
+        double_list.append(1.56);
+        double_list.append(7.65);
+        double_list.append(0.57);
+        double_list.insert(12.9, 4);
+        double_list.display();
+        std::cout << "\n\n";
+
+//        Vector::Vector<std::vector<int>> vector(3);
+//        vector.push_back({2, 3, 4});
+//        vector.push_back({4});
+//        vector.push_back({6, 9});
+//        for (size_t i = 0; i < vector.size(); ++i) {
+//            printvec(vector[i]);
+//        }
         //Vector::Vector<int> vector;
         //vector.push_back(2);
         //vector.push_back(4);

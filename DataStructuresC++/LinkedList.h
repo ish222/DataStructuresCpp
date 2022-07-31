@@ -61,8 +61,42 @@ public:
 #endif
     }
 
-    ListIterator& advance() {
-        return ++*this;
+    ListIterator& advance(const size_t& distance) {
+#ifdef DEBUG
+        if (mPtr) {
+#endif
+            size_t moved = 0;
+            if (distance > 0) {
+                while (mPtr && moved < distance) {
+                    ++*this;
+                    ++moved;
+                }
+            }
+            else {
+                while (mPtr && moved > distance) {
+                    --*this;
+                    --moved;
+                }
+            }
+#ifdef DEBUG
+            if (moved != distance)
+                throw std::invalid_argument("Distance out of range of iterator");
+#endif
+            return *this;
+        }
+#ifdef DEBUG
+        throw std::runtime_error("Iterator is at an invalid position, cannot advance");
+#endif
+    }
+
+    ListIterator next() const {
+#ifdef DEBUG
+        if (mPtr)
+#endif
+            return ++ListIterator(*this);
+#ifdef DEBUG
+        throw std::out_of_range("Cannot increment list iterator past end of list");
+#endif
     }
 
     ListIterator operator+(const size_t& amount) {
@@ -139,10 +173,14 @@ public:
 public:
     LinkedList() : head(nullptr), tail(nullptr), mLength(0) {}
 
-    explicit LinkedList(const T& data) {
+    explicit LinkedList(const T& data) : mLength(1) {
         head = new Node(data);
         tail = head;
-        mLength = 1;
+    }
+
+    explicit LinkedList(T&& data) : mLength(1) {
+        head = new Node(std::move(data));
+        tail = head;
     }
 
     LinkedList(LinkedList<T>& other) {
@@ -210,8 +248,21 @@ public:
         return *this;
     }
 
-    void append(const T& data) {
+     void append(const T& data) {
         Node* new_node = new Node(data);
+        if (mLength) {
+            ++mLength;
+            tail->next = new_node;
+            tail = new_node;
+            return;
+        }
+        ++mLength;
+        head = new_node;
+        tail = head;
+    }
+
+     void append(T&& data) {
+        Node* new_node = new Node(std::move(data));
         if (mLength) {
             ++mLength;
             tail->next = new_node;
@@ -227,7 +278,11 @@ public:
         append(data);
     }
 
-    void insert(const T& data, const size_t& index) {
+    void push_back(T&& data) {
+        append(std::move(data));
+    }
+
+     void insert(const T& data, const size_t& index) {
 #ifdef DEBUG
         if (mLength && index <= mLength) {
 #endif
@@ -264,8 +319,49 @@ public:
 #endif
     }
 
+     void insert(T&& data, const size_t& index) {
+#ifdef DEBUG
+        if (mLength && index <= mLength) {
+#endif
+            Node* new_node = new Node(std::move(data));
+            ++mLength;
+            if (index == 0) {
+                new_node->next = head;
+                head = new_node;
+                return;
+            }
+            if (index == mLength) {
+                tail->next = new_node;
+                tail = new_node;
+                return;
+            }
+            size_t _index = 1;
+            Node* cur_node = head;
+            Node* last_node;
+            while (true) {
+                last_node = cur_node;
+                cur_node = cur_node->next;
+                if (_index == index) {
+                    last_node->next = new_node;
+                    new_node->next = cur_node;
+                    return;
+                }
+                ++_index;
+            }
+#ifdef DEBUG
+        }
+        if (index > mLength)
+            throw std::invalid_argument("Invalid index, out of range");
+        throw std::invalid_argument("Linked list is empty and uninitialised, use append instead");
+#endif
+    }
+
     void push_front(const T& data) {
         insert(data, 0);
+    }
+
+    void push_front(T&& data) {
+        insert(std::move(data), 0);
     }
 
     std::vector<T> contents() const {
@@ -344,7 +440,7 @@ public:
         return true;
     }
 
-    void erase(const size_t& index) {
+     void erase(const size_t& index) {
 #ifdef DEBUG
         if (mLength && index < mLength) {
 #endif
@@ -406,8 +502,7 @@ public:
                 return head->data;
             size_t cur_index = 1;
             Node* cur_node = head;
-            while (1) {
-                Node* last_node = cur_node;
+            while (true) {
                 cur_node = cur_node->next;
                 if (cur_index == index)
                     return cur_node->data;
@@ -437,10 +532,14 @@ public:
 
     void pop_front() {
 #ifdef DEBUG
-        if (mLength)
+        if (mLength) {
 #endif
-            erase(0);
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+            --mLength;
 #ifdef DEBUG
+        }
         else throw std::runtime_error("List is empty, there is nothing to pop front");
 #endif
     }
@@ -455,7 +554,7 @@ public:
 #endif
     }
 
-    void reverse_order() {
+     void reverse_order() {
 #ifdef DEBUG
         if (mLength) {
 #endif
@@ -514,7 +613,7 @@ public:
         return Iterator(nullptr);
     }
 
-    virtual ~LinkedList() {
+     virtual ~LinkedList() {
         if (mLength)
             clear();
     }
@@ -524,14 +623,15 @@ private:
         T data;
         Node* next = nullptr;
 
-        explicit Node(T data) : data(data) {}
+        explicit Node(const T& data) : data(data) {}
+        explicit Node(T&& data) : data(std::move(data)) {}
     };
 
     Node* head;
     Node* tail;
     size_t mLength;
 
-    T& ref_get(const size_t& index) {
+     T& ref_get(const size_t& index) {
 #ifdef DEBUG
         if (index < mLength) {
 #endif
@@ -540,7 +640,6 @@ private:
             size_t cur_index = 1;
             Node* cur_node = head;
             while (true) {
-                Node* last_node = cur_node;
                 cur_node = cur_node->next;
                 if (cur_index == index)
                     return cur_node->data;
