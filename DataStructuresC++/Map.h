@@ -1,11 +1,12 @@
-#pragma once
+#ifndef MAP_H
+#define MAP_H
 
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 #include <string>
 
-namespace Map {
+namespace custom {
     template<typename T, typename U = std::string>
     class Map {
     public:
@@ -176,3 +177,5 @@ namespace Map {
         std::vector<Key*> key_list;
     };
 }
+
+#endif // MAP_H

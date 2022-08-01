@@ -1,24 +1,17 @@
-#pragma once
+#ifndef TREE_H
+#define TREE_H
 
 #include <vector>
 #include <stdexcept>
 #include <type_traits>
 #include <algorithm>
 
-namespace Tree {
-    template<typename T>
-    struct Node {
-        T data;
-        std::vector<Node<T>*> children;
-
-        Node(const T& data = 0) : data(data), children({}) {}
-    };
-
+namespace custom {
     template<typename T>
     class Tree {
     public:
         Tree(const T& data, const bool& ordered = false) {
-            Node<T>* new_node = new Node<T>(data);
+            Node* new_node = new Node(data);
             root = new_node;
             current_head = root;
             this->ordered = ordered;  // Orders children in ascending values
@@ -32,10 +25,10 @@ namespace Tree {
                 throw std::runtime_error("Current node is uninitialised, cannot add child.");
                 return;
             }
-            Node<T>* new_node = new Node<T>(data);
+            Node* new_node = new Node(data);
             if (ordered) {
                 int index = 0;
-                for (Node<T>*& node: current_head->children) {
+                for (Node*& node: current_head->children) {
                     if (data > node->data)
                         ++index;
                     else break;
@@ -51,7 +44,7 @@ namespace Tree {
                 return {};
             }
             std::vector<T> ret = {};
-            for (const Node<T>*& node: current_head->children) {
+            for (const Node*& node: current_head->children) {
                 ret.push_back(node->data);
             }
             return ret;
@@ -63,7 +56,7 @@ namespace Tree {
                 return -1;
             }
             int index = 0;
-            for (Node<T>* node: current_head->children) {
+            for (Node* node: current_head->children) {
                 if (node->data == data)
                     return index;
                 ++index;
@@ -128,39 +121,48 @@ namespace Tree {
         }
 
     private:
-        Node<T>* root;
-        Node<T>* current_head;
+        struct Node {
+            T data;
+            std::vector<Node*> children;
+
+            Node(const T& data = 0) : data(data), children({}) {}
+        };
+        
+        Node* root;
+        Node* current_head;
         bool ordered;
 
-        std::vector<T>& InOrder(Node<T>* node, std::vector<T>& data) {
+        std::vector<T>& InOrder(Node* node, std::vector<T>& data) {
             // TODO: FIX this function
             if (!node) return data;
             data.push_back(node->data);
-            for (Node<T>*& child: node->children) {
+            for (Node*& child: node->children) {
                 data.push_back(child->data);
                 InOrder(child, data);
             }
             return data;
         }
 
-        int get_depth(Node<T>* node) {
+        int get_depth(Node* node) {
             if (!node) return 0;
             int max_depth = 0;
-            for (Node<T>* child: node->children) {
+            for (Node* child: node->children) {
                 max_depth = std::max(max_depth, get_depth(child));
             }
             return ++max_depth;
         }
 
-        void delete_tree(Node<T>*& node) {
+        void delete_tree(Node*& node) {
             if (!node) return;
             if (node->children.empty()) {
                 delete node;
                 return;
             }
-            for (Node<T>*& child: node->children) {
+            for (Node*& child: node->children) {
                 delete_tree(child);
             }
         }
     };
 }
+
+#endif // TREE_H

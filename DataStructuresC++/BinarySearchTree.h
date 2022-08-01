@@ -1,33 +1,25 @@
-#pragma once
+#ifndef BINARY_SEARCH_TREE_H
+#define BINARY_SEARCH_TREE_H
 
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 #include <type_traits>
 
-namespace BST {
-    template<typename T>
-    struct Node {
-        T data;
-        Node<T>* left = nullptr;
-        Node<T>* right = nullptr;
-
-        Node(T data) : data(data) {}
-    };
-
+namespace custom {
     template<typename T, typename = typename std::enable_if_t<std::is_arithmetic<T>::value>>
     class BinarySearchTree {
     public:
         BinarySearchTree(const T& data) {
-            root = new Node<T>(data);
+            root = new Node(data);
             current_head = nullptr;
             left = false;
         }
 
         void add(const T& data) {
-            Node<T>* change = find_node(data, root);
+            Node* change = find_node(data, root);
             if (change == nullptr && current_head != nullptr) {
-                change = new Node<T>(data);
+                change = new Node(data);
                 if (left)
                     current_head->left = change;
                 else current_head->right = change;
@@ -78,7 +70,7 @@ namespace BST {
         }
 
         void remove(const T& val) {
-            Node<T>* node = find_node(val, root);
+            Node* node = find_node(val, root);
             if (node == nullptr) {
                 throw std::runtime_error("Error: value not found, so cannot be deleted");
                 return;
@@ -91,7 +83,7 @@ namespace BST {
                 return;
             }
             else if (node->left == nullptr) {
-                Node<T>* node_cpy = node;
+                Node* node_cpy = node;
                 node = node->right;
                 delete node_cpy;
                 if (left)
@@ -100,7 +92,7 @@ namespace BST {
                 return;
             }
             else if (node->right == nullptr) {
-                Node<T>* node_cpy = node;
+                Node* node_cpy = node;
                 node = node->left;
                 delete node;
                 if (left)
@@ -109,7 +101,7 @@ namespace BST {
                 return;
             }
             else {
-                Node<T>* replace = min_value(node->right);
+                Node* replace = min_value(node->right);
                 node->data = replace->data;
                 delete replace;
                 if (left)
@@ -134,11 +126,19 @@ namespace BST {
         }
 
     private:
-        Node<T>* root;
-        Node<T>* current_head;
+        struct Node {
+            T data;
+            Node* left = nullptr;
+            Node* right = nullptr;
+
+            Node(T data) : data(data) {}
+        };
+        
+        Node* root;
+        Node* current_head;
         bool left;
 
-        Node<T>* find_node(const T& data, Node<T>* node) {
+        Node* find_node(const T& data, Node* node) {
             if (node == nullptr) {
                 return node;
             }
@@ -155,8 +155,8 @@ namespace BST {
             else return node;
         }
 
-        Node<T>* min_value(Node<T>* node) {
-            Node<T>* cur = node;
+        Node* min_value(Node* node) {
+            Node* cur = node;
             while (cur->left != nullptr) {
                 current_head = cur;
                 cur = cur->left;
@@ -164,7 +164,7 @@ namespace BST {
             return cur;
         }
 
-        std::vector<T>& PreOrder(Node<T>* node, std::vector<T>& data) {
+        std::vector<T>& PreOrder(Node* node, std::vector<T>& data) {
             if (node != nullptr) {
                 data.push_back(node->data);
                 PreOrder(node->left, data);
@@ -173,7 +173,7 @@ namespace BST {
             return data;
         }
 
-        std::vector<T>& InOrder(Node<T>* node, std::vector<T>& data) {
+        std::vector<T>& InOrder(Node* node, std::vector<T>& data) {
             if (node != nullptr) {
                 InOrder(node->left, data);
                 data.push_back(node->data);
@@ -182,7 +182,7 @@ namespace BST {
             return data;
         }
 
-        std::vector<T>& PostOrder(Node<T>* node, std::vector<T>& data) {
+        std::vector<T>& PostOrder(Node* node, std::vector<T>& data) {
             if (node != nullptr) {
                 PostOrder(node->left, data);
                 PostOrder(node->right, data);
@@ -191,7 +191,7 @@ namespace BST {
             return data;
         }
 
-        int calc_max_height(Node<T>* node) {
+        int calc_max_height(Node* node) {
             if (node == nullptr)
                 return -1;
             int l_height = calc_max_height(node->left);
@@ -201,7 +201,7 @@ namespace BST {
             else return r_height + 1;
         }
 
-        void delete_tree(Node<T>*& node) {
+        void delete_tree(Node*& node) {
             if (node->left != nullptr)
                 delete_tree(node->left);
             if (node->right != nullptr)
@@ -210,3 +210,5 @@ namespace BST {
         }
     };
 };
+
+#endif //BINARY_SEARCH_TREE_H

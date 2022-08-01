@@ -1,9 +1,10 @@
-#pragma once
+#ifndef VECTOR_H
+#define VECTOR_H
 
 #include <utility>
 #include <stdexcept>
 
-namespace Vector {
+namespace custom {
     template<typename T>
     class Vector {
     public:
@@ -95,3 +96,5 @@ namespace Vector {
         }
     };
 }
+
+#endif // VECTOR_H

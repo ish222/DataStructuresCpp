@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DOUBLY_LINKED_LIST_H
+#define DOUBLY_LINKED_LIST_H
 
 #include <iostream>
 #include <vector>
@@ -219,7 +220,7 @@ public:
         tail = head;
     }
 
-    DoublyLinkedList(const DoublyLinkedList& other) {
+    DoublyLinkedList(const DoublyLinkedList<T>& other) {
         if (other.mLength) {
             head = new Node(other.head->data);
             mLength = other.mLength;
@@ -239,10 +240,10 @@ public:
         mLength = 0;
     }
 
-    DoublyLinkedList& operator=(const DoublyLinkedList& other) {
+    DoublyLinkedList& operator=(const DoublyLinkedList<T>& other) {
         if (this != &other) {
-//            if (mLength)
-//                clear();
+            if (mLength)
+                clear();
             if (other.mLength) {
                 head = new Node(other.head->data);
                 mLength = other.mLength;
@@ -265,7 +266,7 @@ public:
         return *this;
     }
 
-    DoublyLinkedList(DoublyLinkedList&& other) noexcept {
+    DoublyLinkedList(DoublyLinkedList<T>&& other) noexcept {
         head = other.head;
         tail = other.tail;
         mLength = other.mLength;
@@ -274,10 +275,10 @@ public:
         other.mLength = 0;
     }
 
-    DoublyLinkedList& operator=(DoublyLinkedList&& other) noexcept {
+    DoublyLinkedList<T>& operator=(DoublyLinkedList<T>&& other) noexcept {
         if (this != &other) {
-//            if (mLength)
-//                clear();
+            if (mLength)
+                clear();
             head = other.head;
             tail = other.tail;
             mLength = other.mLength;
@@ -754,7 +755,8 @@ private:
         Node* next = nullptr;
         Node* last = nullptr;
 
-        Node(T data) : data(data) {}
+        explicit Node(const T& data) : data(data) {}
+        explicit Node(T&& data) : data(std::move(data)) {}
     };
 
     Node* head;
@@ -795,3 +797,5 @@ private:
 #endif
     }
 };
+
+#endif // DOUBLY_LINKED_LIST_H

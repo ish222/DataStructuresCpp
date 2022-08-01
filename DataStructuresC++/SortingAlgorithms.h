@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SORTING_ALGORITHMS_H
+#define SORTING_ALGORITHMS_H
 
 #include "LinkedList.h"
 
-namespace Algorithm {
+namespace custom {
     template<typename T>
     inline bool ascending(T a, T b) { return a > b; }
 
@@ -60,3 +61,5 @@ namespace Algorithm {
 
     }
 }
+
+#endif // SORTING_ALGORITHMS_H

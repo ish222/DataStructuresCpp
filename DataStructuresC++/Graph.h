@@ -1,9 +1,10 @@
-#pragma once
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include <iostream>
 #include <vector>
 
-namespace GP {
+namespace custom {
     template<typename T>
     class Graph {
     public:
@@ -219,5 +220,6 @@ namespace GP {
         size_t node_num;
         bool directed;
     };
-
 }
+
+#endif // GRAPH_H

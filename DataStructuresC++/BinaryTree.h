@@ -1,31 +1,22 @@
-#pragma once
+#ifndef BINARY_TREE_H
+#define BINARY_TREE_H
 
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 
-namespace BT {
-
-    template<typename T>
-    struct Node {
-        T data;
-        Node<T>* left = nullptr;
-        Node<T>* right = nullptr;
-
-        Node(T data) : data(data) {}
-    };
-
+namespace custom {
     template<typename T>
     class BinaryTree {
     public:
         BinaryTree(const T& data) {
-            root = new Node<T>(data);
+            root = new Node(data);
             current_head = root;
         }
 
         void new_left(const T& data) {
             if (current_head->left == nullptr) {
-                Node<T>* new_node = new Node<T>(data);
+                Node* new_node = new Node(data);
                 current_head->left = new_node;
             }
             else
@@ -35,7 +26,7 @@ namespace BT {
 
         void new_right(const T& data) {
             if (current_head->right == nullptr) {
-                Node<T>* new_node = new Node<T>(data);
+                Node* new_node = new Node(data);
                 current_head->right = new_node;
             }
             else
@@ -47,7 +38,7 @@ namespace BT {
             if (current_head != nullptr)
                 current_head->data = data;
             else if (current_head == root && root == nullptr) {
-                Node<T>* new_node = new Node<T>(data);
+                Node* new_node = new Node(data);
                 root = new_node;
             }
             else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
@@ -79,10 +70,6 @@ namespace BT {
 
         void goto_root() {
             current_head = root;
-        }
-
-        Node<T>* get_root() const {
-            return root;
         }
 
         T get_data() const {
@@ -193,10 +180,18 @@ namespace BT {
         }
 
     private:
-        Node<T>* root;
-        Node<T>* current_head;
+        struct Node {
+            T data;
+            Node* left = nullptr;
+            Node* right = nullptr;
 
-        std::vector<T>& PreOrder(Node<T>* node, std::vector<T>& data) {
+            explicit Node(T data) : data(data) {}
+        };
+        
+        Node* root;
+        Node* current_head;
+
+        std::vector<T>& PreOrder(Node* node, std::vector<T>& data) {
             if (node != nullptr) {
                 data.push_back(node->data);
                 PreOrder(node->left, data);
@@ -205,7 +200,7 @@ namespace BT {
             return data;
         }
 
-        std::vector<T>& InOrder(Node<T>* node, std::vector<T>& data) {
+        std::vector<T>& InOrder(Node* node, std::vector<T>& data) {
             if (node != nullptr) {
                 InOrder(node->left, data);
                 data.push_back(node->data);
@@ -214,7 +209,7 @@ namespace BT {
             return data;
         }
 
-        std::vector<T>& PostOrder(Node<T>* node, std::vector<T>& data) {
+        std::vector<T>& PostOrder(Node* node, std::vector<T>& data) {
             if (node != nullptr) {
                 PostOrder(node->left, data);
                 PostOrder(node->right, data);
@@ -223,7 +218,7 @@ namespace BT {
             return data;
         }
 
-        int calc_max_height(Node<T>* node) {
+        int calc_max_height(Node* node) {
             if (node == nullptr)
                 return -1;
             int l_height = calc_max_height(node->left);
@@ -233,7 +228,7 @@ namespace BT {
             else return r_height + 1;
         }
 
-        void delete_tree(Node<T>*& node) {
+        void delete_tree(Node*& node) {
             if (node->left != nullptr)
                 delete_tree(node->left);
             if (node->right != nullptr)
@@ -243,3 +238,5 @@ namespace BT {
     };
 
 }
+
+#endif // BINARY_TREE_H

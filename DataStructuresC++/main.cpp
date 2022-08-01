@@ -25,12 +25,13 @@ static void printvec(std::vector<T> data) {
 
 int main() {
     try {
+        using namespace custom;
         LinkedList<float> list(12.31f);
         list.append(3.13f);
         list.append(5.87f);
         list.append(65.55f);
         list.append(1.90f);
-        Algorithm::insertion_sort(list, [](float x, float y) { return x < y; });
+        insertion_sort(list, [](float x, float y) { return x < y; });
         list.display();
         std::cout << list.length() << std::endl;
         list.erase(2);
@@ -87,7 +88,7 @@ int main() {
         std::cout << stack.peek() << "\n";
         std::cout << stack.length() << "\n\n";
 
-        BT::BinaryTree<int> Btree = BT::BinaryTree<int>(5);
+        BinaryTree<int> Btree = BinaryTree<int>(5);
         Btree.new_left(10);
         Btree.new_right(15);
         Btree.advance_left();
@@ -110,7 +111,7 @@ int main() {
         std::cout << "\nTree height after clearing: " << Btree.max_height();
         std::cout << "\n\n";
 
-        GP::Graph<int> graph(5);
+        Graph<int> graph(5);
         graph.add_node(10);
         graph.add_node(15);
         graph.add_node(20);
@@ -131,7 +132,8 @@ int main() {
         graph.print();
         std::cout << "\n\n";
 
-        Queue<int> PQueue(3, 1);
+        std::cout << "PriorityQueue" << std::endl;
+        PriorityQueue<int> PQueue(3, 1);
         PQueue.enqueue(15);
         PQueue.enqueue(12);
         PQueue.enqueue(20);
@@ -139,7 +141,7 @@ int main() {
         PQueue.display();
         std::cout << "\n\n";
 
-        Map::Map<int, const char*> map;
+        Map<int, const char*> map;
         map.add("A", 15);
         map.add("B", 25);
         map.add("C", 6);
@@ -149,7 +151,7 @@ int main() {
         map.print();
         std::cout << "\n\n";
 
-        BST::BinarySearchTree<double> bst(2.5);
+        BinarySearchTree<double> bst(2.5);
         bst.add(1.9);
         bst.add(5.6);
         bst.add(8.3);
@@ -161,7 +163,7 @@ int main() {
         std::cout << "\n\n";
 
 
-        Tree::Tree<char> tree('A', true);
+        Tree<char> tree('A', true);
         tree.add_child('C');
         tree.add_child('B');
         tree.add_child('G');
