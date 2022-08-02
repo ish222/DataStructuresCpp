@@ -17,7 +17,7 @@
 
 template<typename T>
 static void printvec(std::vector<T> data) {
-    for (T& i : data) {
+    for (T& i: data) {
         std::cout << i << " ";
     }
     std::cout << std::endl;
@@ -124,12 +124,19 @@ int main() {
         graph.add_edge("Beta", "Gamma");
         graph.add_edge("Alpha", "Epsilon");
         graph.add_edge("Epsilon", "Beta");
+        graph.add_edge("Gamma", "Alpha");
         graph.print();
         std::cout << "\n";
         std::cout << graph.find_edge("Theta", "Alpha");
         std::cout << "\n";
         graph.remove("Theta");
         graph.print();
+        std::cout << "\n\n";
+        std::vector<std::string> dfs_result = graph.dfs("Alpha");
+        printvec(dfs_result);
+        std::cout << "\n\n";
+        std::vector<std::string> bfs_result = graph.bfs("Alpha");
+        printvec(bfs_result);
         std::cout << "\n\n";
 
         std::cout << "PriorityQueue" << std::endl;

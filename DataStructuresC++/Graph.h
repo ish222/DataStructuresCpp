@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
+#include <deque>
 
 namespace custom {
     template<typename T, typename ID_Type>
@@ -27,14 +29,14 @@ namespace custom {
             node_list = {};
             adj_list = {};
             node_num = 0;
-            for (Node*& node : other.node_list)
+            for (Node*& node: other.node_list)
                 add_node(node->data);
-            for (std::vector<Node*> link : other.adj_list) {
+            for (std::vector<Node*> link: other.adj_list) {
                 ID_Type first = link[0]->id;
                 for (int i = 1; i < link.size(); ++i) {
                     Node* last_node = nullptr;
                     Node* next_node = nullptr;
-                    for (Node* node : node_list) {
+                    for (Node* node: node_list) {
                         if (node->id == first)
                             last_node = node;
                         else if (node->id == link[i]->id)
@@ -57,9 +59,9 @@ namespace custom {
                 node_list = {};
                 adj_list = {};
                 node_num = 0;
-                for (Node*& node : other.node_list)
+                for (Node*& node: other.node_list)
                     add_node(node->data);
-                for (std::vector<Node*> link : other.adj_list) {
+                for (std::vector<Node*> link: other.adj_list) {
                     ID_Type first = link[0]->id;
                     for (int i = 1; i < link.size(); ++i)
                         add_edge(first, link[i]->id);
@@ -114,7 +116,8 @@ namespace custom {
                 if (node_list[i]->id == last) {
                     last_node = node_list[i];
                     last_index = i;
-                } else if (node_list[i]->id == next) {
+                }
+                else if (node_list[i]->id == next) {
                     next_node = node_list[i];
                     next_index = i;
                 }
@@ -122,11 +125,12 @@ namespace custom {
             if (last_node && next_node) {
                 adj_list[last_index].push_back(next_node);
                 adj_list[next_index].push_back(last_node);
-            } else throw std::runtime_error("Invalid node IDs");
+            }
+            else throw std::runtime_error("Invalid node IDs, cannot add edge");
         }
 
         void change(const ID_Type& id, const T& data) {
-            for (Node*& node : node_list) {
+            for (Node*& node: node_list) {
                 if (node->id == id) {
                     node->data = data;
                     return;
@@ -148,7 +152,7 @@ namespace custom {
         }
 
         bool find(const ID_Type& id) const {
-            for (Node*& node : node_list) {
+            for (Node*& node: node_list) {
                 if (node->id == id)
                     return true;
             }
@@ -172,10 +176,10 @@ namespace custom {
             return false;
         }
 
-        std::vector<int> contents() const {
+        std::vector<T> contents() const {
             if (node_num) {
-                std::vector<int> contents = {};
-                for (Node*& node : node_list) {
+                std::vector<T> contents = {};
+                for (Node*& node: node_list) {
                     contents.push_back(node->data);
                 }
                 return contents;
@@ -183,16 +187,51 @@ namespace custom {
             throw std::runtime_error("Graph is empty, there are no contents");
         }
 
+        std::vector<ID_Type> dfs(const ID_Type& id) const {
+            std::vector<ID_Type> ret;
+            std::unordered_map<Node*, bool> visited;
+            int index = find_node_index(id);
+            if (index == -1)
+                throw std::invalid_argument("Node with id provided does not exist");
+            dfs_helper(node_list[index], ret, visited);
+            return ret;
+        }
+
+        std::vector<ID_Type> bfs(const ID_Type& id) const {
+            std::vector<ID_Type> ret;
+            std::unordered_map<Node*, bool> visited;
+            std::deque<Node*> queue;
+            int index = find_node_index(id);
+            if (index == -1)
+                throw std::invalid_argument("Node with id provided does not exist");
+            visited[node_list[index]] = true;
+            queue.push_back(node_list[index]);
+            while (!queue.empty()) {
+                Node* front = queue.front();
+                ret.push_back(front->id);
+                queue.pop_front();
+                int cur_index = find_node_index(front->id);
+                for (Node* neighbour: adj_list[cur_index]) {
+                    if (!visited[neighbour]) {
+                        visited[neighbour] = true;
+                        queue.push_back(neighbour);
+                    }
+                }
+            }
+            return ret;
+        }
+
         void print() const {
             if (node_num) {
-                for (std::vector<Node*> links : adj_list) {
-                    for (Node*& node : links) {
+                for (std::vector<Node*> links: adj_list) {
+                    for (Node*& node: links) {
                         std::cout << node->id << " : " << node->data << "\t->\t";
                     }
                     std::cout << "END\n";
                 }
                 std::cout << std::endl;
-            } else throw std::runtime_error("Graph is empty, there is nothing to print");
+            }
+            else throw std::runtime_error("Graph is empty, there is nothing to print");
         }
 
         void remove(const ID_Type& id) {
@@ -209,7 +248,7 @@ namespace custom {
                 }
                 if (!node)
                     throw std::invalid_argument("Invalid id, this id does not exist");
-                for (std::vector<Node*>& links : adj_list) {
+                for (std::vector<Node*>& links: adj_list) {
                     for (int i = 0; i < links.size(); i++) {
                         if (links[i]->id == id) {
                             links.erase(links.begin() + i);
@@ -217,18 +256,20 @@ namespace custom {
                     }
                 }
                 delete node;
-            } else throw std::runtime_error("Graph is empty, there is nothing to remove");
+            }
+            else throw std::runtime_error("Graph is empty, there is nothing to remove");
         }
 
         void clear() {
             if (node_num) {
-                for (Node*& node : node_list) {
+                for (Node*& node: node_list) {
                     delete node;
                 }
                 node_list.clear();
                 adj_list.clear();
                 node_num = 0;
-            } else throw std::runtime_error("Graph is empty, there is nothing to clear");
+            }
+            else throw std::runtime_error("Graph is empty, there is nothing to clear");
         }
 
         virtual ~Graph() {
@@ -249,6 +290,25 @@ namespace custom {
         std::vector<std::vector<Node*>> adj_list;
         std::vector<Node*> node_list;
         size_t node_num;
+
+        int find_node_index(const ID_Type& id) const {
+            for (int i = 0; i < node_list.size(); ++i) {
+                if (node_list[i]->id == id)
+                    return i;
+            }
+            return -1;
+        }
+
+        void dfs_helper(Node* node, std::vector<ID_Type>& vec, std::unordered_map<Node*, bool>& visited) const {
+            visited[node] = true;
+            vec.push_back(node->id);
+            int node_index = find_node_index(node->id);
+            for (Node* neighbour: adj_list[node_index]) {
+                if (!visited[neighbour]) {
+                    dfs_helper(neighbour, vec, visited);
+                }
+            }
+        }
     };
 
     template<typename T, typename ID_Type>
@@ -264,9 +324,9 @@ namespace custom {
             node_list = {};
             adj_list = {};
             node_num = 0;
-            for (Node*& node : other.node_list)
+            for (Node*& node: other.node_list)
                 add_node(node->data);
-            for (std::vector<Node*> link : other.adj_list) {
+            for (std::vector<Node*> link: other.adj_list) {
                 ID_Type first = link[0]->id;
                 for (int i = 1; i < link.size(); ++i)
                     add_edge(first, link[i]->id);
@@ -280,9 +340,9 @@ namespace custom {
                 node_list = {};
                 adj_list = {};
                 node_num = 0;
-                for (Node*& node : other.node_list)
+                for (Node*& node: other.node_list)
                     add_node(node->data);
-                for (std::vector<Node*> link : other.adj_list) {
+                for (std::vector<Node*> link: other.adj_list) {
                     ID_Type first = link[0]->id;
                     for (int i = 1; i < link.size(); ++i)
                         add_edge(first, link[i]->id);
@@ -291,7 +351,7 @@ namespace custom {
             return *this;
         }
 
-        DirectedGraph(DirectedGraph<T, ID_Type>&& other) noexcept : Graph<T, ID_Type>(std::move(other)) {}
+        DirectedGraph(DirectedGraph<T, ID_Type>&& other) noexcept: Graph<T, ID_Type>(std::move(other)) {}
 
         DirectedGraph<T, ID_Type>& operator=(DirectedGraph<T, ID_Type>&& other) noexcept {
             if (this != &other) {
@@ -310,18 +370,20 @@ namespace custom {
         void add_edge(const ID_Type& last, const ID_Type& next) override {
             Node* last_node = nullptr;
             Node* next_node = nullptr;
-            int last_index;
+            int last_index = -1;
             for (int i = 0; i < node_list.size(); ++i) {
                 if (node_list[i]->id == last) {
                     last_node = node_list[i];
                     last_index = i;
-                } else if (node_list[i]->id == next) {
+                }
+                else if (node_list[i]->id == next) {
                     next_node = node_list[i];
                 }
             }
             if (last_node && next_node) {
                 adj_list[last_index].push_back(next_node);
-            } else throw std::runtime_error("Invalid node IDs");
+            }
+            else throw std::runtime_error("Invalid node IDs, cannot add edge");
         }
 
         virtual ~DirectedGraph() {
