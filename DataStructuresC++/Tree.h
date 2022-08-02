@@ -28,14 +28,13 @@ namespace custom {
             Node* new_node = new Node(data);
             if (ordered) {
                 int index = 0;
-                for (Node*& node: current_head->children) {
+                for (Node*& node : current_head->children) {
                     if (data > node->data)
                         ++index;
                     else break;
                 }
                 current_head->children.insert(current_head->children.begin() + index, new_node);
-            }
-            else current_head->children.push_back(new_node);
+            } else current_head->children.push_back(new_node);
         }
 
         std::vector<T> children_data() const {
@@ -44,7 +43,7 @@ namespace custom {
                 return {};
             }
             std::vector<T> ret = {};
-            for (const Node*& node: current_head->children) {
+            for (const Node*& node : current_head->children) {
                 ret.push_back(node->data);
             }
             return ret;
@@ -56,7 +55,7 @@ namespace custom {
                 return -1;
             }
             int index = 0;
-            for (Node* node: current_head->children) {
+            for (Node* node : current_head->children) {
                 if (node->data == data)
                     return index;
                 ++index;
@@ -127,7 +126,7 @@ namespace custom {
 
             Node(const T& data = 0) : data(data), children({}) {}
         };
-        
+
         Node* root;
         Node* current_head;
         bool ordered;
@@ -136,7 +135,7 @@ namespace custom {
             // TODO: FIX this function
             if (!node) return data;
             data.push_back(node->data);
-            for (Node*& child: node->children) {
+            for (Node*& child : node->children) {
                 data.push_back(child->data);
                 InOrder(child, data);
             }
@@ -146,7 +145,7 @@ namespace custom {
         int get_depth(Node* node) {
             if (!node) return 0;
             int max_depth = 0;
-            for (Node* child: node->children) {
+            for (Node* child : node->children) {
                 max_depth = std::max(max_depth, get_depth(child));
             }
             return ++max_depth;
@@ -158,7 +157,7 @@ namespace custom {
                 delete node;
                 return;
             }
-            for (Node*& child: node->children) {
+            for (Node*& child : node->children) {
                 delete_tree(child);
             }
         }

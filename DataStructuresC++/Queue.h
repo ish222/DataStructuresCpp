@@ -47,8 +47,7 @@ namespace custom {
                         tail = tail->next;
                         other_node = other_node->next;
                     }
-                }
-                else {
+                } else {
                     head = nullptr;
                     tail = head;
                     mLength = 0;
@@ -136,7 +135,7 @@ namespace custom {
             return (bool) mLength;
         }
 
-        bool operator==(const Queue<T>& other) const {
+        virtual bool operator==(const Queue<T>& other) const {
             if (mLength != other.mLength)
                 return false;
             Node* cur = head;
@@ -167,10 +166,10 @@ namespace custom {
             if (right.mLength) {
                 std::vector<T> data = contents();
                 std::vector<T> right_data = right.contents();
-                for (T& i: right_data)
+                for (T& i : right_data)
                     data.push_back(i);
                 Queue<T>* res = new Queue<T>();
-                for (const T& i: data)
+                for (const T& i : data)
                     res->enqueue(i);
                 return *res;
             }
@@ -193,12 +192,11 @@ namespace custom {
         void display() const {
             if (mLength) {
                 std::vector<T> data = contents();
-                for (const T& i: data) {
+                for (const T& i : data) {
                     std::cout << i << "\t";
                 }
                 std::cout << "\n";
-            }
-            else throw std::runtime_error("Error: queue is empty, there is nothing to display");
+            } else throw std::runtime_error("Error: queue is empty, there is nothing to display");
         }
 
         void clear() {
@@ -210,8 +208,7 @@ namespace custom {
                     head = cur_node;
                 }
                 head = nullptr;
-            }
-            else throw std::runtime_error("Error: queue is empty and so cannot be cleared");
+            } else throw std::runtime_error("Error: queue is empty and so cannot be cleared");
         }
 
         virtual ~Queue() {
@@ -225,6 +222,7 @@ namespace custom {
             Node* next = nullptr;
 
             explicit Node(const T& data) : data(data) {}
+
             explicit Node(T&& data) : data(std::move(data)) {}
         };
 
@@ -249,14 +247,15 @@ namespace custom {
         }
     };
 
-    template <typename T>
+    template<typename T>
     class PriorityQueue : public Queue<T> {
     public:
         PriorityQueue() : priority_val(None), Queue<T>() {}
 
         explicit PriorityQueue(const T& data, unsigned int priority = None) : priority_val(priority), Queue<T>(data) {}
 
-        explicit PriorityQueue(T&& data, unsigned int priority = None) : priority_val(priority), Queue<T>(std::move(data)) {}
+        explicit PriorityQueue(T&& data, unsigned int priority = None) : priority_val(priority),
+                                                                         Queue<T>(std::move(data)) {}
 
         PriorityQueue(const PriorityQueue<T>& other) : Queue<T>(other), priority_val(other.priority_val) {}
 
@@ -277,8 +276,7 @@ namespace custom {
                         tail = tail->next;
                         other_node = other_node->next;
                     }
-                }
-                else {
+                } else {
                     head = nullptr;
                     tail = head;
                     mLength = 0;
@@ -287,9 +285,10 @@ namespace custom {
             return *this;
         }
 
-        PriorityQueue(PriorityQueue<T>&& other)  noexcept : Queue<T>(std::move(other)), priority_val(other.priority_val) {}
+        PriorityQueue(PriorityQueue<T>&& other) noexcept : Queue<T>(std::move(other)),
+                                                           priority_val(other.priority_val) {}
 
-        PriorityQueue(Queue<T>&& other)  noexcept : Queue<T>(std::move(other)), priority_val(None) {}
+        PriorityQueue(Queue<T>&& other) noexcept : Queue<T>(std::move(other)), priority_val(None) {}
 
         PriorityQueue<T>& operator=(PriorityQueue<T>&& other) noexcept {
             if (this != &other) {
@@ -308,7 +307,7 @@ namespace custom {
         }
 
         void enqueue(const T& data) override {
-            Node *new_node = new Node(data);
+            Node* new_node = new Node(data);
             if (priority_val == None && mLength) {
                 tail->next = new_node;
                 tail = new_node;
@@ -316,7 +315,7 @@ namespace custom {
                 return;
             }
             if (mLength) {
-                Node *cur_node = head;
+                Node* cur_node = head;
                 size_t index = 0;
                 switch (priority_val) {
                     case Ascending:
@@ -343,7 +342,7 @@ namespace custom {
                 }
                 size_t _index = 1;
                 cur_node = head;
-                Node *last_node = nullptr;
+                Node* last_node = nullptr;
                 while (true) {
                     last_node = cur_node;
                     cur_node = cur_node->next;
@@ -362,7 +361,7 @@ namespace custom {
         }
 
         void enqueue(T&& data) override {
-            Node *new_node = new Node(std::move(data));
+            Node* new_node = new Node(std::move(data));
             if (priority_val == None && mLength) {
                 tail->next = new_node;
                 tail = new_node;
@@ -370,7 +369,7 @@ namespace custom {
                 return;
             }
             if (mLength) {
-                Node *cur_node = head;
+                Node* cur_node = head;
                 size_t index = 0;
                 switch (priority_val) {
                     case Ascending:
@@ -397,7 +396,7 @@ namespace custom {
                 }
                 size_t _index = 1;
                 cur_node = head;
-                Node *last_node = nullptr;
+                Node* last_node = nullptr;
                 while (true) {
                     last_node = cur_node;
                     cur_node = cur_node->next;
@@ -429,18 +428,38 @@ namespace custom {
             return true;
         }
 
+        bool operator==(const Queue<T>& other) const override {
+            PriorityQueue<T> temp(other);
+            if (mLength != temp.mLength)
+                return false;
+            Node* cur = head;
+            Node* other_cur = temp.head;
+            while (cur) {
+                if (cur->data != other_cur->data)
+                    return false;
+                cur = cur->next;
+                other_cur = other_cur->next;
+            }
+            return true;
+        }
+
         PriorityQueue<T> operator+(PriorityQueue<T>& right) {
             if (right.mLength) {
                 std::vector<T> data = contents();
                 std::vector<T> right_data = right.contents();
-                for (T& i: right_data)
+                for (T& i : right_data)
                     data.push_back(i);
                 PriorityQueue<T>* res = new PriorityQueue<T>();
-                for (const T& i: data)
+                for (const T& i : data)
                     res->enqueue(i);
                 return *res;
             }
             return *this;
+        }
+
+        virtual ~PriorityQueue() {
+            if (mLength)
+                clear();
         }
 
     private:

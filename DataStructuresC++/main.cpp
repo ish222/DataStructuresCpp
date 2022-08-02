@@ -17,7 +17,7 @@
 
 template<typename T>
 static void printvec(std::vector<T> data) {
-    for (T& i: data) {
+    for (T& i : data) {
         std::cout << i << " ";
     }
     std::cout << std::endl;
@@ -111,24 +111,24 @@ int main() {
         std::cout << "\nTree height after clearing: " << Btree.max_height();
         std::cout << "\n\n";
 
-        Graph<int> graph(5);
-        graph.add_node(10);
-        graph.add_node(15);
-        graph.add_node(20);
-        graph.add_node(30);
-        graph.add_edge('A', 'B');
-        graph.add_edge('B', 'C');
-        graph.add_edge('A', 'D');
-        graph.add_edge('A', 'C');
-        graph.add_edge('C', 'D');
-        graph.add_edge('B', 'D');
-        graph.add_edge('A', 'E');
-        graph.add_edge('E', 'B');
+        DirectedGraph<int, std::string> graph(5, "Alpha");
+        graph.add_node(10, "Beta");
+        graph.add_node(15, "Theta");
+        graph.add_node(20, "Gamma");
+        graph.add_node(30, "Epsilon");
+        graph.add_edge("Alpha", "Beta");
+        graph.add_edge("Beta", "Theta");
+        graph.add_edge("Alpha", "Gamma");
+        graph.add_edge("Alpha", "Theta");
+        graph.add_edge("Theta", "Gamma");
+        graph.add_edge("Beta", "Gamma");
+        graph.add_edge("Alpha", "Epsilon");
+        graph.add_edge("Epsilon", "Beta");
         graph.print();
         std::cout << "\n";
-        std::cout << graph.find_edge('C', 'A');
+        std::cout << graph.find_edge("Theta", "Alpha");
         std::cout << "\n";
-        graph.remove('C');
+        graph.remove("Theta");
         graph.print();
         std::cout << "\n\n";
 

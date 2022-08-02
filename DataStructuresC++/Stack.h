@@ -11,9 +11,12 @@ namespace custom {
     public:
         Stack() : head(nullptr), mLength(0) {}
 
-        explicit Stack(const T& data) {
+        explicit Stack(const T& data) : mLength(1) {
             head = new Node(data);
-            mLength = 1;
+        }
+
+        explicit Stack(T&& data) : mLength(1) {
+            head = new Node(std::move(data));
         }
 
         Stack(const Stack& other) {
@@ -43,8 +46,7 @@ namespace custom {
                         push(other_node->data);
                         other_node = other_node->next;
                     }
-                }
-                else {
+                } else {
                     head = nullptr;
                     mLength = 0;
                 }
@@ -73,6 +75,18 @@ namespace custom {
 
         void push(const T& data) {
             Node* new_node = new Node(data);
+            if (mLength) {
+                new_node->next = head;
+                head = new_node;
+                ++mLength;
+                return;
+            }
+            head = new_node;
+            ++mLength;
+        }
+
+        void push(T&& data) {
+            Node* new_node = new Node(std::move(data));
             if (mLength) {
                 new_node->next = head;
                 head = new_node;
@@ -127,6 +141,20 @@ namespace custom {
             return true;
         }
 
+        Stack<T> operator+(Stack<T>& right) {
+            if (right.mLength) {
+                std::vector<T> data = contents();
+                std::vector<T> right_data = right.contents();
+                for (T& i : right_data)
+                    data.push_back(i);
+                Stack<T>* res = new Stack<T>();
+                for (const T& i : data)
+                    res->push(i);
+                return *res;
+            }
+            return *this;
+        }
+
         std::vector<T> contents() const {
             if (mLength) {
                 std::vector<T> elems(mLength);
@@ -143,12 +171,11 @@ namespace custom {
         void display() const {
             if (mLength) {
                 std::vector<T> data = contents();
-                for (const T& i: data) {
+                for (const T& i : data) {
                     std::cout << i << "\t";
                 }
                 std::cout << "\n";
-            }
-            else throw std::runtime_error("Error: stack is empty, there is nothing to display");
+            } else throw std::runtime_error("Error: stack is empty, there is nothing to display");
         }
 
         void clear() {
@@ -161,11 +188,10 @@ namespace custom {
                 }
                 head = nullptr;
                 mLength = 0;
-            }
-            else throw std::runtime_error("Error: stack is empty and so cannot be cleared");
+            } else throw std::runtime_error("Error: stack is empty and so cannot be cleared");
         }
 
-        ~Stack() {
+        virtual ~Stack() {
             if (mLength)
                 clear();
         }
@@ -175,7 +201,9 @@ namespace custom {
             T data;
             Node* next = nullptr;
 
-            explicit Node(T data) : data(data) {}
+            explicit Node(const T& data) : data(data) {}
+
+            explicit Node(T&& data) : data(std::move(data)) {}
         };
 
         Node* head;

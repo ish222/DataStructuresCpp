@@ -21,7 +21,7 @@ namespace custom {
 
         Map(const Map& other) {
             key_list = {};
-            for (const Key*& key: key_list)
+            for (const Key*& key : key_list)
                 add(key->id, key->value->data);
         }
 
@@ -29,7 +29,7 @@ namespace custom {
             if (this != &other) {
                 if (!key_list.empty())
                     clear();
-                for (const Key*& key: key_list)
+                for (const Key*& key : key_list)
                     add(key->id, key->value->data);
             }
             return *this;
@@ -59,7 +59,7 @@ namespace custom {
         }
 
         T get(const U& id) const {
-            for (Key* key: key_list) {
+            for (Key* key : key_list) {
                 if (key->id == id)
                     return key->value->data;
             }
@@ -67,7 +67,7 @@ namespace custom {
         }
 
         bool exists(const U& id) const {
-            for (const Key* key: key_list) {
+            for (const Key* key : key_list) {
                 if (key->id == id)
                     return true;
             }
@@ -78,7 +78,7 @@ namespace custom {
             return key_list.empty();
         }
 
-        operator bool() const noexcept {
+        explicit operator bool() const noexcept {
             return !key_list.empty();
         }
 
@@ -87,7 +87,7 @@ namespace custom {
         }
 
         void change(const U& id, const T& data) {
-            for (Key*& key: key_list) {
+            for (Key*& key : key_list) {
                 if (key->id == id) {
                     key->value->data = data;
                     return;
@@ -97,7 +97,7 @@ namespace custom {
         }
 
         T& operator[](const U& id) {
-            for (const Key* key: key_list) {
+            for (const Key* key : key_list) {
                 if (key->id == id)
                     return key->value->data;
             }
@@ -110,7 +110,7 @@ namespace custom {
         std::vector<std::pair<U, T>> contents() const {
             if (!key_list.empty()) {
                 std::vector<std::pair<U, T>> ret = {};
-                for (const Key* key: key_list) {
+                for (const Key* key : key_list) {
                     ret.push_back(std::pair<U, T>(key->id, key->value->data));
                 }
                 return ret;
@@ -120,16 +120,15 @@ namespace custom {
 
         void print() const {
             if (!key_list.empty()) {
-                for (const Key* key: key_list)
+                for (const Key* key : key_list)
                     std::cout << key->id << " : " << key->value->data << "\n";
-            }
-            else throw std::runtime_error("Map is empty, there is nothing to print");
+            } else throw std::runtime_error("Map is empty, there is nothing to print");
         }
 
         void remove(const U& id) {
             if (!key_list.empty()) {
                 int index = 0;
-                for (Key*& key: key_list) {
+                for (Key*& key : key_list) {
                     if (key->id == id) {
                         delete key->value;
                         delete key;
@@ -146,13 +145,12 @@ namespace custom {
 
         void clear() {
             if (!key_list.empty()) {
-                for (Key*& key: key_list) {
+                for (Key*& key : key_list) {
                     delete key->value;
                     delete key;
                 }
                 key_list.clear();
-            }
-            else throw std::runtime_error("Map is empty, there is nothing to clear");
+            } else throw std::runtime_error("Map is empty, there is nothing to clear");
         }
 
         ~Map() {
@@ -164,14 +162,14 @@ namespace custom {
         struct Value {
             T data;
 
-            Value(const T& data) : data(data) {}
+            explicit Value(const T& data) : data(data) {}
         };
 
         struct Key {
             U id;
             Value* value;
 
-            Key(U id, Value* val = nullptr) : id(id), value(val) {}
+            explicit Key(U id, Value* val = nullptr) : id(id), value(val) {}
         };
 
         std::vector<Key*> key_list;

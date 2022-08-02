@@ -73,8 +73,7 @@ namespace custom {
                         ++*this;
                         ++moved;
                     }
-                }
-                else {
+                } else {
                     while (mPtr && moved > distance) {
                         --*this;
                         --moved;
@@ -217,8 +216,7 @@ namespace custom {
                         tail = tail->next;
                         other_node = other_node->next;
                     }
-                }
-                else {
+                } else {
                     head = nullptr;
                     tail = head;
                     mLength = 0;
@@ -407,12 +405,11 @@ namespace custom {
             if (mLength) {
 #endif
                 std::vector<T> vals = contents();
-                for (const T& i: vals)
+                for (const T& i : vals)
                     std::cout << i << "\t";
                 std::cout << "\n";
 #ifdef DEBUG
-            }
-            else throw std::runtime_error("Error: Linked list is empty");
+            } else throw std::runtime_error("Error: Linked list is empty");
 #endif
         }
 
@@ -491,8 +488,7 @@ namespace custom {
                 tail = head;
                 mLength = 0;
 #ifdef DEBUG
-            }
-            else throw std::runtime_error("Error: linked list is empty and so cannot be cleared.");
+            } else throw std::runtime_error("Error: linked list is empty and so cannot be cleared.");
 #endif
         }
 
@@ -541,8 +537,7 @@ namespace custom {
                 delete temp;
                 --mLength;
 #ifdef DEBUG
-            }
-            else throw std::runtime_error("List is empty, there is nothing to pop front");
+            } else throw std::runtime_error("List is empty, there is nothing to pop front");
 #endif
         }
 
@@ -572,8 +567,7 @@ namespace custom {
                 }
                 head = last;
 #ifdef DEBUG
-            }
-            else throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
+            } else throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
 #endif
         }
 
@@ -597,10 +591,10 @@ namespace custom {
             if (right.mLength) {
                 std::vector<T> data = contents();
                 std::vector<T> right_data = right.contents();
-                for (T& i: right_data)
+                for (T& i : right_data)
                     data.push_back(i);
                 LinkedList<T>* res = new LinkedList<T>();
-                for (const T& i: data)
+                for (const T& i : data)
                     res->append(i);
                 return *res;
             }
@@ -626,6 +620,7 @@ namespace custom {
             Node* next = nullptr;
 
             explicit Node(const T& data) : data(data) {}
+
             explicit Node(T&& data) : data(std::move(data)) {}
         };
 

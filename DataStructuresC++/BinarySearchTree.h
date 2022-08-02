@@ -24,8 +24,7 @@ namespace custom {
                     current_head->left = change;
                 else current_head->right = change;
                 left = false;
-            }
-            else throw std::invalid_argument("This value already exists in the tree");
+            } else throw std::invalid_argument("This value already exists in the tree");
         }
 
         int height() {
@@ -74,15 +73,13 @@ namespace custom {
             if (node == nullptr) {
                 throw std::runtime_error("Error: value not found, so cannot be deleted");
                 return;
-            }
-            else if (node->left == nullptr && node->right == nullptr) {
+            } else if (node->left == nullptr && node->right == nullptr) {
                 delete node;
                 if (left)
                     current_head->left = nullptr;
                 else current_head->right = nullptr;
                 return;
-            }
-            else if (node->left == nullptr) {
+            } else if (node->left == nullptr) {
                 Node* node_cpy = node;
                 node = node->right;
                 delete node_cpy;
@@ -90,8 +87,7 @@ namespace custom {
                     current_head->left = node;
                 else current_head->right = node;
                 return;
-            }
-            else if (node->right == nullptr) {
+            } else if (node->right == nullptr) {
                 Node* node_cpy = node;
                 node = node->left;
                 delete node;
@@ -99,8 +95,7 @@ namespace custom {
                     current_head->left = node;
                 else current_head->right = node;
                 return;
-            }
-            else {
+            } else {
                 Node* replace = min_value(node->right);
                 node->data = replace->data;
                 delete replace;
@@ -133,7 +128,7 @@ namespace custom {
 
             Node(T data) : data(data) {}
         };
-        
+
         Node* root;
         Node* current_head;
         bool left;
@@ -146,13 +141,11 @@ namespace custom {
                 current_head = node;
                 left = true;
                 return find_node(data, node->left);
-            }
-            else if (node->data < data) {
+            } else if (node->data < data) {
                 current_head = node;
                 left = false;
                 return find_node(data, node->right);
-            }
-            else return node;
+            } else return node;
         }
 
         Node* min_value(Node* node) {

@@ -18,8 +18,7 @@ namespace custom {
             if (current_head->left == nullptr) {
                 Node* new_node = new Node(data);
                 current_head->left = new_node;
-            }
-            else
+            } else
                 throw std::runtime_error(
                         "Left node is already initialised, use change_left function to change left node.");
         }
@@ -28,8 +27,7 @@ namespace custom {
             if (current_head->right == nullptr) {
                 Node* new_node = new Node(data);
                 current_head->right = new_node;
-            }
-            else
+            } else
                 throw std::runtime_error(
                         "Right node is already initialised, use change_right function to change right node.");
         }
@@ -40,8 +38,7 @@ namespace custom {
             else if (current_head == root && root == nullptr) {
                 Node* new_node = new Node(data);
                 root = new_node;
-            }
-            else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
+            } else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
         }
 
         void change_left(const T& data) {
@@ -187,7 +184,7 @@ namespace custom {
 
             explicit Node(T data) : data(data) {}
         };
-        
+
         Node* root;
         Node* current_head;
 

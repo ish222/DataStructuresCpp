@@ -3,47 +3,64 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 namespace custom {
-    template<typename T>
+    template<typename T, typename ID_Type>
     class Graph {
     public:
-        Graph() : adj_list({}), node_list({}), node_num(0), directed(true) {}
+        Graph() : adj_list({}), node_list({}), node_num(0) {}
 
-        Graph(const int& data, bool directed = true) {
-            Node* new_node = new Node(data, 'A');
-            node_num = 1;
+        explicit Graph(const T& data, const ID_Type& id) : node_num(1) {
+            Node* new_node = new Node(data, id);
             node_list.push_back(new_node);
             adj_list.push_back(std::vector<Node*>{new_node});
-            this->directed = directed;
         }
 
-        Graph(const Graph& other) {
-            directed = other.directed;
+        explicit Graph(T&& data, ID_Type&& id) : node_num(1) {
+            Node* new_node = new Node(std::move(data), std::move(id));
+            node_list.push_back(new_node);
+            adj_list.push_back(std::vector<Node*>{new_node});
+        }
+
+        Graph(const Graph<T, ID_Type>& other) {
             node_list = {};
             adj_list = {};
             node_num = 0;
-            for (Node*& node: other.node_list)
+            for (Node*& node : other.node_list)
                 add_node(node->data);
-            for (std::vector<Node*> link: other.adj_list) {
-                char first = link[0]->id;
-                for (int i = 1; i < link.size(); ++i)
-                    add_edge(first, link[i]->id);
+            for (std::vector<Node*> link : other.adj_list) {
+                ID_Type first = link[0]->id;
+                for (int i = 1; i < link.size(); ++i) {
+                    Node* last_node = nullptr;
+                    Node* next_node = nullptr;
+                    for (Node* node : node_list) {
+                        if (node->id == first)
+                            last_node = node;
+                        else if (node->id == link[i]->id)
+                            next_node = node;
+                    }
+                    if (last_node && next_node) {
+                        size_t first_index = std::find(adj_list.begin(), adj_list.end(), first);
+                        adj_list[first_index].push_back(next_node);
+                        size_t last_index = std::find(adj_list.begin(), adj_list.end(), last_node->id);
+                        adj_list[last_index].push_back(last_node);
+                    }
+                }
             }
         }
 
-        Graph& operator=(const Graph& other) {
+        Graph<T, ID_Type>& operator=(const Graph<T, ID_Type>& other) {
             if (this != &other) {
                 if (node_num)
                     clear();
-                directed = other.directed;
                 node_list = {};
                 adj_list = {};
                 node_num = 0;
-                for (Node*& node: other.node_list)
+                for (Node*& node : other.node_list)
                     add_node(node->data);
-                for (std::vector<Node*> link: other.adj_list) {
-                    char first = link[0]->id;
+                for (std::vector<Node*> link : other.adj_list) {
+                    ID_Type first = link[0]->id;
                     for (int i = 1; i < link.size(); ++i)
                         add_edge(first, link[i]->id);
                 }
@@ -51,8 +68,7 @@ namespace custom {
             return *this;
         }
 
-        Graph(Graph&& other) noexcept {
-            directed = other.directed;
+        Graph(Graph<T, ID_Type>&& other) noexcept {
             node_list = other.node_list;
             adj_list = other.adj_list;
             node_num = other.node_num;
@@ -61,11 +77,10 @@ namespace custom {
             other.adj_list.clear();
         }
 
-        Graph& operator=(Graph&& other) noexcept {
+        Graph<T, ID_Type>& operator=(Graph<T, ID_Type>&& other) noexcept {
             if (this != &other) {
                 if (node_num)
                     clear();
-                directed = other.directed;
                 node_list = other.node_list;
                 adj_list = other.adj_list;
                 node_num = other.node_num;
@@ -76,33 +91,42 @@ namespace custom {
             return *this;
         }
 
-        void add_node(const int& data) {
-            Node* new_node = new Node(data, 'A' + node_num);
+        void add_node(const T& data, const ID_Type& id) {
+            Node* new_node = new Node(data, id);
             ++node_num;
             node_list.push_back(new_node);
             adj_list.push_back(std::vector<Node*>{new_node});
         }
 
-        void add_edge(const char& last, const char& next) {
-            Node* last_node = nullptr;
-            Node* next_node = nullptr;
-            for (Node* node: node_list) {
-                if (node->id == last)
-                    last_node = node;
-                else if (node->id == next)
-                    next_node = node;
-            }
-            if (last_node && next_node) {
-                adj_list[(int) (last - 'A')].push_back(next_node);
-                if (!directed) {
-                    adj_list[(int) (next - 'A')].push_back(last_node);
-                }
-            }
-            else throw std::runtime_error("Invalid node IDs");
+        void add_node(T&& data, ID_Type&& id) {
+            Node* new_node = new Node(std::move(data), std::move(id));
+            ++node_num;
+            node_list.push_back(new_node);
+            adj_list.push_back(std::vector<Node*>{new_node});
         }
 
-        void change(const char& id, const T& data) {
-            for (Node*& node: node_list) {
+        virtual void add_edge(const ID_Type& last, const ID_Type& next) {
+            Node* last_node = nullptr;
+            Node* next_node = nullptr;
+            int last_index;
+            int next_index;
+            for (int i = 0; i < node_list.size(); ++i) {
+                if (node_list[i]->id == last) {
+                    last_node = node_list[i];
+                    last_index = i;
+                } else if (node_list[i]->id == next) {
+                    next_node = node_list[i];
+                    next_index = i;
+                }
+            }
+            if (last_node && next_node) {
+                adj_list[last_index].push_back(next_node);
+                adj_list[next_index].push_back(last_node);
+            } else throw std::runtime_error("Invalid node IDs");
+        }
+
+        void change(const ID_Type& id, const T& data) {
+            for (Node*& node : node_list) {
                 if (node->id == id) {
                     node->data = data;
                     return;
@@ -119,20 +143,28 @@ namespace custom {
             return node_num == 0;
         }
 
-        operator bool() const noexcept {
+        explicit operator bool() const noexcept {
             return (bool) node_num;
         }
 
-        bool find(const char& id) const {
-            for (Node*& node: node_list) {
+        bool find(const ID_Type& id) const {
+            for (Node*& node : node_list) {
                 if (node->id == id)
                     return true;
             }
             return false;
         }
 
-        bool find_edge(const char& last, const char& next) const {
-            int last_index = (int) last - 65;
+        bool find_edge(const ID_Type& last, const ID_Type& next) const {
+            int last_index = -1;
+            for (int i = 0; i < node_list.size(); ++i) {
+                if (node_list[i]->id == last) {
+                    last_index = i;
+                    break;
+                }
+            }
+            if (last_index == -1)
+                return false;
             for (int i = 0; i < adj_list[last_index].size(); i++) {
                 if (adj_list[last_index][i]->id == next)
                     return true;
@@ -143,7 +175,7 @@ namespace custom {
         std::vector<int> contents() const {
             if (node_num) {
                 std::vector<int> contents = {};
-                for (Node*& node: node_list) {
+                for (Node*& node : node_list) {
                     contents.push_back(node->data);
                 }
                 return contents;
@@ -153,21 +185,20 @@ namespace custom {
 
         void print() const {
             if (node_num) {
-                for (std::vector<Node*> links: adj_list) {
-                    for (Node*& node: links) {
+                for (std::vector<Node*> links : adj_list) {
+                    for (Node*& node : links) {
                         std::cout << node->id << " : " << node->data << "\t->\t";
                     }
                     std::cout << "END\n";
                 }
                 std::cout << std::endl;
-            }
-            else throw std::runtime_error("Graph is empty, there is nothing to print");
+            } else throw std::runtime_error("Graph is empty, there is nothing to print");
         }
 
-        void remove(const char& id) {
+        void remove(const ID_Type& id) {
             if (node_num) {
                 Node* node = nullptr;
-                for (int i = 0; i < node_list.size(); i++) {
+                for (int i = 0; i < node_list.size(); ++i) {
                     if (node_list[i]->id == id) {
                         node = node_list[i];
                         adj_list.erase(adj_list.begin() + i);
@@ -178,7 +209,7 @@ namespace custom {
                 }
                 if (!node)
                     throw std::invalid_argument("Invalid id, this id does not exist");
-                for (std::vector<Node*>& links: adj_list) {
+                for (std::vector<Node*>& links : adj_list) {
                     for (int i = 0; i < links.size(); i++) {
                         if (links[i]->id == id) {
                             links.erase(links.begin() + i);
@@ -186,39 +217,124 @@ namespace custom {
                     }
                 }
                 delete node;
-            }
-            else throw std::runtime_error("Graph is empty, there is nothing to remove");
+            } else throw std::runtime_error("Graph is empty, there is nothing to remove");
         }
 
         void clear() {
             if (node_num) {
-                for (Node*& node: node_list) {
+                for (Node*& node : node_list) {
                     delete node;
                 }
                 node_list.clear();
                 adj_list.clear();
                 node_num = 0;
-            }
-            else throw std::runtime_error("Graph is empty, there is nothing to clear");
+            } else throw std::runtime_error("Graph is empty, there is nothing to clear");
         }
 
-        ~Graph() {
+        virtual ~Graph() {
             if (node_num)
                 clear();
         }
 
-    private:
+    protected:
         struct Node {
             T data;
-            char id;
+            ID_Type id;
 
-            Node(T data, char id) : data(data), id(id) {}
+            Node(const T& data, ID_Type id) : data(data), id(id) {}
+
+            Node(T&& data, ID_Type&& id) : data(std::move(data)), id(std::move(id)) {}
         };
 
         std::vector<std::vector<Node*>> adj_list;
         std::vector<Node*> node_list;
         size_t node_num;
-        bool directed;
+    };
+
+    template<typename T, typename ID_Type>
+    class DirectedGraph : public Graph<T, ID_Type> {
+    public:
+        DirectedGraph() : Graph<T, ID_Type>() {}
+
+        explicit DirectedGraph(const T& data, const ID_Type& id) : Graph<T, ID_Type>(data, id) {}
+
+        explicit DirectedGraph(T&& data, ID_Type&& id) : Graph<T, ID_Type>(std::move(data), std::move(id)) {}
+
+        DirectedGraph(const DirectedGraph<T, ID_Type>& other) {
+            node_list = {};
+            adj_list = {};
+            node_num = 0;
+            for (Node*& node : other.node_list)
+                add_node(node->data);
+            for (std::vector<Node*> link : other.adj_list) {
+                ID_Type first = link[0]->id;
+                for (int i = 1; i < link.size(); ++i)
+                    add_edge(first, link[i]->id);
+            }
+        }
+
+        DirectedGraph<T, ID_Type>& operator=(const DirectedGraph<T, ID_Type>& other) {
+            if (this != &other) {
+                if (node_num)
+                    clear();
+                node_list = {};
+                adj_list = {};
+                node_num = 0;
+                for (Node*& node : other.node_list)
+                    add_node(node->data);
+                for (std::vector<Node*> link : other.adj_list) {
+                    ID_Type first = link[0]->id;
+                    for (int i = 1; i < link.size(); ++i)
+                        add_edge(first, link[i]->id);
+                }
+            }
+            return *this;
+        }
+
+        DirectedGraph(DirectedGraph<T, ID_Type>&& other) noexcept : Graph<T, ID_Type>(std::move(other)) {}
+
+        DirectedGraph<T, ID_Type>& operator=(DirectedGraph<T, ID_Type>&& other) noexcept {
+            if (this != &other) {
+                if (node_num)
+                    clear();
+                node_list = other.node_list;
+                adj_list = other.adj_list;
+                node_num = other.node_num;
+                other.node_num = 0;
+                other.node_list.clear();
+                other.adj_list.clear();
+            }
+            return *this;
+        }
+
+        void add_edge(const ID_Type& last, const ID_Type& next) override {
+            Node* last_node = nullptr;
+            Node* next_node = nullptr;
+            int last_index;
+            for (int i = 0; i < node_list.size(); ++i) {
+                if (node_list[i]->id == last) {
+                    last_node = node_list[i];
+                    last_index = i;
+                } else if (node_list[i]->id == next) {
+                    next_node = node_list[i];
+                }
+            }
+            if (last_node && next_node) {
+                adj_list[last_index].push_back(next_node);
+            } else throw std::runtime_error("Invalid node IDs");
+        }
+
+        virtual ~DirectedGraph() {
+            if (node_num)
+                clear();
+        }
+
+    private:
+        using typename Graph<T, ID_Type>::Node;
+        using Graph<T, ID_Type>::adj_list;
+        using Graph<T, ID_Type>::node_list;
+        using Graph<T, ID_Type>::node_num;
+        using Graph<T, ID_Type>::clear;
     };
 }
 
