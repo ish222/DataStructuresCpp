@@ -17,7 +17,7 @@
 
 template<typename T>
 static void printvec(std::vector<T> data) {
-    for (T& i: data) {
+    for (T& i : data) {
         std::cout << i << " ";
     }
     std::cout << std::endl;
@@ -116,6 +116,7 @@ int main() {
         graph.add_node(15, "Theta");
         graph.add_node(20, "Gamma");
         graph.add_node(30, "Epsilon");
+        graph.add_node(40, "Eta");
         graph.add_edge("Alpha", "Beta");
         graph.add_edge("Beta", "Theta");
         graph.add_edge("Alpha", "Gamma");
@@ -124,7 +125,8 @@ int main() {
         graph.add_edge("Beta", "Gamma");
         graph.add_edge("Alpha", "Epsilon");
         graph.add_edge("Epsilon", "Beta");
-        graph.add_edge("Gamma", "Alpha");
+        graph.add_edge("Gamma", "Epsilon");
+        graph.add_edge("Gamma", "Eta");
         graph.print();
         std::cout << "\n";
         std::cout << graph.find_edge("Theta", "Alpha");
@@ -137,6 +139,8 @@ int main() {
         std::cout << "\n\n";
         std::vector<std::string> bfs_result = graph.bfs("Alpha");
         printvec(bfs_result);
+        std::cout << "\n\n";
+        std::cout << "Path exists?: " << graph.has_path("Epsilon", "Eta");
         std::cout << "\n\n";
 
         std::cout << "PriorityQueue" << std::endl;
@@ -204,20 +208,21 @@ int main() {
         double_list.display();
         std::cout << "\n\n";
 
-//        Vector::Vector<std::vector<int>> vector(3);
-//        vector.push_back({2, 3, 4});
-//        vector.push_back({4});
-//        vector.push_back({6, 9});
-//        for (size_t i = 0; i < vector.size(); ++i) {
-//            printvec(vector[i]);
-//        }
-        //Vector::Vector<int> vector;
-        //vector.push_back(2);
-        //vector.push_back(4);
-        //vector.push_back(8);
-        //vector.push_back(9);
-        //for (int i = 0; i < vector.size(); ++i)
-        //	std::cout << vector[i] << "\t";
+        Vector<std::vector<int>> vector(3);
+        vector.push_back({2, 3, 4});
+        vector.push_back({4});
+        vector.push_back({6, 9});
+        for (size_t i = 0; i < vector.size(); ++i) {
+            printvec(vector[i]);
+        }
+        std::cout << "\n\n";
+        Vector<int> vector2(2);
+        vector2.emplace_back(2);
+        vector2.emplace_back(4);
+        vector2.emplace_back(8);
+        vector2.emplace_back(9);
+        for (int i = 0; i < vector2.size(); ++i)
+            std::cout << vector2[i] << "\t";
         std::cout << "\n\n";
 
     }

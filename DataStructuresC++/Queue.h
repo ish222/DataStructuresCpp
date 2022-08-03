@@ -117,7 +117,13 @@ namespace custom {
             throw std::runtime_error("Error: queue is empty, there is nothing to dequeue");
         }
 
-        T peek() const {
+        T& peek() {
+            if (mLength)
+                return head->data;
+            throw std::runtime_error("Error: queue is empty, there is nothing to peek");
+        }
+
+        const T& peek() const {
             if (mLength)
                 return head->data;
             throw std::runtime_error("Error: queue is empty, there is nothing to peek");
@@ -229,22 +235,6 @@ namespace custom {
         Node* head;
         Node* tail;
         size_t mLength;
-
-        T& ref_get(const size_t& index) {
-            if (index < mLength) {
-                if (index == 0)
-                    return head->data;
-                size_t cur_index = 1;
-                Node* cur_node = head;
-                while (true) {
-                    cur_node = cur_node->next;
-                    if (cur_index == index)
-                        return cur_node->data;
-                    ++cur_index;
-                }
-            }
-            throw std::invalid_argument("Invalid index, out of range");
-        }
     };
 
     template<typename T>

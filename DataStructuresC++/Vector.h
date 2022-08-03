@@ -8,89 +8,133 @@ namespace custom {
     template<typename T>
     class Vector {
     public:
-        Vector(size_t capacity = 0) {
-            m_size = 0;
-            this->capacity = capacity;
-            if (!capacity) data = nullptr;
-            else data = new T[capacity];
+        explicit Vector(size_t capacity = 10) : capacity(capacity), mSize(0) {
+            data = (T*)::operator new(capacity * sizeof(T));
         }
 
         void push_back(const T& value) {
-            if (m_size >= capacity)
+            if (mSize >= capacity)
                 grow();
-            data[m_size++] = value;
+            data[mSize++] = value;
+        }
+
+        void push_back(T&& value) {
+            if (mSize >= capacity)
+                grow();
+            data[mSize++] = std::move(value);
+        }
+
+        template<typename... Ts>
+        T& emplace_back(Ts&& ... args) {
+            if (mSize >= capacity)
+                grow();
+            new(&data[mSize]) T(std::forward<Ts>(args)...);
+            return data[mSize++];
         }
 
         void pop_back() {
-            if (m_size == 0) {
-                throw std::runtime_error("Vector is empty, there is nothing to pop.");
-                return;
-            }
-            data[m_size--].~T();
+            if (mSize) {
+                data[--mSize].~T();
+                if (mSize < (capacity / 2))
+                    shrink();
+            } else throw std::runtime_error("Vector is empty, there is nothing to pop.");
         }
 
-        T front() const {
-            if (data[0])
+        T& front() {
+            if (mSize)
                 return data[0];
             throw std::runtime_error("Vector is empty, there is nothing at the front.");
-            return T();
         }
 
-        size_t size() const {
-            return m_size;
+        const T& front() const {
+            if (mSize)
+                return data[0];
+            throw std::runtime_error("Vector is empty, there is nothing at the front.");
         }
 
-        T operator[](const size_t& index) const {
-            if (index < 0 || index > m_size) {
-                throw std::invalid_argument("Invalid index, out of range");
-                return T();
-            }
-            return data[index];
+        T& back() {
+            if (mSize)
+                return data[mSize - 1];
+            throw std::runtime_error("Vector is empty, there is nothing at the back");
+        }
+
+        const T& back() const {
+            if (mSize)
+                return data[mSize - 1];
+            throw std::runtime_error("Vector is empty, there is nothing at the back");
+        }
+
+        size_t size() const noexcept {
+            return mSize;
+        }
+
+        bool empty() const noexcept {
+            return (bool)mSize;
+        }
+
+        explicit operator bool() const noexcept {
+            return mSize != 0;
+        }
+
+        T& operator[](const size_t& index) {
+            if (index >= 0 && index < mSize)
+                return data[index];
+            throw std::invalid_argument("Invalid index, out of range");
+        }
+
+        const T& operator[](const size_t& index) const {
+            if (index >= 0 && index < mSize)
+                return data[index];
+            throw std::invalid_argument("Invalid index, out of range");
         }
 
         void clear() {
-            if (!data) {
-                throw std::runtime_error("Vector is empty, cannot be cleared");
-                return;
-            }
-            delete[] data;
-            data = nullptr;
+            if (mSize) {
+                for (size_t i = 0; i < mSize; ++i)
+                    data[i].~T();
+                mSize = 0;
+            } else throw std::runtime_error("Vector is empty, cannot be cleared");
         }
 
         ~Vector() {
-            if (data)
-                clear();
+            clear();
+            ::operator delete(data, capacity * sizeof(T));
         }
 
     private:
-        size_t m_size;
+        size_t mSize;
         size_t capacity;
         T* data;
 
         void grow() {
             if (!data) {
-                capacity = 2;
-                data = new T[capacity];
+                capacity = 10;
+                data = (T*)::operator new(
+                        capacity * sizeof(T));  // Allocates memory without calling constructor, analogous to malloc
                 return;
             }
-            size_t new_capacity = capacity * 1.5;
-            T* new_data = new T[new_capacity];
+            size_t new_capacity = capacity + capacity / 2;
+            T* new_data = (T*)::operator new(new_capacity * sizeof(T));
 
-            for (size_t i = 0; i < m_size; ++i)
+            for (size_t i = 0; i < mSize; ++i) {
                 new_data[i] = std::move(data[i]);
+                data[i].~T();
+            }
 
-            delete[] data;
+            ::operator delete(data, capacity * sizeof(T));  // deallocated memory without calling destructor
             data = new_data;
             capacity = new_capacity;
         }
 
         void shrink() {
-            size_t new_capacity = capacity / 1.5;
-            T* new_data = new T[new_capacity];
-            for (size_t i = 0; i < m_size; ++i)
+            size_t new_capacity = capacity - capacity / 2;
+            T* new_data = (T*)::operator new(new_capacity * sizeof(T));
+            for (size_t i = 0; i < mSize; ++i) {
                 new_data[i] = std::move(data[i]);
+                data[i].~T();
+            }
 
-            delete[] data;
+            ::operator delete(data, capacity * sizeof(T));
             data = new_data;
             capacity = new_capacity;
         }

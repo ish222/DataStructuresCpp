@@ -492,7 +492,7 @@ namespace custom {
 #endif
         }
 
-        T get(const size_t& index) const {
+        T& get(const size_t& index) {
 #ifdef DEBUG
             if (index < mLength) {
 #endif
@@ -512,7 +512,27 @@ namespace custom {
 #endif
         }
 
-        T front() const {
+        const T& get(const size_t& index) const {
+#ifdef DEBUG
+            if (index < mLength) {
+#endif
+                if (index == 0)
+                    return head->data;
+                size_t cur_index = 1;
+                Node* cur_node = head;
+                while (true) {
+                    cur_node = cur_node->next;
+                    if (cur_index == index)
+                        return cur_node->data;
+                    ++cur_index;
+                }
+#ifdef DEBUG
+            }
+            throw std::invalid_argument("Invalid index, out of range");
+#endif
+        }
+
+        T& front() {
 #ifdef DEBUG
             if (mLength)
 #endif
@@ -520,7 +540,23 @@ namespace custom {
             throw std::runtime_error("List is empty, there is nothing at front");
         }
 
-        T back() const {
+        const T& front() const {
+#ifdef DEBUG
+            if (mLength)
+#endif
+                return head->data;
+            throw std::runtime_error("List is empty, there is nothing at front");
+        }
+
+        T& back() {
+#ifdef DEBUG
+            if (mLength)
+#endif
+                return tail->data;
+            throw std::runtime_error("List is empty, there is nothing at back");
+        }
+
+        const T& back() const {
 #ifdef DEBUG
             if (mLength)
 #endif
@@ -571,7 +607,7 @@ namespace custom {
 #endif
         }
 
-        T operator[](const size_t& index) const {
+        T& operator[](const size_t& index) {
 #ifdef DEBUG
             if (index < mLength)
 #endif
@@ -579,11 +615,11 @@ namespace custom {
             throw std::invalid_argument("Invalid index, out of range");
         }
 
-        T& operator[](const size_t index) {
+        const T& operator[](const size_t index) const {
 #ifdef DEBUG
             if (index < mLength)
 #endif
-                return ref_get(index);
+                return get(index);
             throw std::invalid_argument("Invalid index, out of range");
         }
 
@@ -627,26 +663,6 @@ namespace custom {
         Node* head;
         Node* tail;
         size_t mLength;
-
-        T& ref_get(const size_t& index) {
-#ifdef DEBUG
-            if (index < mLength) {
-#endif
-                if (index == 0)
-                    return head->data;
-                size_t cur_index = 1;
-                Node* cur_node = head;
-                while (true) {
-                    cur_node = cur_node->next;
-                    if (cur_index == index)
-                        return cur_node->data;
-                    ++cur_index;
-                }
-#ifdef DEBUG
-            }
-            throw std::invalid_argument("Invalid index, out of range");
-#endif
-        }
     };
 }
 

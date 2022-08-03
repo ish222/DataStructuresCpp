@@ -109,7 +109,13 @@ namespace custom {
             throw std::invalid_argument("Stack is empty, there is nothing to pop.");
         }
 
-        T peek() const {
+        T& peek() {
+            if (mLength)
+                return head->data;
+            throw std::invalid_argument("Stack is empty, there is nothing to peek.");
+        }
+
+        const T& peek() const {
             if (mLength)
                 return head->data;
             throw std::invalid_argument("Stack is empty, there is nothing to peek.");
