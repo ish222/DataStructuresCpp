@@ -1,34 +1,35 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include <utility>
-#include <stdexcept>
 #include <initializer_list>
+#include <stdexcept>
+#include <utility>
 
 namespace custom {
 	template<typename T>
 	class Vector {
 	public:
-		explicit Vector(size_t capacity = 10) : capacity(capacity), mSize(0) {
+		explicit Vector(size_t capacity = 10) noexcept : capacity(capacity), mSize(0) {
 			data = (T*)::operator new(capacity * sizeof(T));
 		}
 
-		Vector(std::initializer_list<T> init) : mSize(init.size()) {
+		Vector(std::initializer_list<T> init) noexcept : mSize(init.size()) {
 			if (mSize < 10)
 				capacity = 10;
-			else capacity = mSize + mSize / 2;
+			else
+				capacity = mSize + mSize / 2;
 			data = (T*)::operator new(capacity * sizeof(T));
 			for (int i = 0; i < mSize; ++i)
 				data[i] = *(init.begin() + i);
 		}
 
-		Vector(const Vector& other) : mSize(other.mSize), capacity(other.capacity) {
+		Vector(const Vector& other) noexcept : mSize(other.mSize), capacity(other.capacity) {
 			data = (T*)::operator new(capacity * sizeof(T));
 			for (int i = 0; i < mSize; ++i)
 				data[i] = other[i];
 		}
 
-		Vector& operator=(const Vector& other) {
+		Vector& operator=(const Vector& other) noexcept {
 			if (this != &other) {
 				if (mSize) {
 					clear();
@@ -41,7 +42,7 @@ namespace custom {
 			return *this;
 		}
 
-		Vector(Vector&& other) noexcept: data(other.data), capacity(other.capacity), mSize(other.mSize) {
+		Vector(Vector&& other) noexcept : data(other.data), capacity(other.capacity), mSize(other.mSize) {
 			other.data = nullptr;
 			other.capacity = 0;
 			other.mSize = 0;
@@ -63,19 +64,19 @@ namespace custom {
 			return *this;
 		}
 
-		void push_back(const T& value) {
+		void push_back(const T& value) noexcept {
 			if (mSize >= capacity)
 				grow();
 			data[mSize++] = value;
 		}
 
-		void push_back(T&& value) {
+		void push_back(T&& value) noexcept {
 			if (mSize >= capacity)
 				grow();
 			data[mSize++] = std::move(value);
 		}
 
-		void push_back(std::initializer_list<T> list) {
+		void push_back(std::initializer_list<T> list) noexcept {
 			size_t new_size = mSize + list.size();
 			if (new_size >= capacity)
 				init_grow(new_size + new_size / 2);
@@ -84,10 +85,10 @@ namespace custom {
 		}
 
 		template<typename... Ts>
-		T& emplace_back(Ts&& ... args) {
+		T& emplace_back(Ts&&... args) noexcept {
 			if (mSize >= capacity)
 				grow();
-			new(&data[mSize]) T(std::forward<Ts>(args)...);
+			new (&data[mSize]) T(std::forward<Ts>(args)...);
 			return data[mSize++];
 		}
 
@@ -96,7 +97,8 @@ namespace custom {
 				data[--mSize].~T();
 				if (mSize < (capacity / 2))
 					shrink();
-			} else throw std::runtime_error("Vector is empty, there is nothing to pop.");
+			} else
+				throw std::runtime_error("Vector is empty, there is nothing to pop.");
 		}
 
 		T& front() {
@@ -147,15 +149,13 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		void clear() {
-			if (mSize) {
-				for (size_t i = 0; i < mSize; ++i)
-					data[i].~T();
-				mSize = 0;
-			} else throw std::runtime_error("Vector is empty, cannot be cleared");
+		void clear() noexcept {
+			for (size_t i = 0; i < mSize; ++i)
+				data[i].~T();
+			mSize = 0;
 		}
 
-		~Vector() {
+		virtual ~Vector() {
 			clear();
 			::operator delete(data, capacity * sizeof(T));
 		}
@@ -165,11 +165,11 @@ namespace custom {
 		size_t capacity;
 		T* data;
 
-		void grow() {
+		void grow() noexcept {
 			if (!data) {
 				capacity = 10;
 				data = (T*)::operator new(
-						capacity * sizeof(T));  // Allocates memory without calling constructor, analogous to malloc
+				        capacity * sizeof(T));// Allocates memory without calling constructor, analogous to malloc
 				return;
 			}
 			size_t new_capacity = capacity + capacity / 2;
@@ -180,16 +180,16 @@ namespace custom {
 				data[i].~T();
 			}
 
-			::operator delete(data, capacity * sizeof(T));  // deallocated memory without calling destructor
+			::operator delete(data, capacity * sizeof(T));// deallocated memory without calling destructor
 			data = new_data;
 			capacity = new_capacity;
 		}
 
-		void init_grow(size_t cap) {
+		void init_grow(size_t cap) noexcept {
 			if (!data) {
 				capacity = cap;
 				data = (T*)::operator new(
-						capacity * sizeof(T));  // Allocates memory without calling constructor, analogous to malloc
+				        capacity * sizeof(T));// Allocates memory without calling constructor, analogous to malloc
 				return;
 			}
 			T* new_data = (T*)::operator new(cap * sizeof(T));
@@ -199,12 +199,12 @@ namespace custom {
 				data[i].~T();
 			}
 
-			::operator delete(data, capacity * sizeof(T));  // deallocated memory without calling destructor
+			::operator delete(data, capacity * sizeof(T));// deallocated memory without calling destructor
 			data = new_data;
 			capacity = cap;
 		}
 
-		void shrink() {
+		void shrink() noexcept {
 			size_t new_capacity = capacity - capacity / 2;
 			T* new_data = (T*)::operator new(new_capacity * sizeof(T));
 			for (size_t i = 0; i < mSize; ++i) {
@@ -217,6 +217,6 @@ namespace custom {
 			capacity = new_capacity;
 		}
 	};
-}
+}// namespace custom
 
-#endif // VECTOR_H
+#endif// VECTOR_H

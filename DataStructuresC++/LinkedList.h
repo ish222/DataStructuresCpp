@@ -1,10 +1,10 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-#include <iostream>
-#include <vector>
-#include <stdexcept>
 #include <initializer_list>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
 
 namespace custom {
 	template<typename LinkedList>
@@ -14,13 +14,13 @@ namespace custom {
 		using ValueType = typename LinkedList::ValueType;
 
 	public:
-		ListIterator() : mPtr(nullptr) {}
+		ListIterator() noexcept : mPtr(nullptr) {}
 
-		ListIterator(ListType* ptr) : mPtr(ptr) {}
+		ListIterator(ListType* ptr) noexcept : mPtr(ptr) {}
 
-		ListIterator(const ListIterator& other) : mPtr(other.mPtr) {}
+		ListIterator(const ListIterator& other) noexcept : mPtr(other.mPtr) {}
 
-		ListIterator& operator=(const ListIterator& other) {
+		ListIterator& operator=(const ListIterator& other) noexcept {
 			if (this != &other)
 				mPtr = other.mPtr;
 			return *this;
@@ -160,6 +160,8 @@ namespace custom {
 			return LinkedList::mLength;
 		}
 
+		virtual ~ListIterator() = default;
+
 	private:
 		ListType* mPtr;
 	};
@@ -173,24 +175,24 @@ namespace custom {
 		friend class ListIterator<LinkedList>;
 
 	public:
-		LinkedList() noexcept: head(nullptr), tail(nullptr), mLength(0) {}
+		LinkedList() noexcept : head(nullptr), tail(nullptr), mLength(0) {}
 
-		explicit LinkedList(const T& data) : mLength(1) {
+		explicit LinkedList(const T& data) noexcept : mLength(1) {
 			head = new Node(data);
 			tail = head;
 		}
 
-		explicit LinkedList(T&& data) : mLength(1) {
+		explicit LinkedList(T&& data) noexcept : mLength(1) {
 			head = new Node(std::move(data));
 			tail = head;
 		}
 
-		LinkedList(std::initializer_list<T> init) : mLength(0) {
+		LinkedList(std::initializer_list<T> init) noexcept : mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
 				append(*it);
 		}
 
-		LinkedList(LinkedList<T>& other) : mLength(other.mLength) {
+		LinkedList(LinkedList<T>& other) noexcept : mLength(other.mLength) {
 			if (other.mLength) {
 				head = new Node(other.head->data);
 				tail = head;
@@ -207,7 +209,7 @@ namespace custom {
 			mLength = 0;
 		}
 
-		LinkedList<T>& operator=(const LinkedList<T>& other) {
+		LinkedList<T>& operator=(const LinkedList<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength)
 					clear();
@@ -230,7 +232,7 @@ namespace custom {
 			return *this;
 		}
 
-		LinkedList(LinkedList<T>&& other) noexcept: head(other.head), tail(other.tail), mLength(other.mLength) {
+		LinkedList(LinkedList<T>&& other) noexcept : head(other.head), tail(other.tail), mLength(other.mLength) {
 			other.head = nullptr;
 			other.tail = nullptr;
 			other.mLength = 0;
@@ -250,7 +252,7 @@ namespace custom {
 			return *this;
 		}
 
-		void append(const T& data) {
+		void append(const T& data) noexcept {
 			Node* new_node = new Node(data);
 			if (mLength) {
 				++mLength;
@@ -263,7 +265,7 @@ namespace custom {
 			tail = head;
 		}
 
-		void append(T&& data) {
+		void append(T&& data) noexcept {
 			Node* new_node = new Node(std::move(data));
 			if (mLength) {
 				++mLength;
@@ -276,16 +278,16 @@ namespace custom {
 			tail = head;
 		}
 
-		void append(std::initializer_list<T> list) {
+		void append(std::initializer_list<T> list) noexcept {
 			for (auto it = list.begin(); it != list.end(); ++it)
 				append(*it);
 		}
 
-		void push_back(const T& data) {
+		void push_back(const T& data) noexcept {
 			append(data);
 		}
 
-		void push_back(T&& data) {
+		void push_back(T&& data) noexcept {
 			append(std::move(data));
 		}
 
@@ -371,21 +373,14 @@ namespace custom {
 			insert(std::move(data), 0);
 		}
 
-		std::vector<T> contents() const {
-#ifdef DEBUG
-			if (mLength) {
-#endif
-				std::vector<T> elems(mLength);
-				Node* cur_node = head;
-				for (int i = 0; i < mLength; ++i) {
-					elems[i] = cur_node->data;
-					cur_node = cur_node->next;
-				}
-				return elems;
-#ifdef DEBUG
+		std::vector<T> contents() const noexcept {
+			std::vector<T> elems(mLength);
+			Node* cur_node = head;
+			for (int i = 0; i < mLength; ++i) {
+				elems[i] = cur_node->data;
+				cur_node = cur_node->next;
 			}
-			throw std::runtime_error("Error: Linked list is empty");
-#endif
+			return elems;
 		}
 
 		int find(const T& data) const {
@@ -416,7 +411,8 @@ namespace custom {
 					std::cout << i << "\t";
 				std::cout << "\n";
 #ifdef DEBUG
-			} else throw std::runtime_error("Error: Linked list is empty");
+			} else
+				throw std::runtime_error("Error: Linked list is empty, nothing to display");
 #endif
 		}
 
@@ -432,7 +428,7 @@ namespace custom {
 			return (bool)mLength;
 		}
 
-		bool operator==(const LinkedList<T>& other) const {
+		bool operator==(const LinkedList<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -481,22 +477,16 @@ namespace custom {
 #endif
 		}
 
-		void clear() {
-#ifdef DEBUG
-			if (mLength) {
-#endif
-				Node* cur_node = head;
-				while (cur_node) {
-					cur_node = cur_node->next;
-					delete head;
-					head = cur_node;
-				}
-				head = nullptr;
-				tail = head;
-				mLength = 0;
-#ifdef DEBUG
-			} else throw std::runtime_error("Error: linked list is empty and so cannot be cleared.");
-#endif
+		void clear() noexcept {
+			Node* cur_node = head;
+			while (cur_node) {
+				cur_node = cur_node->next;
+				delete head;
+				head = cur_node;
+			}
+			head = nullptr;
+			tail = head;
+			mLength = 0;
 		}
 
 		T& get(const size_t& index) {
@@ -580,7 +570,8 @@ namespace custom {
 				delete temp;
 				--mLength;
 #ifdef DEBUG
-			} else throw std::runtime_error("List is empty, there is nothing to pop front");
+			} else
+				throw std::runtime_error("List is empty, there is nothing to pop front");
 #endif
 		}
 
@@ -590,7 +581,8 @@ namespace custom {
 #endif
 				erase(mLength - 1);
 #ifdef DEBUG
-			else throw std::runtime_error("List is empty, there is nothing to pop back");
+			else
+				throw std::runtime_error("List is empty, there is nothing to pop back");
 #endif
 		}
 
@@ -610,7 +602,8 @@ namespace custom {
 				}
 				head = last;
 #ifdef DEBUG
-			} else throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
+			} else
+				throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
 #endif
 		}
 
@@ -630,7 +623,7 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		LinkedList<T> operator+(LinkedList<T>& right) {
+		LinkedList<T> operator+(LinkedList<T>& right) noexcept {
 			if (right.mLength) {
 				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
@@ -662,15 +655,15 @@ namespace custom {
 			T data;
 			Node* next = nullptr;
 
-			explicit Node(const T& data) : data(data) {}
+			explicit Node(const T& data) noexcept : data(data) {}
 
-			explicit Node(T&& data) : data(std::move(data)) {}
+			explicit Node(T&& data) noexcept : data(std::move(data)) {}
 		};
 
 		Node* head;
 		Node* tail;
 		size_t mLength;
 	};
-}
+}// namespace custom
 
-#endif // LINKED_LIST_H
+#endif// LINKED_LIST_H

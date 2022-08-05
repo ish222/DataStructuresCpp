@@ -1,19 +1,19 @@
 #include <iostream>
-#include <vector>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
-#include "LinkedList.h"
-#include "Queue.h"
-#include "Stack.h"
-#include "BinaryTree.h"
-#include "Graph.h"
-#include "Map.h"
 #include "BinarySearchTree.h"
+#include "BinaryTree.h"
+#include "DoublyLinkedList.h"
+#include "Graph.h"
+#include "LinkedList.h"
+#include "Map.h"
+#include "Queue.h"
+#include "SortingAlgorithms.h"
+#include "Stack.h"
 #include "Tree.h"
 #include "Vector.h"
-#include "DoublyLinkedList.h"
-#include "SortingAlgorithms.h"
 
 template<typename T>
 static void printvec(std::vector<T> data) {
@@ -152,13 +152,14 @@ int main() {
 		PQueue.display();
 		std::cout << "\n\n";
 
-		Map<int, const char*> map;
-		map.add("A", 15);
-		map.add("B", 25);
-		map.add("C", 6);
-		map.add("D", 53);
-		map.add("E", 152);
-		map["F"] = 196;
+		Map<char, int> map;
+		map.add('A', 15);
+		map.add('B', 25);
+		map.add('C', 6);
+		map.add('D', 53);
+		map.add('E', 152);
+		map['F'] = 196;
+		map['B'] = 20;
 		map.print();
 		std::cout << "\n\n";
 

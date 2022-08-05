@@ -2,29 +2,29 @@
 #define STACK_H
 
 #include <iostream>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 namespace custom {
 	template<typename T>
 	class Stack {
 	public:
-		Stack() noexcept: head(nullptr), mLength(0) {}
+		Stack() noexcept : head(nullptr), mLength(0) {}
 
-		explicit Stack(const T& data) : mLength(1) {
+		explicit Stack(const T& data) noexcept : mLength(1) {
 			head = new Node(data);
 		}
 
-		explicit Stack(T&& data) : mLength(1) {
+		explicit Stack(T&& data) noexcept : mLength(1) {
 			head = new Node(std::move(data));
 		}
 
-		Stack(std::initializer_list<T> init) : mLength(0) {
+		Stack(std::initializer_list<T> init) noexcept : mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
 				push(*it);
 		}
 
-		Stack(const Stack& other) : mLength(other.mLength) {
+		Stack(const Stack& other) noexcept : mLength(other.mLength) {
 			if (other.mLength) {
 				head = new Node(other.head->data);
 				Node* other_node = other.head->next;
@@ -37,7 +37,7 @@ namespace custom {
 			head = nullptr;
 		}
 
-		Stack& operator=(const Stack& other) {
+		Stack& operator=(const Stack& other) noexcept {
 			if (this != &other) {
 				if (mLength)
 					clear();
@@ -57,7 +57,7 @@ namespace custom {
 			return *this;
 		}
 
-		Stack(Stack&& other) noexcept: head(other.head), mLength(other.mLength) {
+		Stack(Stack&& other) noexcept : head(other.head), mLength(other.mLength) {
 			other.head = nullptr;
 			other.mLength = 0;
 		}
@@ -74,7 +74,7 @@ namespace custom {
 			return *this;
 		}
 
-		void push(const T& data) {
+		void push(const T& data) noexcept {
 			Node* new_node = new Node(data);
 			if (mLength) {
 				new_node->next = head;
@@ -86,7 +86,7 @@ namespace custom {
 			++mLength;
 		}
 
-		void push(T&& data) {
+		void push(T&& data) noexcept {
 			Node* new_node = new Node(std::move(data));
 			if (mLength) {
 				new_node->next = head;
@@ -98,7 +98,7 @@ namespace custom {
 			++mLength;
 		}
 
-		void push(std::initializer_list<T> list) {
+		void push(std::initializer_list<T> list) noexcept {
 			for (auto it = list.begin(); it != list.end(); ++it)
 				append(*it);
 		}
@@ -139,7 +139,7 @@ namespace custom {
 			return (bool)mLength;
 		}
 
-		bool operator==(const Stack<T>& other) const {
+		bool operator==(const Stack<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -153,7 +153,7 @@ namespace custom {
 			return true;
 		}
 
-		Stack<T> operator+(Stack<T>& right) {
+		Stack<T> operator+(Stack<T>& right) noexcept {
 			if (right.mLength) {
 				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
@@ -167,17 +167,14 @@ namespace custom {
 			return *this;
 		}
 
-		std::vector<T> contents() const {
-			if (mLength) {
-				std::vector<T> elems(mLength);
-				Node* cur_node = head;
-				for (int i = 0; i < mLength; ++i) {
-					elems[i] = cur_node->data;
-					cur_node = cur_node->next;
-				}
-				return elems;
+		std::vector<T> contents() const noexcept {
+			std::vector<T> elems(mLength);
+			Node* cur_node = head;
+			for (int i = 0; i < mLength; ++i) {
+				elems[i] = cur_node->data;
+				cur_node = cur_node->next;
 			}
-			throw std::runtime_error("Error: stack is empty, there is no content");
+			return elems;
 		}
 
 		void display() const {
@@ -187,20 +184,19 @@ namespace custom {
 					std::cout << i << "\t";
 				}
 				std::cout << "\n";
-			} else throw std::runtime_error("Error: stack is empty, there is nothing to display");
+			} else
+				throw std::runtime_error("Error: stack is empty, there is nothing to display");
 		}
 
-		void clear() {
-			if (mLength) {
-				Node* cur_node = head;
-				while (cur_node) {
-					cur_node = cur_node->next;
-					delete head;
-					head = cur_node;
-				}
-				head = nullptr;
-				mLength = 0;
-			} else throw std::runtime_error("Error: stack is empty and so cannot be cleared");
+		void clear() noexcept {
+			Node* cur_node = head;
+			while (cur_node) {
+				cur_node = cur_node->next;
+				delete head;
+				head = cur_node;
+			}
+			head = nullptr;
+			mLength = 0;
 		}
 
 		virtual ~Stack() {
@@ -213,14 +209,14 @@ namespace custom {
 			T data;
 			Node* next = nullptr;
 
-			explicit Node(const T& data) : data(data) {}
+			explicit Node(const T& data) noexcept : data(data) {}
 
-			explicit Node(T&& data) : data(std::move(data)) {}
+			explicit Node(T&& data) noexcept : data(std::move(data)) {}
 		};
 
 		Node* head;
 		size_t mLength;
 	};
-}
+}// namespace custom
 
-#endif // STACK_H
+#endif// STACK_H

@@ -1,33 +1,33 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <iostream>
-#include <vector>
-#include <stdexcept>
 #include <initializer_list>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
 
 namespace custom {
 	template<typename T>
 	class Queue {
 	public:
-		Queue() noexcept: head(nullptr), tail(nullptr), mLength(0) {}
+		Queue() noexcept : head(nullptr), tail(nullptr), mLength(0) {}
 
-		explicit Queue(const T& data) : mLength(1) {
+		explicit Queue(const T& data) noexcept : mLength(1) {
 			head = new Node(data);
 			tail = head;
 		}
 
-		explicit Queue(T&& data) : mLength(1) {
+		explicit Queue(T&& data) noexcept : mLength(1) {
 			head = new Node(std::move(data));
 			tail = head;
 		}
 
-		Queue(std::initializer_list<T> init) : mLength(0) {
+		Queue(std::initializer_list<T> init) noexcept : mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
 				enqueue(*it);
 		}
 
-		Queue(const Queue<T>& other) : mLength(other.mLength) {
+		Queue(const Queue<T>& other) noexcept : mLength(other.mLength) {
 			head = new Node(other.head->data);
 			tail = head;
 			Node* other_node = other.head->next;
@@ -38,7 +38,7 @@ namespace custom {
 			}
 		}
 
-		Queue<T>& operator=(const Queue<T>& other) {
+		Queue<T>& operator=(const Queue<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength > 0)
 					clear();
@@ -61,7 +61,7 @@ namespace custom {
 			return *this;
 		}
 
-		Queue(Queue<T>&& other) noexcept: head(other.head), tail(other.tail), mLength(other.mLength) {
+		Queue(Queue<T>&& other) noexcept : head(other.head), tail(other.tail), mLength(other.mLength) {
 			other.head = nullptr;
 			other.tail = nullptr;
 			other.mLength = 0;
@@ -81,7 +81,7 @@ namespace custom {
 			return *this;
 		}
 
-		virtual void enqueue(const T& data) {
+		virtual void enqueue(const T& data) noexcept {
 			Node* new_node = new Node(data);
 			if (mLength) {
 				tail->next = new_node;
@@ -94,7 +94,7 @@ namespace custom {
 			mLength = 1;
 		}
 
-		virtual void enqueue(T&& data) {
+		virtual void enqueue(T&& data) noexcept {
 			Node* new_node = new Node(std::move(data));
 			if (mLength) {
 				tail->next = new_node;
@@ -143,7 +143,7 @@ namespace custom {
 			return (bool)mLength;
 		}
 
-		virtual bool operator==(const Queue<T>& other) const {
+		virtual bool operator==(const Queue<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -167,10 +167,10 @@ namespace custom {
 				}
 				return false;
 			}
-			throw std::runtime_error("Error: queue is empty");
+			throw std::runtime_error("Error: queue is empty, cannot check for contents");
 		}
 
-		Queue<T> operator+(Queue<T>& right) {
+		Queue<T> operator+(Queue<T>& right) noexcept {
 			if (right.mLength) {
 				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
@@ -184,17 +184,14 @@ namespace custom {
 			return *this;
 		}
 
-		std::vector<T> contents() const {
-			if (mLength) {
-				std::vector<T> elems(mLength);
-				Node* cur_node = head;
-				for (size_t i = 0; i < mLength; ++i) {
-					elems[i] = cur_node->data;
-					cur_node = cur_node->next;
-				}
-				return elems;
+		std::vector<T> contents() const noexcept {
+			std::vector<T> elems(mLength);
+			Node* cur_node = head;
+			for (size_t i = 0; i < mLength; ++i) {
+				elems[i] = cur_node->data;
+				cur_node = cur_node->next;
 			}
-			throw std::runtime_error("Error: queue is empty, there is no content");
+			return elems;
 		}
 
 		void display() const {
@@ -204,19 +201,18 @@ namespace custom {
 					std::cout << i << "\t";
 				}
 				std::cout << "\n";
-			} else throw std::runtime_error("Error: queue is empty, there is nothing to display");
+			} else
+				throw std::runtime_error("Error: queue is empty, there is nothing to display");
 		}
 
-		void clear() {
-			if (mLength) {
-				Node* cur_node = head;
-				while (cur_node) {
-					cur_node = cur_node->next;
-					delete head;
-					head = cur_node;
-				}
-				head = nullptr;
-			} else throw std::runtime_error("Error: queue is empty and so cannot be cleared");
+		void clear() noexcept {
+			Node* cur_node = head;
+			while (cur_node) {
+				cur_node = cur_node->next;
+				delete head;
+				head = cur_node;
+			}
+			head = nullptr;
 		}
 
 		virtual ~Queue() {
@@ -229,9 +225,9 @@ namespace custom {
 			T data;
 			Node* next = nullptr;
 
-			explicit Node(const T& data) : data(data) {}
+			explicit Node(const T& data) noexcept : data(data) {}
 
-			explicit Node(T&& data) : data(std::move(data)) {}
+			explicit Node(T&& data) noexcept : data(std::move(data)) {}
 		};
 
 		Node* head;
@@ -242,18 +238,18 @@ namespace custom {
 	template<typename T>
 	class PriorityQueue : public Queue<T> {
 	public:
-		PriorityQueue() : priority_val(None), Queue<T>() {}
+		PriorityQueue() noexcept : priority_val(None), Queue<T>() {}
 
-		explicit PriorityQueue(const T& data, unsigned int priority = None) : priority_val(priority), Queue<T>(data) {}
+		explicit PriorityQueue(const T& data, unsigned int priority = None) noexcept : priority_val(priority), Queue<T>(data) {}
 
-		explicit PriorityQueue(T&& data, unsigned int priority = None) : priority_val(priority),
-		                                                                 Queue<T>(std::move(data)) {}
+		explicit PriorityQueue(T&& data, unsigned int priority = None) noexcept : priority_val(priority),
+		                                                                          Queue<T>(std::move(data)) {}
 
-		PriorityQueue(const PriorityQueue<T>& other) : Queue<T>(other), priority_val(other.priority_val) {}
+		PriorityQueue(const PriorityQueue<T>& other) noexcept : Queue<T>(other), priority_val(other.priority_val) {}
 
-		PriorityQueue(const Queue<T>& other) : Queue<T>(other), priority_val(None) {}
+		PriorityQueue(const Queue<T>& other) noexcept : Queue<T>(other), priority_val(None) {}
 
-		PriorityQueue<T>& operator=(const PriorityQueue<T>& other) {
+		PriorityQueue<T>& operator=(const PriorityQueue<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength > 0)
 					clear();
@@ -277,10 +273,10 @@ namespace custom {
 			return *this;
 		}
 
-		PriorityQueue(PriorityQueue<T>&& other) noexcept: Queue<T>(std::move(other)),
-		                                                  priority_val(other.priority_val) {}
+		PriorityQueue(PriorityQueue<T>&& other) noexcept : Queue<T>(std::move(other)),
+		                                                   priority_val(other.priority_val) {}
 
-		PriorityQueue(Queue<T>&& other) noexcept: Queue<T>(std::move(other)), priority_val(None) {}
+		PriorityQueue(Queue<T>&& other) noexcept : Queue<T>(std::move(other)), priority_val(None) {}
 
 		PriorityQueue<T>& operator=(PriorityQueue<T>&& other) noexcept {
 			if (this != &other) {
@@ -298,7 +294,7 @@ namespace custom {
 			return *this;
 		}
 
-		void enqueue(const T& data) override {
+		void enqueue(const T& data) noexcept override {
 			Node* new_node = new Node(data);
 			if (priority_val == None && mLength) {
 				tail->next = new_node;
@@ -352,7 +348,7 @@ namespace custom {
 			mLength = 1;
 		}
 
-		void enqueue(T&& data) override {
+		void enqueue(T&& data) noexcept override {
 			Node* new_node = new Node(std::move(data));
 			if (priority_val == None && mLength) {
 				tail->next = new_node;
@@ -406,7 +402,7 @@ namespace custom {
 			mLength = 1;
 		}
 
-		bool operator==(const PriorityQueue<T>& other) const {
+		bool operator==(const PriorityQueue<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -420,7 +416,7 @@ namespace custom {
 			return true;
 		}
 
-		bool operator==(const Queue<T>& other) const override {
+		bool operator==(const Queue<T>& other) const noexcept override {
 			PriorityQueue<T> temp(other);
 			if (mLength != temp.mLength)
 				return false;
@@ -435,7 +431,7 @@ namespace custom {
 			return true;
 		}
 
-		PriorityQueue<T> operator+(PriorityQueue<T>& right) {
+		PriorityQueue<T> operator+(PriorityQueue<T>& right) noexcept {
 			if (right.mLength) {
 				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
@@ -469,6 +465,6 @@ namespace custom {
 			Descending
 		};
 	};
-}
+}// namespace custom
 
-#endif // QUEUE_H
+#endif// QUEUE_H
