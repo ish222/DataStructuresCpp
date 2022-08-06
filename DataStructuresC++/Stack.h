@@ -24,7 +24,7 @@ namespace custom {
 				push(*it);
 		}
 
-		Stack(const Stack& other) noexcept : mLength(other.mLength) {
+		Stack(const Stack<T>& other) noexcept : mLength(other.mLength) {
 			if (other.mLength) {
 				head = new Node(other.head->data);
 				Node* other_node = other.head->next;
@@ -37,7 +37,7 @@ namespace custom {
 			head = nullptr;
 		}
 
-		Stack& operator=(const Stack& other) noexcept {
+		Stack<T>& operator=(const Stack<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength)
 					clear();
@@ -57,12 +57,12 @@ namespace custom {
 			return *this;
 		}
 
-		Stack(Stack&& other) noexcept : head(other.head), mLength(other.mLength) {
+		Stack(Stack<T>&& other) noexcept : head(other.head), mLength(other.mLength) {
 			other.head = nullptr;
 			other.mLength = 0;
 		}
 
-		Stack& operator=(Stack&& other) noexcept {
+		Stack<T>& operator=(Stack<T>&& other) noexcept {
 			if (this != &other) {
 				if (mLength)
 					clear();
@@ -100,7 +100,7 @@ namespace custom {
 
 		void push(std::initializer_list<T> list) noexcept {
 			for (auto it = list.begin(); it != list.end(); ++it)
-				append(*it);
+				append(std::move(*it));
 		}
 
 		T pop() {
@@ -115,23 +115,23 @@ namespace custom {
 			throw std::invalid_argument("Stack is empty, there is nothing to pop.");
 		}
 
-		T& peek() {
+		[[nodiscard]] T& peek() {
 			if (mLength)
 				return head->data;
 			throw std::invalid_argument("Stack is empty, there is nothing to peek.");
 		}
 
-		const T& peek() const {
+		[[nodiscard]] const T& peek() const {
 			if (mLength)
 				return head->data;
 			throw std::invalid_argument("Stack is empty, there is nothing to peek.");
 		}
 
-		int length() const noexcept {
+		[[nodiscard]] int length() const noexcept {
 			return mLength;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return mLength == 0;
 		}
 
@@ -153,21 +153,18 @@ namespace custom {
 			return true;
 		}
 
-		Stack<T> operator+(Stack<T>& right) noexcept {
+		[[nodiscard]] Stack<T> operator+(Stack<T>& right) noexcept {
 			if (right.mLength) {
-				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
-				for (T& i: right_data)
-					data.push_back(i);
-				Stack<T>* res = new Stack<T>();
-				for (const T& i: data)
-					res->push(i);
-				return *res;
+				Stack<T> res(*this);
+				for (const T& i: right_data)
+					res.push(i);
+				return res;
 			}
 			return *this;
 		}
 
-		std::vector<T> contents() const noexcept {
+		[[nodiscard]] std::vector<T> contents() const noexcept {
 			std::vector<T> elems(mLength);
 			Node* cur_node = head;
 			for (int i = 0; i < mLength; ++i) {

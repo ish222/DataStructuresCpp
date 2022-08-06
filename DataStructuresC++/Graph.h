@@ -139,11 +139,11 @@ namespace custom {
 			throw std::runtime_error("Invalid node ID");
 		}
 
-		int size() const noexcept {
+		[[nodiscard]] int size() const noexcept {
 			return node_num;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return node_num == 0;
 		}
 
@@ -151,7 +151,7 @@ namespace custom {
 			return (bool)node_num;
 		}
 
-		bool find(const ID_Type& id) const noexcept {
+		[[nodiscard]] bool find(const ID_Type& id) const noexcept {
 			for (Node*& node: node_list) {
 				if (node->id == id)
 					return true;
@@ -159,7 +159,7 @@ namespace custom {
 			return false;
 		}
 
-		bool find_edge(const ID_Type& last, const ID_Type& next) const noexcept {
+		[[nodiscard]] bool find_edge(const ID_Type& last, const ID_Type& next) const noexcept {
 			int last_index = -1;
 			for (int i = 0; i < node_list.size(); ++i) {
 				if (node_list[i]->id == last) {
@@ -176,7 +176,7 @@ namespace custom {
 			return false;
 		}
 
-		std::vector<std::pair<ID_Type, T>> contents() const noexcept {
+		[[nodiscard]] std::vector<std::pair<ID_Type, T>> contents() const noexcept {
 			std::vector<std::pair<ID_Type, T>> contents = {};
 			for (Node*& node: node_list) {
 				contents.push_back({node->id, node->data});
@@ -184,7 +184,7 @@ namespace custom {
 			return contents;
 		}
 
-		std::vector<ID_Type> dfs(const ID_Type& id) const {
+		[[nodiscard]] std::vector<ID_Type> dfs(const ID_Type& id) const {
 			std::vector<ID_Type> ret;
 			std::unordered_map<Node*, bool> visited;
 			std::stack<Node*> stack;
@@ -209,7 +209,7 @@ namespace custom {
 			return ret;
 		}
 
-		std::vector<ID_Type> bfs(const ID_Type& id) const {
+		[[nodiscard]] std::vector<ID_Type> bfs(const ID_Type& id) const {
 			std::vector<ID_Type> ret;
 			std::unordered_map<Node*, bool> visited;
 			std::deque<Node*> queue;
@@ -233,7 +233,7 @@ namespace custom {
 			return ret;
 		}
 
-		bool has_path(const ID_Type& last, const ID_Type& next, bool use_dfs = true) {
+		[[nodiscard]] bool has_path(const ID_Type& last, const ID_Type& next, bool use_dfs = true) {
 			int last_index = find_node_index(last);
 			int next_index = find_node_index(next);
 			if (last_index == -1 || next_index == -1)
@@ -310,7 +310,7 @@ namespace custom {
 		std::vector<Node*> node_list;
 		size_t node_num;
 
-		int find_node_index(const ID_Type& id) const noexcept {
+		[[nodiscard]] int find_node_index(const ID_Type& id) const noexcept {
 			for (int i = 0; i < node_list.size(); ++i) {
 				if (node_list[i]->id == id)
 					return i;
@@ -318,7 +318,7 @@ namespace custom {
 			return -1;
 		}
 
-		bool dfs_path(Node* last, Node* next) const {
+		[[nodiscard]] bool dfs_path(Node* last, Node* next) const {
 			std::unordered_map<Node*, bool> visited;
 			std::stack<Node*> stack;
 			int index = find_node_index(last->id);
@@ -343,7 +343,7 @@ namespace custom {
 			return false;
 		}
 
-		bool bfs_path(Node* last, Node* next) const {
+		[[nodiscard]] bool bfs_path(Node* last, Node* next) const {
 			std::unordered_map<Node*, bool> visited;
 			std::deque<Node*> queue;
 			int index = find_node_index(last->id);

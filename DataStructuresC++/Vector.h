@@ -23,13 +23,13 @@ namespace custom {
 				data[i] = *(init.begin() + i);
 		}
 
-		Vector(const Vector& other) noexcept : mSize(other.mSize), capacity(other.capacity) {
+		Vector(const Vector<T>& other) noexcept : mSize(other.mSize), capacity(other.capacity) {
 			data = (T*)::operator new(capacity * sizeof(T));
 			for (int i = 0; i < mSize; ++i)
 				data[i] = other[i];
 		}
 
-		Vector& operator=(const Vector& other) noexcept {
+		Vector<T>& operator=(const Vector<T>& other) noexcept {
 			if (this != &other) {
 				if (mSize) {
 					clear();
@@ -42,13 +42,13 @@ namespace custom {
 			return *this;
 		}
 
-		Vector(Vector&& other) noexcept : data(other.data), capacity(other.capacity), mSize(other.mSize) {
+		Vector(Vector<T>&& other) noexcept : data(other.data), capacity(other.capacity), mSize(other.mSize) {
 			other.data = nullptr;
 			other.capacity = 0;
 			other.mSize = 0;
 		}
 
-		Vector& operator=(Vector&& other) noexcept {
+		Vector<T>& operator=(Vector<T>&& other) noexcept {
 			if (this != &other) {
 				if (mSize) {
 					clear();
@@ -125,11 +125,11 @@ namespace custom {
 			throw std::runtime_error("Vector is empty, there is nothing at the back");
 		}
 
-		size_t size() const noexcept {
+		[[nodiscard]] size_t size() const noexcept {
 			return mSize;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return (bool)mSize;
 		}
 
@@ -137,16 +137,26 @@ namespace custom {
 			return mSize != 0;
 		}
 
-		T& operator[](const size_t& index) {
+		[[nodiscard]] T& operator[](const size_t& index) {
 			if (index >= 0 && index < mSize)
 				return data[index];
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		const T& operator[](const size_t& index) const {
+		[[nodiscard]] const T& operator[](const size_t& index) const {
 			if (index >= 0 && index < mSize)
 				return data[index];
 			throw std::invalid_argument("Invalid index, out of range");
+		}
+
+		[[nodiscard]] Vector<T> operator+(const Vector<T>& right) const noexcept {
+			if (right.mSize) {
+				Vector<T> res(*this);
+				for (size_t i = 0; i < right.mSize; ++i)
+					res.append(right[i]);
+				return res;
+			}
+			return *this;
 		}
 
 		void clear() noexcept {
@@ -189,7 +199,7 @@ namespace custom {
 			if (!data) {
 				capacity = cap;
 				data = (T*)::operator new(
-				        capacity * sizeof(T));// Allocates memory without calling constructor, analogous to malloc
+				        capacity * sizeof(T));
 				return;
 			}
 			T* new_data = (T*)::operator new(cap * sizeof(T));
@@ -199,7 +209,7 @@ namespace custom {
 				data[i].~T();
 			}
 
-			::operator delete(data, capacity * sizeof(T));// deallocated memory without calling destructor
+			::operator delete(data, capacity * sizeof(T));
 			data = new_data;
 			capacity = cap;
 		}

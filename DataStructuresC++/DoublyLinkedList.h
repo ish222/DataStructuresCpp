@@ -213,7 +213,7 @@ namespace custom {
 
 
 	public:
-		constexpr DoublyLinkedList() noexcept : head(nullptr), tail(nullptr), mLength(0) {}
+		DoublyLinkedList() noexcept : head(nullptr), tail(nullptr), mLength(0) {}
 
 		explicit DoublyLinkedList(const T& data) noexcept : mLength(1) {
 			head = new Node(data);
@@ -249,7 +249,7 @@ namespace custom {
 			mLength = 0;
 		}
 
-		DoublyLinkedList& operator=(const DoublyLinkedList<T>& other) noexcept {
+		DoublyLinkedList<T>& operator=(const DoublyLinkedList<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength)
 					clear();
@@ -476,7 +476,7 @@ namespace custom {
 			return elems;
 		}
 
-		int find(const T& data) const noexcept {
+		[[nodiscard]] int find(const T& data) const noexcept {
 			int index = 0;
 			Node* cur_node = head;
 			while (cur_node) {
@@ -502,11 +502,11 @@ namespace custom {
 #endif
 		}
 
-		size_t length() const noexcept {
+		[[nodiscard]] size_t length() const noexcept {
 			return mLength;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return mLength == 0;
 		}
 
@@ -514,7 +514,7 @@ namespace custom {
 			return (bool)mLength;
 		}
 
-		bool operator==(const DoublyLinkedList<T>& other) const noexcept {
+		[[nodiscard]] bool operator==(const DoublyLinkedList<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -595,7 +595,7 @@ namespace custom {
 			mLength = 0;
 		}
 
-		T& get(const size_t& index) {
+		[[nodiscard]] T& get(const size_t& index) {
 #ifdef DEBUG
 			if (index < mLength) {
 #endif
@@ -628,7 +628,7 @@ namespace custom {
 #endif
 		}
 
-		const T& get(const size_t& index) const {
+		[[nodiscard]] const T& get(const size_t& index) const {
 #ifdef DEBUG
 			if (index < mLength) {
 #endif
@@ -748,7 +748,7 @@ namespace custom {
 #endif
 		}
 
-		T& operator[](const size_t& index) {
+		[[nodiscard]] T& operator[](const size_t& index) {
 #ifdef DEBUG
 			if (index < mLength)
 #endif
@@ -756,7 +756,7 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		const T& operator[](const size_t index) const {
+		[[nodiscard]] const T& operator[](const size_t index) const {
 #ifdef DEBUG
 			if (index < mLength)
 #endif
@@ -764,30 +764,24 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		DoublyLinkedList<T> operator+(DoublyLinkedList<T>& right) noexcept {
+		[[nodiscard]] DoublyLinkedList<T> operator+(DoublyLinkedList<T>& right) const noexcept {
 			if (right.mLength) {
-				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
-				for (T& i: right_data)
-					data.push_back(i);
-				DoublyLinkedList<T>* res = new DoublyLinkedList<T>();
-				for (const T& i: data)
-					res->append(i);
-				return *res;
+				DoublyLinkedList<T> res(*this);
+				for (const T& i: right_data)
+					res.append(i);
+				return res;
 			}
 			return *this;
 		}
 
-		DoublyLinkedList<T> operator+(LinkedList<T>& right) noexcept {
+		[[nodiscard]] DoublyLinkedList<T> operator+(LinkedList<T>& right) const noexcept {
 			if (right.mLength) {
-				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
-				for (T& i: right_data)
-					data.push_back(i);
-				DoublyLinkedList<T>* res = new DoublyLinkedList<T>();
-				for (const T& i: data)
-					res->append(i);
-				return *res;
+				DoublyLinkedList<T> res(*this);
+				for (const T& i: right_data)
+					res.append(i);
+				return res;
 			}
 			return *this;
 		}

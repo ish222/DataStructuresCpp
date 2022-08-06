@@ -51,7 +51,7 @@ namespace custom {
 #endif
 		}
 
-		ListIterator operator++(int) {
+		const ListIterator operator++(int) {
 #ifdef DEBUG
 			if (mPtr) {
 #endif
@@ -373,7 +373,7 @@ namespace custom {
 			insert(std::move(data), 0);
 		}
 
-		std::vector<T> contents() const noexcept {
+		[[nodiscard]] std::vector<T> contents() const noexcept {
 			std::vector<T> elems(mLength);
 			Node* cur_node = head;
 			for (int i = 0; i < mLength; ++i) {
@@ -383,7 +383,7 @@ namespace custom {
 			return elems;
 		}
 
-		int find(const T& data) const {
+		[[nodiscard]] int find(const T& data) const {
 #ifdef DEBUG
 			if (mLength) {
 #endif
@@ -416,11 +416,11 @@ namespace custom {
 #endif
 		}
 
-		size_t length() const noexcept {
+		[[nodiscard]] size_t length() const noexcept {
 			return mLength;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return mLength == 0;
 		}
 
@@ -428,7 +428,7 @@ namespace custom {
 			return (bool)mLength;
 		}
 
-		bool operator==(const LinkedList<T>& other) const noexcept {
+		[[nodiscard]] bool operator==(const LinkedList<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -489,7 +489,7 @@ namespace custom {
 			mLength = 0;
 		}
 
-		T& get(const size_t& index) {
+		[[nodiscard]] T& get(const size_t& index) {
 #ifdef DEBUG
 			if (index < mLength) {
 #endif
@@ -509,7 +509,7 @@ namespace custom {
 #endif
 		}
 
-		const T& get(const size_t& index) const {
+		[[nodiscard]] const T& get(const size_t& index) const {
 #ifdef DEBUG
 			if (index < mLength) {
 #endif
@@ -607,7 +607,7 @@ namespace custom {
 #endif
 		}
 
-		T& operator[](const size_t& index) {
+		[[nodiscard]] T& operator[](const size_t& index) {
 #ifdef DEBUG
 			if (index < mLength)
 #endif
@@ -615,7 +615,7 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		const T& operator[](const size_t index) const {
+		[[nodiscard]] const T& operator[](const size_t index) const {
 #ifdef DEBUG
 			if (index < mLength)
 #endif
@@ -623,16 +623,13 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
-		LinkedList<T> operator+(LinkedList<T>& right) noexcept {
+		[[nodiscard]] LinkedList<T> operator+(LinkedList<T>& right) noexcept {
 			if (right.mLength) {
-				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
-				for (T& i: right_data)
-					data.push_back(i);
-				LinkedList<T>* res = new LinkedList<T>();
-				for (const T& i: data)
-					res->append(i);
-				return *res;
+				LinkedList<T> res(*this);
+				for (const T& i: right_data)
+					res.append(i);
+				return res;
 			}
 			return *this;
 		}

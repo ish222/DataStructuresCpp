@@ -27,9 +27,9 @@ namespace custom {
 			key_list[hash_value].push_back(std::move(id));
 		}
 
-		Map(const Map& other) noexcept : capacity(other.capacity), mSize(other.mSize), key_list(other.key_list.begin(), other.key_list.end()), hash_table(other.hash_table.begin(), other.hash_table.end()) {}
+		Map(const Map<U, T>& other) noexcept : capacity(other.capacity), mSize(other.mSize), key_list(other.key_list.begin(), other.key_list.end()), hash_table(other.hash_table.begin(), other.hash_table.end()) {}
 
-		Map& operator=(const Map& other) {
+		Map& operator=(const Map<U, T>& other) {
 			if (this != &other) {
 				if (!key_list.empty())
 					clear();
@@ -41,7 +41,7 @@ namespace custom {
 			return *this;
 		}
 
-		Map(Map&& other) noexcept : capacity(other.capacity), mSize(other.mSize), key_list(other.capacity), hash_table(other.capacity) {
+		Map(Map<U, T>&& other) noexcept : capacity(other.capacity), mSize(other.mSize), key_list(other.capacity), hash_table(other.capacity) {
 			hash_table.insert(hash_table.end(), std::make_move_iterator(other.hash_table.begin()), std::make_move_iterator(other.hash_table.end()));
 			other.hash_table.clear();
 			other.hash_table.shrink_to_fit();// Frees memory allocated to the vector
@@ -90,7 +90,7 @@ namespace custom {
 			throw std::invalid_argument("Key provided already exists");
 		}
 
-		T& at(const U& id) {
+		[[nodiscard]] T& at(const U& id) {
 			size_t hash_value = hash(id) % capacity;
 			auto it = std::find(key_list[hash_value].begin(), key_list[hash_value].end(), id);
 			if (it != key_list[hash_value].end()) {
@@ -100,7 +100,7 @@ namespace custom {
 			throw std::invalid_argument("Id provided not found");
 		}
 
-		const T& at(const U& id) const {
+		[[nodiscard]] const T& at(const U& id) const {
 			size_t hash_value = hash(id) % capacity;
 			auto it = std::find(key_list[hash_value].begin(), key_list[hash_value].end(), id);
 			if (it != key_list[hash_value].end()) {
@@ -110,7 +110,7 @@ namespace custom {
 			throw std::invalid_argument("Id provided not found");
 		}
 
-		bool exists(const U& id) const noexcept {
+		[[nodiscard]] bool exists(const U& id) const noexcept {
 			if (mSize) {
 				size_t hash_value = hash(id) % capacity;
 				return std::find(key_list[hash_value].begin(), key_list[hash_value].end(), id) != key_list[hash_value].end();
@@ -118,7 +118,7 @@ namespace custom {
 			return false;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return mSize == 0;
 		}
 
@@ -126,7 +126,7 @@ namespace custom {
 			return (bool)mSize;
 		}
 
-		size_t size() const noexcept {
+		[[nodiscard]] size_t size() const noexcept {
 			return mSize;
 		}
 
@@ -162,7 +162,7 @@ namespace custom {
 			return add_op(id, T());
 		}
 
-		std::vector<std::pair<U, T>> contents() const noexcept {
+		[[nodiscard]] std::vector<std::pair<U, T>> contents() const noexcept {
 			std::vector<std::pair<U, T>> ret = {};
 			if (mSize) {
 				for (int i = 0; i < capacity; ++i) {

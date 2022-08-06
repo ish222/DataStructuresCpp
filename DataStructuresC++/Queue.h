@@ -119,23 +119,23 @@ namespace custom {
 			throw std::runtime_error("Error: queue is empty, there is nothing to dequeue");
 		}
 
-		T& peek() {
+		[[nodiscard]] T& peek() {
 			if (mLength)
 				return head->data;
 			throw std::runtime_error("Error: queue is empty, there is nothing to peek");
 		}
 
-		const T& peek() const {
+		[[nodiscard]] const T& peek() const {
 			if (mLength)
 				return head->data;
 			throw std::runtime_error("Error: queue is empty, there is nothing to peek");
 		}
 
-		int length() const noexcept {
+		[[nodiscard]] int length() const noexcept {
 			return mLength;
 		}
 
-		bool empty() const noexcept {
+		[[nodiscard]] bool empty() const noexcept {
 			return mLength == 0;
 		}
 
@@ -170,21 +170,21 @@ namespace custom {
 			throw std::runtime_error("Error: queue is empty, cannot check for contents");
 		}
 
-		Queue<T> operator+(Queue<T>& right) noexcept {
+		[[nodiscard]] Queue<T> operator+(Queue<T>& right) const noexcept {
 			if (right.mLength) {
 				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
 				for (T& i: right_data)
 					data.push_back(i);
-				Queue<T>* res = new Queue<T>();
+				Queue<T> res;
 				for (const T& i: data)
-					res->enqueue(i);
-				return *res;
+					res.enqueue(i);
+				return res;
 			}
 			return *this;
 		}
 
-		std::vector<T> contents() const noexcept {
+		[[nodiscard]] std::vector<T> contents() const noexcept {
 			std::vector<T> elems(mLength);
 			Node* cur_node = head;
 			for (size_t i = 0; i < mLength; ++i) {
@@ -402,7 +402,7 @@ namespace custom {
 			mLength = 1;
 		}
 
-		bool operator==(const PriorityQueue<T>& other) const noexcept {
+		[[nodiscard]] bool operator==(const PriorityQueue<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
 			Node* cur = head;
@@ -416,7 +416,7 @@ namespace custom {
 			return true;
 		}
 
-		bool operator==(const Queue<T>& other) const noexcept override {
+		[[nodiscard]] bool operator==(const Queue<T>& other) const noexcept override {
 			PriorityQueue<T> temp(other);
 			if (mLength != temp.mLength)
 				return false;
@@ -431,16 +431,13 @@ namespace custom {
 			return true;
 		}
 
-		PriorityQueue<T> operator+(PriorityQueue<T>& right) noexcept {
+		[[nodiscard]] PriorityQueue<T> operator+(PriorityQueue<T>& right) noexcept {
 			if (right.mLength) {
-				std::vector<T> data = contents();
 				std::vector<T> right_data = right.contents();
-				for (T& i: right_data)
-					data.push_back(i);
-				PriorityQueue<T>* res = new PriorityQueue<T>();
-				for (const T& i: data)
-					res->enqueue(i);
-				return *res;
+				PriorityQueue<T> res(*this);
+				for (const T& i: right_data)
+					res.enqueue(i);
+				return res;
 			}
 			return *this;
 		}
