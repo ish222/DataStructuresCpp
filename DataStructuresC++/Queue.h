@@ -24,7 +24,7 @@ namespace custom {
 
 		Queue(std::initializer_list<T> init) noexcept : mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
-				enqueue(*it);
+				enqueue(std::move(*it));
 		}
 
 		Queue(const Queue<T>& other) noexcept : mLength(other.mLength) {
@@ -38,7 +38,7 @@ namespace custom {
 			}
 		}
 
-		Queue<T>& operator=(const Queue<T>& other) noexcept {
+		virtual Queue<T>& operator=(const Queue<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength > 0)
 					clear();
@@ -67,7 +67,7 @@ namespace custom {
 			other.mLength = 0;
 		}
 
-		Queue<T>& operator=(Queue<T>&& other) noexcept {
+		virtual Queue<T>& operator=(Queue<T>&& other) noexcept {
 			if (this != &other) {
 				if (mLength > 0)
 					clear();
@@ -105,6 +105,11 @@ namespace custom {
 			head = new_node;
 			tail = head;
 			mLength = 1;
+		}
+
+		virtual void enqueue(std::initializer_list<T> list) noexcept {
+			for (auto it = list.begin(); it != list.end(); ++it)
+				enqueue(std::move(*it));
 		}
 
 		T dequeue() {
@@ -247,7 +252,7 @@ namespace custom {
 
 		PriorityQueue(const PriorityQueue<T>& other) noexcept : Queue<T>(other), priority_val(other.priority_val) {}
 
-		PriorityQueue(const Queue<T>& other) noexcept : Queue<T>(other), priority_val(None) {}
+		explicit PriorityQueue(const Queue<T>& other) noexcept : Queue<T>(other), priority_val(None) {}
 
 		PriorityQueue<T>& operator=(const PriorityQueue<T>& other) noexcept {
 			if (this != &other) {
@@ -276,7 +281,7 @@ namespace custom {
 		PriorityQueue(PriorityQueue<T>&& other) noexcept : Queue<T>(std::move(other)),
 		                                                   priority_val(other.priority_val) {}
 
-		PriorityQueue(Queue<T>&& other) noexcept : Queue<T>(std::move(other)), priority_val(None) {}
+		explicit PriorityQueue(Queue<T>&& other) noexcept : Queue<T>(std::move(other)), priority_val(None) {}
 
 		PriorityQueue<T>& operator=(PriorityQueue<T>&& other) noexcept {
 			if (this != &other) {
@@ -400,6 +405,11 @@ namespace custom {
 			head = new_node;
 			tail = head;
 			mLength = 1;
+		}
+
+		void enqueue(std::initializer_list<T> list) noexcept override {
+			for (auto it = list.begin(); it != list.end(); ++it)
+				enqueue(std::move(*it));
 		}
 
 		[[nodiscard]] bool operator==(const PriorityQueue<T>& other) const noexcept {

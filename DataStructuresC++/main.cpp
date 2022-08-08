@@ -149,6 +149,7 @@ int main() {
 		PQueue.enqueue(12);
 		PQueue.enqueue(20);
 		PQueue.enqueue(7);
+		PQueue.enqueue({1, 100, 76});
 		PQueue.display();
 		std::cout << "\n\n";
 

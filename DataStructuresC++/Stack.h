@@ -1,6 +1,7 @@
 #ifndef STACK_H
 #define STACK_H
 
+#include <initializer_list>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -21,7 +22,7 @@ namespace custom {
 
 		Stack(std::initializer_list<T> init) noexcept : mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
-				push(*it);
+				push(std::move(*it));
 		}
 
 		Stack(const Stack<T>& other) noexcept : mLength(other.mLength) {

@@ -2,6 +2,7 @@
 #define TREE_H
 
 #include <algorithm>
+#include <initializer_list>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
@@ -40,7 +41,7 @@ namespace custom {
 				current_head->children.push_back(new_node);
 				return;
 			}
-			throw std::runtime_error("Current node is uninitialised, cannot add child.");
+			throw std::runtime_error("Current node is uninitialised, cannot add child");
 		}
 
 		void add_child(T&& data) {
@@ -57,7 +58,15 @@ namespace custom {
 				current_head->children.push_back(new_node);
 				return;
 			}
-			throw std::runtime_error("Current node is uninitialised, cannot add child.");
+			throw std::runtime_error("Current node is uninitialised, cannot add child");
+		}
+
+		void add_child(std::initializer_list<T> list) {
+			if (current_head) {
+				for (auto it = list.begin(); it != list.end(); ++it)
+					add_child(std::move(*it));
+			} else
+				throw std::runtime_error("Current node is uninitialised, cannot add child");
 		}
 
 		[[nodiscard]] std::vector<T> children_data() const {
@@ -68,7 +77,7 @@ namespace custom {
 				}
 				return ret;
 			}
-			throw std::runtime_error("Current node has no children.");
+			throw std::runtime_error("Current node has no children");
 		}
 
 		[[nodiscard]] int find_child(const T& data) const {
@@ -81,7 +90,7 @@ namespace custom {
 				}
 				return -1;
 			}
-			throw std::runtime_error("Current node has no children.");
+			throw std::runtime_error("Current node has no children");
 		}
 
 		void goto_child(const int& index) {
@@ -147,9 +156,9 @@ namespace custom {
 			T data;
 			std::vector<Node*> children;
 
-			explicit Node(const T& data) : data(data), children({}) {}
+			explicit Node(const T& data) noexcept : data(data), children({}) {}
 
-			explicit Node(T&& data) : data(std::move(data)), children({}) {}
+			explicit Node(T&& data) noexcept : data(std::move(data)), children({}) {}
 		};
 
 		Node* root;

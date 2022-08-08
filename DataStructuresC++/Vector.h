@@ -81,7 +81,7 @@ namespace custom {
 			if (new_size >= capacity)
 				init_grow(new_size + new_size / 2);
 			for (auto it = list.begin(); it != list.end(); ++it)
-				data[mSize++] = *it;
+				data[mSize++] = std::move(*it);
 		}
 
 		template<typename... Ts>

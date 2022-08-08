@@ -189,7 +189,7 @@ namespace custom {
 
 		LinkedList(std::initializer_list<T> init) noexcept : mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
-				append(*it);
+				append(std::move(*it));
 		}
 
 		LinkedList(LinkedList<T>& other) noexcept : mLength(other.mLength) {
@@ -280,7 +280,7 @@ namespace custom {
 
 		void append(std::initializer_list<T> list) noexcept {
 			for (auto it = list.begin(); it != list.end(); ++it)
-				append(*it);
+				append(std::move(*it));
 		}
 
 		void push_back(const T& data) noexcept {

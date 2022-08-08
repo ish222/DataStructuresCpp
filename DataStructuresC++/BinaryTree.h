@@ -2,238 +2,268 @@
 #define BINARY_TREE_H
 
 #include <iostream>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 namespace custom {
-    template<typename T>
-    class BinaryTree {
-    public:
-        BinaryTree(const T& data) {
-            root = new Node(data);
-            current_head = root;
-        }
+	template<typename T>
+	class BinaryTree {
+	public:
+		BinaryTree() noexcept : root(nullptr), current_head(nullptr) {}
 
-        void new_left(const T& data) {
-            if (current_head->left == nullptr) {
-                Node* new_node = new Node(data);
-                current_head->left = new_node;
-            } else
-                throw std::runtime_error(
-                        "Left node is already initialised, use change_left function to change left node.");
-        }
+		explicit BinaryTree(const T& data) noexcept {
+			root = new Node(data);
+			current_head = root;
+		}
 
-        void new_right(const T& data) {
-            if (current_head->right == nullptr) {
-                Node* new_node = new Node(data);
-                current_head->right = new_node;
-            } else
-                throw std::runtime_error(
-                        "Right node is already initialised, use change_right function to change right node.");
-        }
+		explicit BinaryTree(T&& data) noexcept {
+			root = new Node(std::move(data));
+			current_head = root;
+		}
 
-        void change_data(const T& data) {
-            if (current_head != nullptr)
-                current_head->data = data;
-            else if (current_head == root && root == nullptr) {
-                Node* new_node = new Node(data);
-                root = new_node;
-            } else throw std::runtime_error("Current node is uninitialised, there is no value to change.");
-        }
+		void new_left(const T& data) {
+			if (current_head->left == nullptr) {
+				Node* new_node = new Node(data);
+				current_head->left = new_node;
+			} else
+				throw std::runtime_error(
+				        "Left node is already initialised, use change_left function to change left node.");
+		}
 
-        void change_left(const T& data) {
-            if (current_head->left != nullptr)
-                current_head->left->data = data;
-            else throw std::runtime_error("Left node is uninitialised, use new_left function to add a left node.");
-        }
+		void new_left(T&& data) {
+			if (current_head->left == nullptr) {
+				Node* new_node = new Node(std::move(data));
+				current_head->left = new_node;
+			} else
+				throw std::runtime_error(
+				        "Left node is already initialised, use change_left function to change left node.");
+		}
 
-        void change_right(const T& data) {
-            if (current_head->right != nullptr)
-                current_head->right->data = data;
-            else throw std::runtime_error("Right node is uninitialised, use new_right function to add a right node.");
-        }
+		void new_right(const T& data) {
+			if (current_head->right == nullptr) {
+				Node* new_node = new Node(data);
+				current_head->right = new_node;
+			} else
+				throw std::runtime_error(
+				        "Right node is already initialised, use change_right function to change right node.");
+		}
 
-        void advance_left() {
-            if (current_head->left != nullptr)
-                current_head = current_head->left;
-            else throw std::runtime_error("Left node is uninitialised.");
-        }
+		void new_right(T&& data) {
+			if (current_head->right == nullptr) {
+				Node* new_node = new Node(std::move(data));
+				current_head->right = new_node;
+			} else
+				throw std::runtime_error(
+				        "Right node is already initialised, use change_right function to change right node.");
+		}
 
-        void advance_right() {
-            if (current_head->right != nullptr)
-                current_head = current_head->right;
-            else throw std::runtime_error("Right node is uninitialised.");
-        }
+		void change_data(const T& data) {
+			if (current_head)
+				current_head->data = data;
+			else if (current_head == root && root == nullptr) {
+				Node* new_node = new Node(data);
+				root = new_node;
+			} else
+				throw std::runtime_error("Current node is uninitialised, there is no value to change.");
+		}
 
-        void goto_root() {
-            current_head = root;
-        }
+		void change_data(T&& data) {
+			if (current_head)
+				current_head->data = std::move(data);
+			else if (current_head == root && root == nullptr) {
+				Node* new_node = new Node(std::move(data));
+				root = new_node;
+			} else
+				throw std::runtime_error("Current node is uninitialised, there is no value to change.");
+		}
 
-        T get_data() const {
-            return current_head->data;
-        }
+		void change_left(const T& data) {
+			if (current_head->left)
+				current_head->left->data = data;
+			else
+				throw std::runtime_error("Left node is uninitialised, use new_left function to add a left node.");
+		}
 
-        static T get_data(BinaryTree<T>* node) {
-            if (node->current_head != nullptr)
-                return node->current_head->data;
-            else {
-                throw std::runtime_error("Error: Binary tree object provided is empty");
-                return T();
-            }
-        }
+		void change_left(T&& data) {
+			if (current_head->left)
+				current_head->left->data = std::move(data);
+			else
+				throw std::runtime_error("Left node is uninitialised, use new_left function to add a left node.");
+		}
 
-        int max_height() {
-            if (root == nullptr)
-                return -1;
-            return calc_max_height(root);
-        }
+		void change_right(const T& data) {
+			if (current_head->right)
+				current_head->right->data = data;
+			else
+				throw std::runtime_error("Right node is uninitialised, use new_right function to add a right node.");
+		}
 
-        int height() {
-            return calc_max_height(current_head);
-        }
+		void change_right(T&& data) {
+			if (current_head->right)
+				current_head->right->data = std::move(data);
+			else
+				throw std::runtime_error("Right node is uninitialised, use new_right function to add a right node.");
+		}
 
-        bool is_empty() {
-            return max_height() == 0;
-        }
+		void advance_left() {
+			if (current_head->left)
+				current_head = current_head->left;
+			else
+				throw std::runtime_error("Left node is uninitialised.");
+		}
 
-        operator bool() const {
-            return (is_empty() != 0);
-        }
+		void advance_right() {
+			if (current_head->right)
+				current_head = current_head->right;
+			else
+				throw std::runtime_error("Right node is uninitialised.");
+		}
 
-        T show_left() const {
-            if (current_head->left != nullptr)
-                return current_head->left->data;
-            else {
-                throw std::runtime_error("Error: left node is empty");
-                return T();
-            }
-        }
+		void goto_root() noexcept {
+			current_head = root;
+		}
 
-        T show_right() const {
-            if (current_head->right != nullptr)
-                return current_head->right->data;
-            else {
-                throw std::runtime_error("Error: right node is empty");
-                return T();
-            }
-        }
+		const T& get_data() const noexcept {
+			return current_head->data;
+		}
 
-        std::vector<T> contents_PreOrder() {
-            if (max_height() == 0) {
-                throw std::runtime_error("Error: Binary tree is empty, there is no content to return");
-                return std::vector<T>();
-            }
-            std::vector<T> temp = {};
-            return PreOrder(root, temp);
-        }
+		[[nodiscard]] static T get_data(BinaryTree<T>* node) {
+			if (node->current_head)
+				return node->current_head->data;
+			throw std::runtime_error("Error: Binary tree object provided is empty");
+		}
 
-        std::vector<T> contents_InOrder() {
-            if (max_height() == 0) {
-                throw std::runtime_error("Error: Binary tree is empty, there is no content to return");
-                return std::vector<T>();
-            }
-            std::vector<T> temp = {};
-            return InOrder(root, temp);
-        }
+		[[nodiscard]] int max_height() const noexcept {
+			if (root == nullptr)
+				return -1;
+			return calc_max_height(root);
+		}
 
-        std::vector<T> contents_PostOrder() {
-            if (max_height() == 0) {
-                throw std::runtime_error("Error: Binary tree is empty, there is no content to return");
-                return std::vector<T>();
-            }
-            std::vector<T> temp = {};
-            return PostOrder(root, temp);
-        }
+		[[nodiscard]] int height() const noexcept {
+			return calc_max_height(current_head);
+		}
 
-        void remove_left() {
-            if (current_head->left != nullptr)
-                delete_tree(current_head->left);
-            else {
-                throw std::runtime_error("Error: Left node is empty, there is nothing to remove");
-            }
-        }
+		[[nodiscard]] bool empty() const noexcept {
+			return max_height() == 0;
+		}
 
-        void remove_right() {
-            if (current_head->right != nullptr)
-                delete_tree(current_head->right);
-            else {
-                throw std::runtime_error("Error: Right node is empty, there is nothing to remove");
-            }
-        }
+		explicit operator bool() const noexcept {
+			return (empty() != 0);
+		}
 
-        void clear() {
-            if (max_height() == -1) {
-                throw std::runtime_error("Error: Binary tree is empty, there is nothing to remove");
-                return;
-            }
-            delete_tree(root);
-            root = nullptr;
-            current_head = root;
-        }
+		const T& show_left() const {
+			if (current_head->left)
+				return current_head->left->data;
+			throw std::runtime_error("Error: left node is empty");
+		}
 
-        ~BinaryTree() {
-            if (root != nullptr)
-                clear();
-        }
+		const T& show_right() const {
+			if (current_head->right)
+				return current_head->right->data;
+			throw std::runtime_error("Error: right node is empty");
+		}
 
-    private:
-        struct Node {
-            T data;
-            Node* left = nullptr;
-            Node* right = nullptr;
+		[[nodiscard]] std::vector<T> contents_PreOrder() const noexcept {
+			std::vector<T> temp = {};
+			return PreOrder(root, temp);
+		}
 
-            explicit Node(T data) : data(data) {}
-        };
+		[[nodiscard]] std::vector<T> contents_InOrder() const noexcept {
+			std::vector<T> temp = {};
+			return InOrder(root, temp);
+		}
 
-        Node* root;
-        Node* current_head;
+		[[nodiscard]] std::vector<T> contents_PostOrder() const noexcept {
+			std::vector<T> temp = {};
+			return PostOrder(root, temp);
+		}
 
-        std::vector<T>& PreOrder(Node* node, std::vector<T>& data) {
-            if (node != nullptr) {
-                data.push_back(node->data);
-                PreOrder(node->left, data);
-                PreOrder(node->right, data);
-            }
-            return data;
-        }
+		void remove_left() {
+			if (current_head->left)
+				delete_tree(current_head->left);
+			else
+				throw std::runtime_error("Error: Left node is uninitialised, there is nothing to remove");
+		}
 
-        std::vector<T>& InOrder(Node* node, std::vector<T>& data) {
-            if (node != nullptr) {
-                InOrder(node->left, data);
-                data.push_back(node->data);
-                InOrder(node->right, data);
-            }
-            return data;
-        }
+		void remove_right() {
+			if (current_head->right)
+				delete_tree(current_head->right);
+			else
+				throw std::runtime_error("Error: Right node is uninitialised, there is nothing to remove");
+		}
 
-        std::vector<T>& PostOrder(Node* node, std::vector<T>& data) {
-            if (node != nullptr) {
-                PostOrder(node->left, data);
-                PostOrder(node->right, data);
-                data.push_back(node->data);
-            }
-            return data;
-        }
+		void clear() noexcept {
+			delete_tree(root);
+			root = nullptr;
+			current_head = root;
+		}
 
-        int calc_max_height(Node* node) {
-            if (node == nullptr)
-                return -1;
-            int l_height = calc_max_height(node->left);
-            int r_height = calc_max_height(node->right);
-            if (l_height > r_height)
-                return l_height + 1;
-            else return r_height + 1;
-        }
+		~BinaryTree() {
+			if (root)
+				clear();
+		}
 
-        void delete_tree(Node*& node) {
-            if (node->left != nullptr)
-                delete_tree(node->left);
-            if (node->right != nullptr)
-                delete_tree(node->right);
-            delete node;
-        }
-    };
+	private:
+		struct Node {
+			T data;
+			Node* left = nullptr;
+			Node* right = nullptr;
 
-}
+			explicit Node(const T& data) noexcept : data(data) {}
 
-#endif // BINARY_TREE_H
+			explicit Node(T&& data) noexcept : data(std::move(data)) {}
+		};
+
+		Node* root;
+		Node* current_head;
+
+		std::vector<T>& PreOrder(Node* node, std::vector<T>& data) const noexcept {
+			if (node != nullptr) {
+				data.push_back(node->data);
+				PreOrder(node->left, data);
+				PreOrder(node->right, data);
+			}
+			return data;
+		}
+
+		std::vector<T>& InOrder(Node* node, std::vector<T>& data) const noexcept {
+			if (node != nullptr) {
+				InOrder(node->left, data);
+				data.push_back(node->data);
+				InOrder(node->right, data);
+			}
+			return data;
+		}
+
+		std::vector<T>& PostOrder(Node* node, std::vector<T>& data) const noexcept {
+			if (node != nullptr) {
+				PostOrder(node->left, data);
+				PostOrder(node->right, data);
+				data.push_back(node->data);
+			}
+			return data;
+		}
+
+		int calc_max_height(Node* node) const noexcept {
+			if (node == nullptr)
+				return -1;
+			int l_height = calc_max_height(node->left);
+			int r_height = calc_max_height(node->right);
+			if (l_height > r_height)
+				return l_height + 1;
+			else
+				return r_height + 1;
+		}
+
+		void delete_tree(Node*& node) noexcept {
+			if (node->left != nullptr)
+				delete_tree(node->left);
+			if (node->right != nullptr)
+				delete_tree(node->right);
+			delete node;
+		}
+	};
+
+}// namespace custom
+
+#endif// BINARY_TREE_H
