@@ -57,6 +57,8 @@ namespace custom {
 		 * Copy constructor for the Vector class. This will create a new Vector object and perform an element wise,
 		 * deep copy of another vector of the same type `T`.
 		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the other vector.
+		 * 
 		 * @param other
 		 */
 		Vector(const Vector<T>& other) noexcept: mSize(other.mSize), capacity(other.capacity) {
@@ -72,6 +74,9 @@ namespace custom {
 		 * \note
 		 * If the current object, that is being copied into, is not empty, **it will be cleared**.
 		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the other vector + the number of elements
+		 * in the existing vector.
+		 * 
 		 * @param other - the Vector to be copied.
 		 * @return - a reference to the current Vector object.
 		 */
@@ -95,6 +100,8 @@ namespace custom {
 		 *
 		 * \note
 		 * As expected of move operations, the other Vector object will be uninitialized.
+		 * 
+		 * **Time Complexity** = *O(1)*.
 		 *
 		 * @param other - an *r-value reference* to the Vector object to be moved.
 		 */
@@ -107,8 +114,11 @@ namespace custom {
 		/**
 		 * Move assignment operator will move an existing Vector object's data into this object. Both Vector objects
 		 * must be of the same type `T`. This function will check for and ignore self assignment.
+		 * 
 		 * \note
 		 * If the current object, that is being copied into, is not empty, **it will be cleared**.
+		 * 
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the existing Vector object.
 		 *
 		 * @param other - an *r-value reference* to the Vector object to be moved.
 		 * @return - a reference to the current Vector object.
@@ -133,6 +143,9 @@ namespace custom {
 		 * Adds a new element of the type `T` to the end of the array. If the array is at capacity, grow() is called.
 		 *
 		 * @param value - an element of the type `T` to be added to the end of the array.
+		 * 
+		 * **Time Complexity** = *O(1)* if no growth is necessary, otherwise *O(n)* where n is the number of elements in
+		 * the array.
 		 *
 		 * @see grow()
 		 */
@@ -147,6 +160,9 @@ namespace custom {
 		 * called.
 		 *
 		 * @param value - an *r-value reference* to move to the end of the array.
+		 * 
+		 * **Time Complexity** = *O(1)* if no growth is necessary, otherwise *O(n)* where n is the number of elements in
+		 * the array.
 		 *
 		 * @see grow()
 		 */
@@ -161,6 +177,9 @@ namespace custom {
 		 * list combined with the array size exceeds the capacity of the array, init_grow will be called. This will
 		 * grow the capacity by one and a half times the total size of the initialiser list and the array size.
 		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the initialiser list + the number elements
+		 * in the existing array (if growth is necessary).
+		 * 
 		 * @param list - the initialiser list whose elements will be appended to the array.
 		 *
 		 * @see <a href="https://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a>
@@ -180,6 +199,9 @@ namespace custom {
 		 * This will provide speed benefits by negating the need for copying or moving a potentially large object.
 		 * If the size of the array exceeds the capacity, grow() will be called.
 		 *
+		 * **Time Complexity** = *O(1)* if growth is unnecessary otherwise *O(n)* where n is the number of elements
+		 * in the existing array.
+		 * 
 		 * @tparam Ts - dummy template parameters to hold the arguments for the object constructor.
 		 * @param args - the arguments to be forwarded to the object of type `T`'s constructor.
 		 * @return - a reference to the object created.
@@ -200,6 +222,9 @@ namespace custom {
 		 * than half of the capacity, shrink() will be called to reduce the capacity of the array. If the array is
 		 * empty, a runtime exception will be thrown.
 		 *
+		 * **Time Complexity** = *O(1)* if no shrink is necessary, otherwise *O(n)* where n is the number of elements in
+		 * the array.
+		 * 
 		 * @see shrink()
 		 */
 		void pop_back() {
@@ -215,6 +240,8 @@ namespace custom {
 		 * Returns a reference to the object at the beginning of the array. If the array is empty, a runtime
 		 * exception will be thrown.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return - a reference to the object of type `T` at the beginning of the array.
 		 */
 		T& front() {
@@ -227,6 +254,8 @@ namespace custom {
 		 * Returns a const reference to the the object at the beginning of the array. This function will be relevant to
 		 * const Vector objects. If the array is empty, a runtime exception will be thrown.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return - a const reference to the object of type `T` at the beginning of the array.
 		 */
 		const T& front() const {
@@ -239,6 +268,8 @@ namespace custom {
 		 * Returns a reference to the object at the end of the array. If the array is empty, a runtime exception
 		 * will be thrown.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return - a reference to the object of type `T` at the end of the array.
 		 */
 		T& back() {
@@ -251,6 +282,8 @@ namespace custom {
 		 * Returns a const reference to the the object at the end of the array. This function will be relevant to
 		 * const Vector objects. If the array is empty, a runtime exception will be thrown.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return - a const reference to the object of type `T` at the end of the array.
 		 */
 		const T& back() const {
@@ -262,6 +295,8 @@ namespace custom {
 		/**
 		 * Returns the number of elements in the array.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return - an unsigned integer representing the number of elements in the array.
 		 */
 		[[nodiscard]] size_t size() const noexcept {
@@ -271,6 +306,8 @@ namespace custom {
 		/**
 		 * Returns a boolean value that indicates whether the Vector object's array is empty.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return  - a boolean value that indicates whether the Vector object's array is empty.
 		 */
 		[[nodiscard]] bool empty() const noexcept {
@@ -281,6 +318,8 @@ namespace custom {
 		 * Conversion operator for boolean type. Evaluates to `true` if the size of the array is not 0, otherwise
 		 * it evaluates to `false`.
 		 *
+		 * **Time Complexity** = *O(1)*.
+		 * 
 		 * @return - the boolean value of whether the size of the array is 0.
 		 */
 		explicit operator bool() const noexcept {
@@ -291,6 +330,8 @@ namespace custom {
 		 * Square brackets operator to access elements of a given index in the array.
 		 * If the index provided is out of bounds, an invalid argument exception is thrown.
 		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
+		 * 
 		 * @param index - an unsigned integer indicating the index in the array for whose data to return.
 		 *
 		 * @return - a reference, of type `T`, to the data at the element specified by index.
@@ -305,6 +346,8 @@ namespace custom {
 		 * Square brackets operator used to access elements of a given index in the array.
 		 * If the index provided is out of bounds, an invalid argument exception is thrown.
 		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
+		 *
 		 * @param index - an unsigned integer indicating the index in the array for whose data to return.
 		 *
 		 * @return - a const reference, of type `T`, to the data at the element specified by index.
@@ -317,6 +360,8 @@ namespace custom {
 
 		/**
 		 * Plus operator used to append another Vector objects of the same type `T` to the current object.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the `right` Vector object.
 		 *
 		 * @param right - a Vector object of the same type `T` to be appended to the current object.
 		 *
@@ -334,6 +379,8 @@ namespace custom {
 
 		/**
 		 * This function calls the destructor of each object in the array and then sets the size member variable to 0.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
 		 */
 		void clear() noexcept {
 			for (size_t i = 0; i < mSize; ++i)
@@ -343,6 +390,8 @@ namespace custom {
 
 		/**
 		 * Destructor for the Vector class which calls clear() and then deallocates the memory of the vector.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
 		 */
 		virtual ~Vector() {
 			clear();
@@ -350,18 +399,17 @@ namespace custom {
 		}
 
 	private:
-		/** \brief An unsigned integer representing the number of elements in the array. */
-		size_t mSize;
-		/** \brief An unsigned integer representing the number of elements for which memory is allocated. */
-		size_t capacity;
-		/** \brief A pointer of type `T` which points to the beginning of the array. */
-		T* data;
+		size_t mSize;  /**< An unsigned integer representing the number of elements in the array. */
+		size_t capacity; /**< An unsigned integer representing the number of elements for which memory is allocated. */
+		T* data;  /**< A pointer of type `T` which points to the beginning of the array. */
 
 		/**
 		 * Grows the array and copies, or moves if possible, the elements from the old array to the new array.
 		 * If the array is not initialised, memory for an array with the default capacity of 10 is allocated.
 		 * Otherwise, memory for a new array with a capacity one and a half times larger is allocated.
 		 * The old array's objects are destroyed and its memory released.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
 		 */
 		void grow() noexcept {
 			if (!data) {
@@ -387,6 +435,8 @@ namespace custom {
 		 * Function used to grow the capacity of the array after the use of an initialiser list.
 		 * Performs the same operation as grow() but with the new capacity provided.
 		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
+		 *
 		 * @param cap - the new capacity of the array.
 		 */
 		void init_grow(size_t cap) noexcept {
@@ -411,6 +461,8 @@ namespace custom {
 		/**
 		 * Shrinks the capacity of the array by copying, or moving if possible. the elements of the array into a
 		 * smaller array and then releasing the memory of the old array.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
 		 */
 		void shrink() noexcept {
 			size_t new_capacity = capacity - capacity / 2;
