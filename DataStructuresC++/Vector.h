@@ -7,8 +7,9 @@
 
 namespace custom {
 	/**
-	 * An template implementation of a dynamic array. Automatically grows and shrinks
-	 * its capacity based on the number of elements in the array.
+	 * A template implementation of a dynamic array. Automatically grows and shrinks
+	 * its capacity based on the number of elements in the array. Provides *O(1)* element retrieval and on average,
+	 * *O(1)* element addition to the end of the array. Insertion and deletion have a time complexity of *O(n)*.
 	 *
 	 * Default capacity is 10.
 	 *
@@ -24,6 +25,7 @@ namespace custom {
 		 * This method is noexcept, meaning that failure to allocate memory or
 		 * a <a href="https://en.cppreference.com/w/cpp/memory/new/bad_alloc">`std::bad_alloc`</a>
 		 * exception will terminate the program.
+		 * This constructor is explicit, meaning implicit conversion is not supported.
 		 *
 		 * @param capacity - an unsigned integer to specify the total capacity of the array at initialization.
 		 */
@@ -38,6 +40,8 @@ namespace custom {
 		 *
 		 * Sets the capacity of the array to one and a half times the number of elements in the initialiser list or
 		 * at least 10.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the initialiser list.
 		 *
 		 * @param init - the initialiser list whose contents will be added to the array
 		 *
@@ -142,10 +146,10 @@ namespace custom {
 		/**
 		 * Adds a new element of the type `T` to the end of the array. If the array is at capacity, grow() is called.
 		 *
-		 * @param value - an element of the type `T` to be added to the end of the array.
-		 * 
 		 * **Time Complexity** = *O(1)* if no growth is necessary, otherwise *O(n)* where n is the number of elements in
 		 * the array.
+		 *
+		 * @param value - an element of the type `T` to be added to the end of the array.
 		 *
 		 * @see grow()
 		 */
@@ -159,10 +163,10 @@ namespace custom {
 		 * Moves an element from an *r-value reference* to the end of the array. If the array is at capacity, grow() is
 		 * called.
 		 *
-		 * @param value - an *r-value reference* to move to the end of the array.
-		 * 
 		 * **Time Complexity** = *O(1)* if no growth is necessary, otherwise *O(n)* where n is the number of elements in
 		 * the array.
+		 *
+		 * @param value - an *r-value reference* to move to the end of the array.
 		 *
 		 * @see grow()
 		 */
@@ -177,7 +181,7 @@ namespace custom {
 		 * list combined with the array size exceeds the capacity of the array, init_grow will be called. This will
 		 * grow the capacity by one and a half times the total size of the initialiser list and the array size.
 		 *
-		 * **Time Complexity** = *O(n)* where n is the number of elements in the initialiser list + the number elements
+		 * **Time Complexity** = *O(n)* where n is the number elements in the initialiser list + the number of elements
 		 * in the existing array (if growth is necessary).
 		 * 
 		 * @param list - the initialiser list whose elements will be appended to the array.

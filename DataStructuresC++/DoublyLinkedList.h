@@ -9,30 +9,62 @@
 #include "LinkedList.h"
 
 namespace custom {
+	/**
+	 * An iterator class for forwards or backwards iterating over the elements of a DoublyLinkedList. Provides
+	 * functionality for incrementing or decrementing the iterator and allows for C++ operations such as range
+	 * based for loops and other iterator methods.
+	 * @tparam LinkedList - the DoublyLinkedList type to iterate over.
+	 */
 	template<typename LinkedList>
 	class DoublyListIterator {
 	public:
-		using ListType = typename LinkedList::Node;
-		using ValueType = typename LinkedList::ValueType;
+		using ListType = typename LinkedList::Node;  /**< An alias for the Node sub-class in the DoublyLinkedList. */
+		using ValueType = typename LinkedList::ValueType;  /**< An alias for the type of the data in the DoublyLinkedList. */
 
 	public:
-		DoublyListIterator() noexcept : mPtr(nullptr) {}
+		/**
+		 * Default DoublyLinkedList iterator constructor which sets the member pointer to `nullptr`.
+		 */
+		DoublyListIterator() noexcept: mPtr(nullptr) {}
 
-		DoublyListIterator(ListType* ptr) noexcept : mPtr(ptr) {}
+		/**
+		 * Overloaded iterator constructor which provides a pointer to a `Node` in the DoublyLinkedList.
+		 * @param ptr - pointer to a node in the LinkedList.
+		 */
+		DoublyListIterator(ListType* ptr) noexcept: mPtr(ptr) {}
 
-		DoublyListIterator(const DoublyListIterator& other) noexcept : mPtr(other.mPtr) {}
+		/**
+		 * Copy constructor for the iterator which copies the other iterator's member pointer.
+		 * @param other - an iterator to copy.
+		 */
+		DoublyListIterator(const DoublyListIterator& other) noexcept: mPtr(other.mPtr) {}
 
+		/**
+		 * Copy assignment operator which copies anther DoublyLinkedList iterator into the current object.
+		 * Checks for and ignores self-assignment.
+		 * @param other - an iterator to copy.
+		 * @return - a reference to the resultant current object.
+		 */
 		DoublyListIterator& operator=(const DoublyListIterator& other) noexcept {
 			if (this != &other)
 				mPtr = other.mPtr;
 			return *this;
 		}
 
+		/**
+		 * Move constructor for the iterator.
+		 * @param other - an iterator to move into the current object.
+		 */
 		DoublyListIterator(DoublyListIterator&& other) noexcept {
 			mPtr = other.mPtr;
 			other.mPtr = nullptr;
 		}
 
+		/**
+		 * Move assignment operator. Checks for and ignores self-assignment.
+		 * @param other - an iterator object to move into the current object.
+		 * @return - a reference to the resultant current object.
+		 */
 		DoublyListIterator& operator=(DoublyListIterator&& other) noexcept {
 			if (this != &other) {
 				mPtr = other.mPtr;
@@ -41,6 +73,11 @@ namespace custom {
 			return *this;
 		}
 
+		/**
+		 * Prefix-increment operator which increments the iterator to the next position. This will throw an
+		 * `out_of_range` exception if an invalid iterator, one whose member pointer is nullptr, is incremented.
+		 * @return - a reference to the current object after incrementing.
+		 */
 		DoublyListIterator& operator++() {
 #ifdef DEBUG
 			if (mPtr) {
@@ -53,7 +90,13 @@ namespace custom {
 #endif
 		}
 
-		DoublyListIterator operator++(int) {
+		/**
+		 * Postfix-increment operator which increments the iterator to the next position, but returns a copy of the
+		 * iterator at its previous position. This will throw an `out_of_range` exception if an invalid iterator, one
+		 * whose member pointer is nullptr, is incremented.
+		 * @return - a copy DoublyListIterator object at the position before incrementing.
+		 */
+		const DoublyListIterator operator++(int) {
 #ifdef DEBUG
 			if (mPtr) {
 #endif
@@ -66,6 +109,11 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Prefix-decrement operator which decrements the iterator to the next position. This will throw an
+		 * `out_of_range` exception if an invalid iterator, one whose member pointer is nullptr, is decremented into.
+		 * @return - a reference to the current object after decrementing.
+		 */
 		DoublyListIterator& operator--() {
 #ifdef DEBUG
 			if (mPtr) {
@@ -78,7 +126,13 @@ namespace custom {
 #endif
 		}
 
-		DoublyListIterator operator--(int) {
+		/**
+		 * Postfix-decrement operator which decrements the iterator to the previous position, but returns a copy of the
+		 * iterator at its next position. This will throw an `out_of_range` exception if an invalid iterator, one
+		 * whose member pointer is nullptr, is decremented.
+		 * @return - a copy DoublyListIterator object at the position before decrementing.
+		 */
+		const DoublyListIterator operator--(int) {
 #ifdef DEBUG
 			if (mPtr) {
 #endif
@@ -91,11 +145,18 @@ namespace custom {
 #endif
 		}
 
-		DoublyListIterator& advance(const size_t& distance) {
+		/**
+		 * Advances the iterator by a given value, which could be negative to advance backwards. If the value is out of
+		 * the range of the iterator, an `invalid_argument` exception is thrown.
+		 *
+		 * @param distance - an unsigned integer to represent the number of positions to advance.
+		 * @return - a reference to the current object.
+		 */
+		DoublyListIterator& advance(const int& distance) {
 #ifdef DEBUG
 			if (mPtr) {
 #endif
-				size_t moved = 0;
+				int moved = 0;
 				if (distance > 0) {
 					while (mPtr && moved < distance) {
 						++*this;
@@ -118,6 +179,11 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Advances the iterator to the next position. If the current position is not valid, i.e. the iterator points
+		 * to nullptr, an `out_of_range` exception is thrown.
+		 * @return - a copy of the incremented object.
+		 */
 		DoublyListIterator next() const {
 #ifdef DEBUG
 			if (mPtr)
@@ -128,6 +194,11 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Advances the iterator to the previous position. If the current position is not valid, i.e. the iterator points
+		 * to nullptr, an `out_of_range` exception is thrown.
+		 * @return - a copy of the decremented object.
+		 */
 		DoublyListIterator prev() const {
 #ifdef DEBUG
 			if (mPtr)
@@ -138,6 +209,12 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Plus operator which advances the iterator by the distance specified. If the distance goes out of the
+		 * range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a copy of the advanced object.
+		 */
 		DoublyListIterator operator+(const size_t& amount) {
 			DoublyListIterator result(*this);
 #ifdef DEBUG
@@ -157,6 +234,12 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Plus-equals operator which advances the current object by the distance specified. If the distance goes
+		 * out of the range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a reference to the advanced object.
+		 */
 		DoublyListIterator& operator+=(const size_t& amount) {
 #ifdef DEBUG
 			size_t moved = 0;
@@ -175,14 +258,78 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Minus operator which advances the iterator backwards by the distance specified. If the distance goes out
+		 * of the range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a copy of the advanced object.
+		 */
+		DoublyListIterator operator-(const size_t& amount) {
+			DoublyListIterator result(*this);
+#ifdef DEBUG
+			size_t moved = 0;
+			while (mPtr && moved < amount) {
+				result.mPtr = result.mPtr->last;
+				++moved;
+			}
+			if (moved == amount)
+				return result;
+			throw std::out_of_range("Cannot increment list iterator before beginning of list");
+#endif
+#ifdef RELEASE
+			for (size_t i = 0; i < amount; ++i)
+				result.mPtr = result.mPtr->last;
+			return result;
+#endif
+		}
+
+		/**
+		 * Minus-equals operator which advances the current object backwards by the distance specified. If the
+		 * distance goes out of the range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a reference to the advanced object.
+		 */
+		DoublyListIterator& operator-=(const size_t& amount) {
+#ifdef DEBUG
+			size_t moved = 0;
+			while (mPtr && moved < amount) {
+				mPtr = mPtr->last;
+				++moved;
+			}
+			if (moved == amount)
+				return *this;
+			throw std::out_of_range("Cannot increment list iterator past end of list");
+#endif
+#ifdef RELEASE
+			for (size_t i = 0; i < amount; ++i)
+				mPtr = mPtr->last;
+			return *this;
+#endif
+		}
+
+		/**
+		 * Equivalence operator which compares two DoublyLinkedList iterators to see if they are at the same position.
+		 * @param other - another DoublyLinkedList iterator to compare.
+		 * @return - a boolean indicating if the two iterators are at the same position.
+		 */
 		bool operator==(const DoublyListIterator& other) const noexcept {
 			return mPtr == other.mPtr;
 		}
 
+		/**
+		 * Not-equivalence operator which compares two DoublyLinkedList iterators to see if they are not at the same position.
+		 * @param other - another DoublyLinkedList iterator to compare.
+		 * @return - a boolean indicating if the two iterators are not at the same position.
+		 */
 		bool operator!=(const DoublyListIterator& other) const noexcept {
 			return mPtr != other.mPtr;
 		}
 
+		/**
+		 * De-reference operator which returns the data at the current iterator position. If the iterator points
+		 * to an invalid position, a `runtime_error` exception is thrown.
+		 * @return - A reference to the data at the current iterator position.
+		 */
 		ValueType& operator*() const {
 #ifdef DEBUG
 			if (mPtr)
@@ -193,6 +340,10 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Returns the length of the DoublyLinkedList object being iterated over.
+		 * @return - an unsigned integer representing the length of the DoublyLinkedList object.
+		 */
 		size_t _size() const noexcept {
 			return LinkedList::mLength;
 		}
@@ -200,37 +351,81 @@ namespace custom {
 		virtual ~DoublyListIterator() = default;
 
 	private:
-		ListType* mPtr;
+		ListType* mPtr;  /**< A pointer of type DoublyLinkedList::Node which points to the current position in the DoublyLinkedList. */
 	};
 
+	/**
+	 * A template implementation of a doubly linked list where nodes of data are stored in non-contiguous memory and
+	 * each node has a member data and a pointer to the next and previous nodes. The first and last nodes in the list
+	 * are tracked using the head and tail member variables. This data structure offers *O(1)* element insertion,
+	 * deletion, and element retrieval from the beginning or end of the list. The time complexity of retrieving
+	 * any other element is *O(n)*. The performance benefits over singly linked lists include more efficient insertion
+	 * and removal of elements as depending on their index, you can iterate from the beginning or end of the list.
+	 *
+	 * \note
+	 * Methods where exceptions are not to be thrown are all explicitly marked noexcept, therefore extreme exceptions
+	 * such as <a href="https://en.cppreference.com/w/cpp/memory/new/bad_alloc">`std::bad_alloc`</a> will terminate
+	 * the program. Otherwise, exceptions are used when the class is used incorrectly so as to allow for the program
+	 * to continue running.
+	 *
+	 * @tparam T - the type of the data to be stored in each node.
+	 * @see <a href="https://en.wikipedia.org/wiki/Linked_list#Doubly_linked_list">Doubly linked list</a>
+	 */
 	template<typename T>
 	class DoublyLinkedList {
 	public:
-		using ValueType = T;
-		using Iterator = DoublyListIterator<DoublyLinkedList>;
+		using ValueType = T;  /**< An alias for the type of data `T` to be used by external utility classes. */
+		using Iterator = DoublyListIterator<DoublyLinkedList>;  /**< An alias for the DoublyLinkedList iterator class. */
 
-		friend class DoublyListIterator<DoublyLinkedList>;
+		friend class DoublyListIterator<DoublyLinkedList>;  /**< Friend DoublyLinkedList iterator class, allowing it to access private members. */
 
 
 	public:
-		DoublyLinkedList() noexcept : head(nullptr), tail(nullptr), mLength(0) {}
+		/**
+		 * Default DoublyLinkedList constructor which initialises the head and tail pointer members to nullptr and
+		 * the length to 0.
+		 */
+		DoublyLinkedList() noexcept: head(nullptr), tail(nullptr), mLength(0) {}
 
-		explicit DoublyLinkedList(const T& data) noexcept : mLength(1) {
+		/**
+		 * Overloaded DoublyLinkedList constructor which allocates memory for one element node and copies the data provided.
+		 * This constructor is explicit, meaning implicit conversion is not supported.
+		 * @param data - data of type `T` to be copied into the head node of the DoublyLinkedList.
+		 */
+		explicit DoublyLinkedList(const T& data) noexcept: mLength(1) {
 			head = new Node(data);
 			tail = head;
 		}
 
-		explicit DoublyLinkedList(T&& data) noexcept : mLength(1) {
+		/**
+		 * Overloaded DoublyLinkedList constructor which allocates memory for one element node and moves the data provided.
+		 * This constructor is explicit, meaning implicit conversion is not supported.
+		 * @param data - an *r-value reference* to data of type `T`, to be moved into the head node of the DoublyLinkedList.
+		 */
+		explicit DoublyLinkedList(T&& data) noexcept: mLength(1) {
 			head = new Node(std::move(data));
 			tail = head;
 		}
 
-		DoublyLinkedList(std::initializer_list<T> init) noexcept : mLength(0) {
+		/**
+		 * Overloaded DoublyLinkedList constructor which takes an argument of an initialiser list of type `T` and appends
+		 * its arguments to the list.
+		 * **Time Complexity** = *O(n)* where n is the number elements in the initialiser list.
+		 * @param init - an initialiser list of type `T` whose contents will be added to the list.
+		 * @see <a href="https://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a>
+		 */
+		DoublyLinkedList(std::initializer_list<T> init) noexcept: mLength(0) {
 			for (auto it = init.begin(); it != init.end(); ++it)
 				append(std::move(*it));
 		}
 
-		DoublyLinkedList(const DoublyLinkedList<T>& other) noexcept : mLength(other.mLength) {
+		/**
+		 * Copy constructor for a DoublyLinkedList which will perform a deep copy, element-wise, of another DoublyLinkedList
+		 * object of the same type `T`.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the other list.
+		 * @param other - another DoublyLinkedList object of the same type `T` to be copied.
+		 */
+		DoublyLinkedList(const DoublyLinkedList<T>& other) noexcept: mLength(other.mLength) {
 			if (other.mLength) {
 				head = new Node(other.head->data);
 				tail = head;
@@ -249,6 +444,16 @@ namespace custom {
 			mLength = 0;
 		}
 
+		/**
+		 * Copy assignment operator for the DoublyLinkedList which will copy another DoublyLinkedList object of the same type
+		 * `T` into the current object.
+		 * \note
+		 * If the current object, that is being copied into, is not empty, **it will be cleared**.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the other list + the number of elements
+		 * in the current list.
+		 * @param other - another DoublyLinkedList object of the same type `T` to be copied.
+		 * @return - a reference to the current object.
+		 */
 		DoublyLinkedList<T>& operator=(const DoublyLinkedList<T>& other) noexcept {
 			if (this != &other) {
 				if (mLength)
@@ -274,13 +479,28 @@ namespace custom {
 			return *this;
 		}
 
-		DoublyLinkedList(DoublyLinkedList<T>&& other) noexcept : head(other.head), tail(other.tail),
-		                                                         mLength(other.mLength) {
+		/**
+		 * Move constructor for a DoublyLinkedList which will take the data from another DoublyLinkedList object of the same type
+		 * `T` and set the other object to its default state of not have any data.
+		 * **Time Complexity** = *O(1)*.
+		 * @param other - an *r-value reference* to a DoublyLinkedList object of type `T` to be moved.
+		 */
+		DoublyLinkedList(DoublyLinkedList<T>&& other) noexcept: head(other.head), tail(other.tail),
+		                                                        mLength(other.mLength) {
 			other.head = nullptr;
 			other.tail = nullptr;
 			other.mLength = 0;
 		}
 
+		/**
+		 * Move assignment operator for the DoublyLinkedList which will move another DoublyLinkedList object of type `T` into
+		 * the current object.
+		 * \note
+		 * If the current object, that is being copied into, is not empty, **it will be cleared**.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current list object.
+		 * @param other - an *r-value reference* to a DoublyLinkedList object of type `T` to be moved.
+		 * @return - a reference to the current object.
+		 */
 		DoublyLinkedList<T>& operator=(DoublyLinkedList<T>&& other) noexcept {
 			if (this != &other) {
 				if (mLength)
@@ -295,6 +515,12 @@ namespace custom {
 			return *this;
 		}
 
+		/**
+		 * Allocates memory for a new element node with the data provided and adds the element to the end of the list.
+		 * If the list is empty, it initialises the head of the list with the data provided.
+		 * **Time Complexity** = *O(1)*.
+		 * @param data - the data to be copied into the end of the list.
+		 */
 		void append(const T& data) noexcept {
 			Node* new_node = new Node(data);
 			if (mLength) {
@@ -309,6 +535,12 @@ namespace custom {
 			tail = head;
 		}
 
+		/**
+		 * Allocates memory for a new element node with the data provided and adds the element to the end of the list.
+		 * If the list is empty, it initialises the head of the list with the data provided.
+		 * **Time Complexity** = *O(1)*.
+		 * @param data - an *r-value reference* to the data to be moved into the end of the list.
+		 */
 		void append(T&& data) noexcept {
 			Node* new_node = new Node(std::move(data));
 			if (mLength) {
@@ -323,19 +555,45 @@ namespace custom {
 			tail = head;
 		}
 
+		/**
+		 * Adds elements from an initialiser list, in order, to the end of the list.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the initialiser list.
+		 * @param list - the initialiser list whose elements will be appended to the list.
+		 * @see <a href="https://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a>
+		 */
 		void append(std::initializer_list<T> list) noexcept {
 			for (auto it = list.begin(); it != list.end(); ++it)
 				append(std::move(*it));
 		}
 
+		/**
+		 * An alias method for append(), appends a node with the data provided to the end of the list.
+		 * **Time Complexity** = *O(1)*.
+		 * @param data - the data to be copied into the end of the list.
+		 */
 		void push_back(const T& data) noexcept {
 			append(data);
 		}
 
+		/**
+		 * An alias method for append(), appends a node with the data provided to the end of the list.
+		 * **Time Complexity** = *O(1)*.
+		 * @param data - an *r-value reference* to the data to be moved into the end of the list.
+		 */
 		void push_back(T&& data) noexcept {
 			append(std::move(data));
 		}
 
+		/**
+		 * Allocates memory for and inserts an element node with the data provided at a given index of the list.
+		 * Starts iterating from the head or tail of the list depending on the index provided, allowing for greater
+		 * efficiency than a singly linked list.
+		 * If the index is out of the range of the list, an `invalid_argument` exception is thrown.
+		 * If the list is uninitialized, an `invalid_argument` exception is thrown.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param data - the data of type `T` to be copied into a new node at the given index of the list.
+		 * @param index - an unsigned integer to represent the index of the list to insert into.
+		 */
 		void insert(const T& data, const size_t& index) {
 #ifdef DEBUG
 			if (mLength && index <= mLength) {
@@ -343,7 +601,7 @@ namespace custom {
 				Node* new_node = new Node(data);
 				++mLength;
 				if (index != 0 && index < mLength) {
-					if (index < mLength / 2) {
+					if (index < mLength / 2) {  // Index is closer to the head of the list
 						size_t _index = 1;
 						Node* cur_node = head;
 						Node* last_node;
@@ -359,7 +617,7 @@ namespace custom {
 							}
 							++_index;
 						}
-					} else {
+					} else { // Index is closer to the tail of the list
 						size_t _index = mLength - 1;
 						Node* cur_node = tail;
 						Node* next_node;
@@ -377,13 +635,13 @@ namespace custom {
 						}
 					}
 				}
-				if (index == 0) {
+				if (index == 0) {  // Insertion at the beginning
 					new_node->next = head;
 					head->last = new_node;
 					head = new_node;
 					return;
 				}
-				if (index == mLength) {
+				if (index == mLength) {  // Insertion at the end
 					tail->next = new_node;
 					new_node->last = tail;
 					tail = new_node;
@@ -397,6 +655,16 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Allocates memory for and inserts an element node with the data provided at a given index of the list.
+		 * Starts iterating from the head or tail of the list depending on the index provided, allowing for greater
+		 * efficiency than a singly linked list.
+		 * If the index is out of the range of the list, an `invalid_argument` exception is thrown.
+		 * If the list is uninitialized, an `invalid_argument` exception is thrown.
+		 * **Time Complexity** = *O(n)*, more specifically *O(n/2)*, where n is the number of elements in the list.
+		 * @param data - an *r-value reference* to the data to be moved into a new node at the given index of the list.
+		 * @param index - an unsigned integer to represent the index of the list to insert into.
+		 */
 		void insert(T&& data, const size_t& index) {
 #ifdef DEBUG
 			if (mLength && index <= mLength) {
@@ -458,14 +726,32 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Allocates memory for and inserts an element to the beginning of the list, by calling insert() with the
+		 * data forwarded and the index of 0.
+		 * **Time Complexity** = *O(1)*.
+		 * @param data - the data to be copied into a new node at the beginning of the list.
+		 */
 		void push_front(const T& data) {
 			insert(data, 0);
 		}
 
+		/**
+		 * Allocates memory for and inserts an element to the beginning of the list, by calling insert() with the
+		 * data forwarded and the index of 0.
+		 * **Time Complexity** = *O(1)*.
+		 * @param data - an *r-value reference* to the data to be moved into a new node at the beginning of the list.
+		 */
 		void push_front(T&& data) {
 			insert(std::move(data), 0);
 		}
 
+		/**
+		 * Adds the contents of the list, in order, into a `std::vector` of type `T` and returns it.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @return - a `std::vector` of type `T` containing the contents of the list.
+		 * @see <a href="https://en.cppreference.com/w/cpp/container/vector">std::vector</a>
+		 */
 		std::vector<T> contents() const noexcept {
 			std::vector<T> elems(mLength);
 			Node* cur_node = head;
@@ -476,6 +762,15 @@ namespace custom {
 			return elems;
 		}
 
+		/**
+		 * Finds the index of the node with the data provided. If multiple nodes exist with the same data, the index
+		 * of only the first node is returned. If a node with the data provided is not found, a value of **-1**
+		 * is returned. If the list is uninitialized, i.e. the head member pointer is nullptr, a `runtime_error`
+		 * exception is thrown.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param data - the data to be searched for in the list.
+		 * @return - an integer value representing the index of the node with the data.
+		 */
 		[[nodiscard]] int find(const T& data) const noexcept {
 			int index = 0;
 			Node* cur_node = head;
@@ -488,6 +783,14 @@ namespace custom {
 			return -1;
 		}
 
+		/**
+		 * Calls `std::cout` on each element in the list, to print the data of the list, in order, onto the console.
+		 * If the list is uninitialized, i.e. the head member pointer is nullptr, a `runtime_error` exception is thrown.
+		 * \note
+		 * The type `T` must be compatible with `std::cout`.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @see <a href="https://en.cppreference.com/w/cpp/io/cout">std::cout</a>
+		 */
 		void display() const {
 #ifdef DEBUG
 			if (mLength) {
@@ -502,18 +805,42 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Provides a value for the number of elements in the list.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - an unsigned integer representing the number of elements in the list.
+		 */
 		[[nodiscard]] size_t length() const noexcept {
 			return mLength;
 		}
 
+		/**
+		 * Provides a boolean value that indicates whether the list contains any elements.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a boolean value that indicates whether the list is empty or not.
+		 */
 		[[nodiscard]] bool empty() const noexcept {
 			return mLength == 0;
 		}
 
+		/**
+		 * Conversion operator for boolean type. Evaluates to `true` if the size of the list is not 0, otherwise
+		 * it evaluates to `false`.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - the boolean value of whether the size of the list is 0.
+		 */
 		explicit operator bool() const noexcept {
 			return (bool)mLength;
 		}
 
+		/**
+		 * Equivalence operator which compares two DoublyLinkedList objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain the same data.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current list + the number of elements
+		 * in the other list.
+		 * @param other - a DoublyLinkedList object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two lists contain the same data.
+		 */
 		[[nodiscard]] bool operator==(const DoublyLinkedList<T>& other) const noexcept {
 			if (mLength != other.mLength)
 				return false;
@@ -528,6 +855,14 @@ namespace custom {
 			return true;
 		}
 
+		/**
+		 * Removes the element at the specified index from the list. Starts iterating from the head or tail of the
+		 * list depending on the index provided, allowing for greater efficiency than a singly linked list. If the
+		 * index is out of the range of the list, an `invalid_argument` exception is thrown. If the list is empty,
+		 * a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param index - an unsigned integer specifying the index of the element to be removed.
+		 */
 		void erase(const size_t& index) {
 #ifdef DEBUG
 			if (mLength && index < mLength) {
@@ -583,6 +918,11 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Erases all elements from the list and deallocates its memory. Sets the head member pointer to nullptr and
+		 * the length to 0.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 */
 		void clear() noexcept {
 			Node* cur_node = head;
 			while (cur_node) {
@@ -595,6 +935,14 @@ namespace custom {
 			mLength = 0;
 		}
 
+		/**
+		 * Retrieves the data of the element at the specified index. If the index is out of the range of the list,
+		 * an `invalid_argument` exception is thrown. Starts iterating from the head or tail of the
+		 * list depending on the index provided, allowing for greater efficiency than a singly linked list.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param index - an unsigned integer specifying the index of the element whose data to retrieve.
+		 * @return - a reference to the data of the element at the specified index.
+		 */
 		[[nodiscard]] T& get(const size_t& index) {
 #ifdef DEBUG
 			if (index < mLength) {
@@ -628,6 +976,14 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Retrieves the data of the element at the specified index. If the index is out of the range of the list,
+		 * an `invalid_argument` exception is thrown. Starts iterating from the head or tail of the
+		 * list depending on the index provided, allowing for greater efficiency than a singly linked list.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param index - an unsigned integer specifying the index of the element whose data to retrieve.
+		 * @return - a const reference to the data of the element at the specified index.
+		 */
 		[[nodiscard]] const T& get(const size_t& index) const {
 #ifdef DEBUG
 			if (index < mLength) {
@@ -661,6 +1017,12 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Retrieves the data of the element at the beginning of the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a reference of the data of the element at the beginning of the list.
+		 */
 		T& front() {
 #ifdef DEBUG
 			if (mLength)
@@ -669,6 +1031,12 @@ namespace custom {
 			throw std::runtime_error("List is empty, there is nothing at front");
 		}
 
+		/**
+		 * Retrieves the data of the element at the beginning of the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a const reference of the data of the element at the beginning of the list.
+		 */
 		const T& front() const {
 #ifdef DEBUG
 			if (mLength)
@@ -677,6 +1045,12 @@ namespace custom {
 			throw std::runtime_error("List is empty, there is nothing at front");
 		}
 
+		/**
+		 * Retrieves the data of the element at the end of the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a reference of the data of the element at the end of the list.
+		 */
 		T& back() {
 #ifdef DEBUG
 			if (mLength)
@@ -685,6 +1059,12 @@ namespace custom {
 			throw std::runtime_error("List is empty, there is nothing at back");
 		}
 
+		/**
+		 * Retrieves the data of the element at the end of the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a const reference of the data of the element at the end of the list.
+		 */
 		const T& back() const {
 #ifdef DEBUG
 			if (mLength)
@@ -693,6 +1073,11 @@ namespace custom {
 			throw std::runtime_error("List is empty, there is nothing at back");
 		}
 
+		/**
+		 * Removes the element at the beginning of the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(1)*.
+		 */
 		void pop_front() {
 #ifdef DEBUG
 			if (mLength) {
@@ -709,6 +1094,11 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Removes the element at the end of the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(1)*.
+		 */
 		void pop_back() {
 #ifdef DEBUG
 			if (mLength) {
@@ -725,6 +1115,11 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Reverses the order of the elements in the list. If the list is uninitialized, i.e. the head
+		 * member pointer is `nullptr`, a `runtime_error` exception is thrown.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 */
 		void reverse_order() {
 #ifdef DEBUG
 			if (mLength) {
@@ -748,6 +1143,15 @@ namespace custom {
 #endif
 		}
 
+		/**
+		 * Square brackets operator which retrieves the data for the element at a specified index using get().
+		 * Starts iterating from the head or tail of the list depending on the index provided, allowing for greater
+		 * efficiency than a singly linked list. If the index provided is out of the range of the list, an
+		 * `invalid_argument` exception is thrown.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param index - an unsigned integer specifying the index of the element whose data to retrieve.
+		 * @return - a reference to the data of the element at the specified index.
+		 */
 		[[nodiscard]] T& operator[](const size_t& index) {
 #ifdef DEBUG
 			if (index < mLength)
@@ -756,6 +1160,15 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
+		/**
+		 * Square brackets operator which retrieves the data for the element at a specified index using get().
+		 * Starts iterating from the head or tail of the list depending on the index provided, allowing for greater
+		 * efficiency than a singly linked list. If the index provided is out of the range of the list, an
+		 * `invalid_argument` exception is thrown.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 * @param index - an unsigned integer specifying the index of the element whose data to retrieve.
+		 * @return - a const reference to the data of the element at the specified index.
+		 */
 		[[nodiscard]] const T& operator[](const size_t index) const {
 #ifdef DEBUG
 			if (index < mLength)
@@ -764,6 +1177,12 @@ namespace custom {
 			throw std::invalid_argument("Invalid index, out of range");
 		}
 
+		/**
+		 * Plus operator which appends another DoublyLinkedList object of type `T` to the current list.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the other list.
+		 * @param right - s DoublyLinkedList object of type `T` to append to the current list.
+		 * @return - a copy of the current list object.
+		 */
 		[[nodiscard]] DoublyLinkedList<T> operator+(DoublyLinkedList<T>& right) const noexcept {
 			if (right.mLength) {
 				std::vector<T> right_data = right.contents();
@@ -775,6 +1194,12 @@ namespace custom {
 			return *this;
 		}
 
+		/**
+		 * Plus operator which appends a inkedList object of type `T` to the current list.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the other list.
+		 * @param right - s LinkedList object of type `T` to append to the current list.
+		 * @return - a copy of the current list object.
+		 */
 		[[nodiscard]] DoublyLinkedList<T> operator+(LinkedList<T>& right) const noexcept {
 			if (right.mLength) {
 				std::vector<T> right_data = right.contents();
@@ -786,33 +1211,58 @@ namespace custom {
 			return *this;
 		}
 
+		/**
+		 * Creates and returns an iterator with the position of the beginning of the list.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a ListIterator object with the position of the beginning of the list.
+		 */
 		Iterator begin() const noexcept {
 			return Iterator(head);
 		}
 
+		/**
+		 * Creates and returns an iterator with the position of the end of the list.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a ListIterator object with the position of the end of the list.
+		 */
 		Iterator end() const noexcept {
 			return Iterator(nullptr);
 		}
 
+		/**
+		 * LinkedList destructor which clears the list and releases any memory allocated for each element.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the list.
+		 */
 		virtual ~DoublyLinkedList() {
 			if (mLength)
 				clear();
 		}
 
 	private:
+		/**
+		 * A node structure to contain the data at each element and a pointer to the next and previous nodes in the list.
+		 */
 		struct Node {
-			T data;
-			Node* next = nullptr;
-			Node* last = nullptr;
+			T data;  /**< The data of type `T` of each element node. */
+			Node* next = nullptr;  /**< A pointer to the next node object in the list. */
+			Node* last = nullptr;  /**< A pointer to the previous node object in the list. */
 
-			explicit Node(const T& data) noexcept : data(data) {}
+			/**
+			 * Constructor which copies the data provided into the node object.
+			 * @param data - data of type `T` to copy into the node object.
+			 */
+			explicit Node(const T& data) noexcept: data(data) {}
 
-			explicit Node(T&& data) noexcept : data(std::move(data)) {}
+			/**
+			 * Constructor which moves the data provided into the node object.
+			 * @param data - an *r-value reference* to data of type `T` to move into the node object.
+			 */
+			explicit Node(T&& data) noexcept: data(std::move(data)) {}
 		};
 
-		Node* head;
-		Node* tail;
-		size_t mLength;
+		Node* head;  /**< A pointer to the first node element of the list. */
+		Node* tail;  /**< A pointer to the last node element of the list.  */
+		size_t mLength;  /**< An unsigned integer specifying the number of elements in the list. */
 	};
 }// namespace custom
 
