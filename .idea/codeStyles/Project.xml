@@ -1,0 +1,24 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <Objective-C>
+      <option name="KEEP_STRUCTURES_IN_ONE_LINE" value="true" />
+      <option name="SPACE_BEFORE_INIT_LIST" value="true" />
+      <option name="SPACE_BEFORE_POINTER_IN_DECLARATION" value="false" />
+      <option name="SPACE_AFTER_POINTER_IN_DECLARATION" value="true" />
+      <option name="SPACE_BEFORE_REFERENCE_IN_DECLARATION" value="false" />
+      <option name="SPACE_AFTER_REFERENCE_IN_DECLARATION" value="true" />
+      <option name="DISCHARGED_SHORT_TERNARY_OPERATOR" value="true" />
+    </Objective-C>
+    <clangFormatSettings>
+      <option name="ENABLED" value="true" />
+    </clangFormatSettings>
+    <codeStyleSettings language="ObjectiveC">
+      <option name="SPACE_AROUND_LAMBDA_ARROW" value="false" />
+      <option name="SPACE_AFTER_TYPE_CAST" value="false" />
+      <indentOptions>
+        <option name="USE_TAB_CHARACTER" value="true" />
+        <option name="SMART_TABS" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
+  </code_scheme>
+</component>

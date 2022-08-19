@@ -234,6 +234,14 @@ namespace custom {
 		}
 
 		/**
+		 * Member access operator allows access to a LinkedList member function directly from the iterator.
+		 * @return - a pointer to the current position of the iterator.
+		 */
+		ListType* operator->() const noexcept {
+			return mPtr;
+		}
+
+		/**
 		 * Returns the length of the LinkedList object being iterated over.
 		 * @return - an unsigned integer representing the length of the LinkedList object.
 		 */
@@ -509,7 +517,7 @@ namespace custom {
 			}
 			if (index > mLength)
 				throw std::invalid_argument("Invalid index, out of range");
-			throw std::invalid_argument("Linked list is empty and uninitialised, use append instead");
+			throw std::runtime_error("Linked list is empty and uninitialised, use append instead");
 #endif
 		}
 
@@ -552,9 +560,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			if (index > mLength)
+			if (mLength && index > mLength)
 				throw std::invalid_argument("Invalid index, out of range");
-			throw std::invalid_argument("Linked list is empty and uninitialised, use append instead");
+			throw std::runtime_error("Linked list is empty and uninitialised, use append instead");
 #endif
 		}
 
@@ -564,8 +572,11 @@ namespace custom {
 		 * **Time Complexity** = *O(1)*.
 		 * @param data - the data to be copied into a new node at the beginning of the list.
 		 */
-		void push_front(const T& data) {
-			insert(data, 0);
+		void push_front(const T& data) noexcept {
+			Node* new_node = new Node(data);
+			++mLength;
+			new_node->next = head;
+			head = new_node;
 		}
 
 		/**
@@ -574,8 +585,11 @@ namespace custom {
 		 * **Time Complexity** = *O(1)*.
 		 * @param data - an *r-value reference* to the data to be moved into a new node at the beginning of the list.
 		 */
-		void push_front(T&& data) {
-			insert(std::move(data), 0);
+		void push_front(T&& data) noexcept {
+			Node* new_node = new Node(std::move(data));
+			++mLength;
+			new_node->next = head;
+			head = new_node;
 		}
 
 		/**
@@ -729,7 +743,7 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			if (index >= mLength)
+			if (mLength && index >= mLength)
 				throw std::invalid_argument("Invalid index, out of range");
 			throw std::runtime_error("Error: Linked list is empty, there is nothing to erase");
 #endif
@@ -775,7 +789,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			throw std::invalid_argument("Invalid index, out of range");
+			if (mLength && index >= mLength)
+				throw std::invalid_argument("Invalid index, out of range");
+			throw std::runtime_error("Error: Linked list is empty, there is nothing to get");
 #endif
 		}
 
@@ -802,7 +818,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			throw std::invalid_argument("Invalid index, out of range");
+			if (mLength && index >= mLength)
+				throw std::invalid_argument("Invalid index, out of range");
+			throw std::runtime_error("Error: Linked list is empty, there is nothing to get");
 #endif
 		}
 
@@ -931,11 +949,7 @@ namespace custom {
 		 * @return - a reference to the data of the element at the specified index.
 		 */
 		[[nodiscard]] T& operator[](const size_t& index) {
-#ifdef DEBUG
-			if (index < mLength)
-#endif
-				return get(index);
-			throw std::invalid_argument("Invalid index, out of range");
+			return get(index);
 		}
 
 		/**
@@ -946,11 +960,7 @@ namespace custom {
 		 * @return - a const reference to the data of the element at the specified index.
 		 */
 		[[nodiscard]] const T& operator[](const size_t index) const {
-#ifdef DEBUG
-			if (index < mLength)
-#endif
-				return get(index);
-			throw std::invalid_argument("Invalid index, out of range");
+			return get(index);
 		}
 
 		/**
