@@ -50,8 +50,8 @@ TEST (DoublyLinkedListTest /*test suite name*/, Methods /*test name*/) {
 	custom::DoublyLinkedList<int> list = {1,2,3,4,5,6,7};
 	ASSERT_EQ (list[0], 1);
 	ASSERT_EQ (list[6], 7);
-	ASSERT_THROW (list[-1], std::invalid_argument);
-	ASSERT_THROW (list[10], std::invalid_argument);
+	ASSERT_THROW (static_cast<void>(list[-1]), std::invalid_argument);
+	ASSERT_THROW (static_cast<void>(list[10]), std::invalid_argument);
 
 	ASSERT_EQ (list.front(), 1);
 	ASSERT_EQ (list.back(), 7);

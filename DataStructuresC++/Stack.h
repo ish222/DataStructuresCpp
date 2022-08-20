@@ -276,6 +276,18 @@ namespace custom {
 		}
 
 		/**
+		 * Not-equivalence operator which compares two Stack objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain different data.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current stack + the number of elements
+		 * in the other stack.
+		 * @param other - a Stack object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two stacks contain different data.
+		 */
+		[[nodiscard]] bool operator!=(const Stack<T>& other) const noexcept {
+			return !(*this == other);
+		}
+
+		/**
 		 * Iterates through the stack and checks whether an element with the data specified exists. If the stack is
 		 * uninitialized, i.e. the head member pointer is `nullptr`, a `runtime_error` exception is thrown.
 		 * **Time Complexity** = *O(n)* where n is the number of elements in the stack.

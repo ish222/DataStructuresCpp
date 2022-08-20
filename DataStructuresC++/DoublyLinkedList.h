@@ -863,6 +863,18 @@ namespace custom {
 		}
 
 		/**
+		 * Not-equivalence operator which compares two DoublyLinkedList objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain different data.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current list + the number of elements
+		 * in the other list.
+		 * @param other - a DoublyLinkedList object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two lists contain different data.
+		 */
+		[[nodiscard]] bool operator!=(const DoublyLinkedList<T>& other) const noexcept {
+			return !(*this == other);
+		}
+
+		/**
 		 * Removes the element at the specified index from the list. Starts iterating from the head or tail of the
 		 * list depending on the index provided, allowing for greater efficiency than a singly linked list. If the
 		 * index is out of the range of the list, an `invalid_argument` exception is thrown. If the list is empty,

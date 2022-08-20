@@ -289,6 +289,18 @@ namespace custom {
 		}
 
 		/**
+		 * Not-equivalence operator which compares two Queue objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain different data.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current queue + the number of elements
+		 * in the other queue.
+		 * @param other - a Queue object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two queues contain different data.
+		 */
+		[[nodiscard]] bool operator!=(const Queue<T>& other) const noexcept {
+			return !(*this == other);
+		}
+
+		/**
 		 * Iterates through the queue and checks whether an element with the data specified exists. If the queue is
 		 * uninitialized, i.e. the head member pointer is `nullptr`, a `runtime_error` exception is thrown.
 		 * **Time Complexity** = *O(n)* where n is the number of elements in the queue.

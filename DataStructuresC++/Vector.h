@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <initializer_list>
+#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -91,6 +92,8 @@ namespace custom {
 					clear();
 					::operator delete(data, capacity * sizeof(T));
 				}
+				capacity = other.capacity;
+				mSize = other.mSize;
 				data = (T*)::operator new(capacity * sizeof(T));
 				for (int i = 0; i < mSize; ++i)
 					data[i] = other[i];
@@ -315,7 +318,7 @@ namespace custom {
 		 * @return  - a boolean value that indicates whether the Vector object's array is empty.
 		 */
 		[[nodiscard]] bool empty() const noexcept {
-			return (bool)mSize;
+			return mSize == 0;
 		}
 
 		/**
@@ -328,6 +331,40 @@ namespace custom {
 		 */
 		explicit operator bool() const noexcept {
 			return mSize != 0;
+		}
+
+		/**
+		 * Equivalence operator which compares two Vector objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain the same data.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current vector + the number of elements
+		 * in the other vector.
+		 *
+		 * @param other - a Vector object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two arrays contain the same data.
+		 */
+		bool operator==(const Vector<T>& other) const noexcept {
+			if (mSize != other.mSize)
+				return false;
+			for (size_t i = 0; i < mSize; ++i) {
+				if (data[i] != other.data[i])
+					return false;
+			}
+			return true;
+		}
+
+		/**
+		 * Not-equivalence operator which compares two Vector objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain different data.
+		 *
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current vector + the number of elements
+		 * in the other vector.
+		 *
+		 * @param other - a Vector object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two arrays contain different data.
+		 */
+		bool operator!=(const Vector<T>& other) const noexcept {
+			return !(*this == other);
 		}
 
 		/**
@@ -375,7 +412,7 @@ namespace custom {
 			if (right.mSize) {
 				Vector<T> res(*this);
 				for (size_t i = 0; i < right.mSize; ++i)
-					res.append(right[i]);
+					res.push_back(right[i]);
 				return res;
 			}
 			return *this;
