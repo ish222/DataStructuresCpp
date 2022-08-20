@@ -122,7 +122,7 @@ namespace custom {
 				return *this;
 #ifdef DEBUG
 			}
-			throw std::out_of_range("Cannot increment list iterator past end of list");
+			throw std::out_of_range("Cannot decrement list iterator to before beginning of list");
 #endif
 		}
 
@@ -141,7 +141,7 @@ namespace custom {
 				return temp;
 #ifdef DEBUG
 			}
-			throw std::out_of_range("Cannot increment list iterator past end of list");
+			throw std::out_of_range("Cannot decrement list iterator to before beginning of list");
 #endif
 		}
 
@@ -219,7 +219,7 @@ namespace custom {
 			DoublyListIterator result(*this);
 #ifdef DEBUG
 			size_t moved = 0;
-			while (mPtr && moved < amount) {
+			while (result.mPtr && moved < amount) {
 				result.mPtr = result.mPtr->next;
 				++moved;
 			}
@@ -649,9 +649,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			if (index > mLength)
+			if (mLength && index > mLength)
 				throw std::invalid_argument("Invalid index, out of range");
-			throw std::invalid_argument("Linked list is empty and uninitialised, use append instead");
+			throw std::runtime_error("Linked list is empty and uninitialised, use append instead");
 #endif
 		}
 
@@ -720,9 +720,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			if (index > mLength)
+			if (mLength && index > mLength)
 				throw std::invalid_argument("Invalid index, out of range");
-			throw std::invalid_argument("Linked list is empty and uninitialised, use append instead");
+			throw std::runtime_error("Linked list is empty and uninitialised, use append instead");
 #endif
 		}
 
@@ -771,16 +771,23 @@ namespace custom {
 		 * @param data - the data to be searched for in the list.
 		 * @return - an integer value representing the index of the node with the data.
 		 */
-		[[nodiscard]] int find(const T& data) const noexcept {
-			int index = 0;
-			Node* cur_node = head;
-			while (cur_node) {
-				if (cur_node->data == data)
-					return index;
-				cur_node = cur_node->next;
-				++index;
+		[[nodiscard]] int find(const T& data) const {
+#ifdef DEBUG
+			if (mLength) {
+#endif
+				int index = 0;
+				Node* cur_node = head;
+				while (cur_node) {
+					if (cur_node->data == data)
+						return index;
+					cur_node = cur_node->next;
+					++index;
+				}
+				return -1;
+#ifdef DEBUG
 			}
-			return -1;
+			throw std::runtime_error("Linked list is empty and uninitialized, there is nothing to find.");
+#endif
 		}
 
 		/**
@@ -912,7 +919,7 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			if (index >= mLength)
+			if (mLength && index >= mLength)
 				throw std::invalid_argument("Invalid index, out of range");
 			throw std::runtime_error("Error: Linked list is empty, there is nothing to erase");
 #endif
@@ -972,7 +979,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			throw std::invalid_argument("Invalid index, out of range");
+			if (mLength && index >= mLength)
+				throw std::invalid_argument("Invalid index, out of range");
+			throw std::runtime_error("Linked list is empty and uninitialized, there is nothing to get.");
 #endif
 		}
 
@@ -1013,7 +1022,9 @@ namespace custom {
 				}
 #ifdef DEBUG
 			}
-			throw std::invalid_argument("Invalid index, out of range");
+			if (mLength && index >= mLength)
+				throw std::invalid_argument("Invalid index, out of range");
+			throw std::runtime_error("Linked list is empty and uninitialized, there is nothing to get.");
 #endif
 		}
 
@@ -1124,19 +1135,17 @@ namespace custom {
 #ifdef DEBUG
 			if (mLength) {
 #endif
-				Node* cur_node = head->next;
-				Node* last = head;
+				Node* temp = nullptr;
+				Node* cur_node = head;
 				tail = head;
-				tail->last = cur_node;
-				Node* next;
 				while (cur_node) {
-					next = cur_node->next;
-					cur_node->next = last;
-					last->last = cur_node;
-					last = cur_node;
-					cur_node = next;
+					temp = cur_node->last;
+					cur_node->last = cur_node->next;
+					cur_node->next = temp;
+					cur_node = cur_node->last;
 				}
-				head = last;
+				if (temp)
+					head = temp->last;
 #ifdef DEBUG
 			} else
 				throw std::runtime_error("Error: linked list is empty and so cannot be reversed");
@@ -1153,11 +1162,7 @@ namespace custom {
 		 * @return - a reference to the data of the element at the specified index.
 		 */
 		[[nodiscard]] T& operator[](const size_t& index) {
-#ifdef DEBUG
-			if (index < mLength)
-#endif
-				return get(index);
-			throw std::invalid_argument("Invalid index, out of range");
+			return get(index);
 		}
 
 		/**
@@ -1170,11 +1175,7 @@ namespace custom {
 		 * @return - a const reference to the data of the element at the specified index.
 		 */
 		[[nodiscard]] const T& operator[](const size_t index) const {
-#ifdef DEBUG
-			if (index < mLength)
-#endif
-				return get(index);
-			throw std::invalid_argument("Invalid index, out of range");
+			return get(index);
 		}
 
 		/**

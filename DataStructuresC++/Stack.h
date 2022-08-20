@@ -62,20 +62,19 @@ namespace custom {
 		/**
 		 * Copy constructor for a Stack which will perform a deep copy, element-wise, of another Stack
 		 * object of the same type `T`.
-		 * **Time Complexity** = *O(n)* where n is the number of elements in the other stack.
+		 * **Time Complexity** = *O(n)* where n is the twice the number of elements in the other stack.
 		 * @param other - another Stack object of the same type `T` to be copied.
 		 */
-		Stack(const Stack<T>& other) noexcept: mLength(other.mLength) {
+		Stack(const Stack<T>& other) noexcept {
 			if (other.mLength) {
-				head = new Node(other.head->data);
-				Node* other_node = other.head->next;
-				while (other_node) {
-					push(other_node->data);
-					other_node = other_node->next;
-				}
+				const auto other_contents = other.contents();
+				mLength = 0;
+				for (size_t i = other_contents.size(); i > 0; --i)  // Needs to be pushed into the stack in reverse order.
+					push(other_contents[i-1]);
 				return;
 			}
 			head = nullptr;
+			mLength = 0;
 		}
 
 		/**
@@ -93,13 +92,10 @@ namespace custom {
 				if (mLength)
 					clear();
 				if (other.mLength) {
-					head = new Node(other.head->data);
-					mLength = 1;
-					Node* other_node = other.head->next;
-					while (other_node) {
-						push(other_node->data);
-						other_node = other_node->next;
-					}
+					const auto other_contents = other.contents();
+					mLength = 0;
+					for (size_t i = other_contents.size(); i > 0; --i)
+						push(other_contents[i-1]);
 				} else {
 					head = nullptr;
 					mLength = 0;
@@ -184,7 +180,7 @@ namespace custom {
 		 */
 		void push(std::initializer_list<T> list) noexcept {
 			for (auto it = list.begin(); it != list.end(); ++it)
-				append(std::move(*it));
+				push(std::move(*it));
 		}
 
 		/**
@@ -309,8 +305,8 @@ namespace custom {
 			if (right.mLength) {
 				std::vector<T> right_data = right.contents();
 				Stack<T> res(*this);
-				for (const T& i: right_data)
-					res.push(i);
+				for (size_t i = right_data.size(); i > 0; --i)
+					res.push(right_data[i-1]);
 				return res;
 			}
 			return *this;
@@ -325,7 +321,7 @@ namespace custom {
 		[[nodiscard]] std::vector<T> contents() const noexcept {
 			std::vector<T> elems(mLength);
 			Node* cur_node = head;
-			for (int i = 0; i < mLength; ++i) {
+			for (size_t i = 0; i < mLength; ++i) {
 				elems[i] = cur_node->data;
 				cur_node = cur_node->next;
 			}

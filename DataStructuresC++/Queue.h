@@ -376,6 +376,7 @@ namespace custom {
 				head = cur_node;
 			}
 			head = nullptr;
+			mLength = 0;
 		}
 
 		/**
@@ -772,13 +773,15 @@ namespace custom {
 				clear();
 		}
 
+	public:
+		using Queue<T>::clear;  /**< An alias used to cleanly access clear member function in the base class. */
+		using Queue<T>::contents;  /**< An alias used to cleanly access contents member function in the base class. */
+
 	private:
 		using typename Queue<T>::Node;  /**< An alias used to easily access the Node structure in the base class. */
 		using Queue<T>::head;  /**< An alias used to cleanly access head member in the base class. */
 		using Queue<T>::tail;  /**< An alias used to cleanly access tail member in the base class. */
 		using Queue<T>::mLength;  /**< An alias used to cleanly access mLength member in the base class. */
-		using Queue<T>::clear;  /**< An alias used to cleanly access clear member function in the base class. */
-		using Queue<T>::contents;  /**< An alias used to cleanly access contents member function in the base class. */
 
 		unsigned int priority_val;  /**< An unsigned integer to track the type of the priority applied to the queue. */
 		/**
