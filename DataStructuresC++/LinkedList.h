@@ -161,7 +161,7 @@ namespace custom {
 			ListIterator result(*this);
 #ifdef DEBUG
 			size_t moved = 0;
-			while (mPtr && moved < amount) {
+			while (result.mPtr && moved < amount) {
 				result.mPtr = result.mPtr->next;
 				++moved;
 			}
@@ -706,6 +706,18 @@ namespace custom {
 				other_cur = other_cur->next;
 			}
 			return true;
+		}
+
+		/**
+		 * Not-equivalence operator which compares two LinkedList objects of the same type `T`, element-wise, and returns
+		 * a boolean value indicating whether the two objects contain different data.
+		 * **Time Complexity** = *O(n)* where n is the number of elements in the current list + the number of elements
+		 * in the other list.
+		 * @param other - a LinkedList object of the same type `T`, whose data to compare against.
+		 * @return - a boolean value indicating whether the two lists contain different data.
+		 */
+		[[nodiscard]] bool operator!=(const LinkedList<T>& other) const noexcept {
+			return !(*this == other);
 		}
 
 		/**

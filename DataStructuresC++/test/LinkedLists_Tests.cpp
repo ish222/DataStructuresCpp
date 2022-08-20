@@ -74,22 +74,78 @@ TEST (LinkedListTest /*test suite name*/, Methods /*test name*/) {
 
 	list.erase(0);
 	ASSERT_EQ (list.front(), 1);
-	ASSERT_THROW(list.erase(100), std::invalid_argument);
-	ASSERT_THROW(list.insert(10, 100), std::invalid_argument);
+	ASSERT_THROW (list.erase(100), std::invalid_argument);
+	ASSERT_THROW (list.insert(10, 100), std::invalid_argument);
+
+	custom::LinkedList<int> list3 = {10, 11, 12, 13};
+	custom::LinkedList<int> list4 = list + list3;
+	ASSERT_EQ (list4.front(), 1);
+	ASSERT_EQ (list4.back(), 13);
+	ASSERT_EQ (list4.length(), 13);
+
+	custom::LinkedList<int> list_r = {1,2,3,4,5};
+	list_r.reverse_order();
+	custom::LinkedList<int> list_rev = {5,4,3,2,1};
+	ASSERT_EQ (list_r, list_rev);
 }
 
 TEST (LinkedListTest /*test suite name*/, EmptyListExceptions /*test name*/) {
 	// Empty list exception test
 	custom::LinkedList<int> list2;
-	ASSERT_TRUE(list2.empty());
-	ASSERT_THROW(list2.erase(0), std::runtime_error);
-	ASSERT_THROW(list2.insert(0, 0), std::runtime_error);
+	ASSERT_TRUE (list2.empty());
+	ASSERT_THROW (list2.erase(0), std::runtime_error);
+	ASSERT_THROW (list2.insert(0, 0), std::runtime_error);
 	ASSERT_TRUE (list2.contents().empty());
-	ASSERT_THROW(list2.find(10), std::runtime_error);
-	ASSERT_THROW(list2.get(0), std::runtime_error);
-	ASSERT_THROW(list2.front(), std::runtime_error);
-	ASSERT_THROW(list2.back(), std::runtime_error);
-	ASSERT_THROW(list2.pop_front(), std::runtime_error);
-	ASSERT_THROW(list2.pop_back(), std::runtime_error);
-	ASSERT_THROW(list2[0], std::runtime_error);
+	ASSERT_THROW (static_cast<void>(list2.find(10)), std::runtime_error);
+	ASSERT_THROW (static_cast<void>(list2.get(0)), std::runtime_error);
+	ASSERT_THROW (list2.front(), std::runtime_error);
+	ASSERT_THROW (list2.back(), std::runtime_error);
+	ASSERT_THROW (list2.pop_front(), std::runtime_error);
+	ASSERT_THROW (list2.pop_back(), std::runtime_error);
+	ASSERT_THROW (static_cast<void>(list2[0]), std::runtime_error);
+}
+
+TEST (LinkedListTest /*test suite name*/, IteratorTest /*test name*/) {
+	custom::LinkedList<int> list = {1,2,3,4,5,6,7,8,9};
+
+	// Range-based for loop
+	int j = 1;
+	for (const int& i : list) {
+		ASSERT_EQ (i, j++);
+	}
+
+	// Iterator tests, with methods
+	auto it = list.begin();
+	ASSERT_EQ (*it, 1);
+	it++;
+	ASSERT_EQ (*it, 2);
+	++it;
+	ASSERT_EQ (*it, 3);
+	it = list.end();
+	ASSERT_EQ (it, nullptr);
+	ASSERT_THROW(it.advance(100), std::runtime_error);
+	it = list.begin();
+	it.advance(3);
+	ASSERT_EQ (*it, 4);
+	auto it3 = it.next();
+	ASSERT_EQ (*it3, 5);
+	it  = it + 1;
+	ASSERT_EQ (*it, 5);
+	it += 2;
+	ASSERT_EQ (*it, 7);
+	ASSERT_THROW (it.advance(100), std::invalid_argument);
+	it = list.end();
+	ASSERT_THROW (++it, std::out_of_range);
+	it = list.end();
+	ASSERT_THROW (it++, std::out_of_range);
+	it = list.begin();
+	ASSERT_THROW (it=it+100, std::out_of_range);
+	it = list.begin();
+	ASSERT_THROW (it+=100, std::out_of_range);
+	auto it2 = list.begin();
+	it = list.begin();
+	ASSERT_TRUE (it == it2);
+	++it;
+	ASSERT_FALSE (it == it2);
+	ASSERT_TRUE (it != it2);
 }
