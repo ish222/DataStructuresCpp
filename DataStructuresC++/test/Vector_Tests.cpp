@@ -14,7 +14,7 @@ TEST (VectorTests /*test suite name*/, Initialisation /*test name*/) {
 	custom::Vector<int> vector_val(10);
 	ASSERT_EQ (vector_val.size(), 0);
 	
-	// Initializer list initialization
+	// Initializer vector initialization
 	custom::Vector<int> vector2 = {1,2,3,4,5};
 	ASSERT_EQ (vector2.size(), 5);
 	
@@ -74,4 +74,76 @@ TEST (VectorTests /*test suite name*/, EmptyListExceptions /*test name*/) {
 	ASSERT_THROW (static_cast<void>(vector2.back()), std::runtime_error);
 	ASSERT_THROW (static_cast<void>(vector2.front()), std::runtime_error);
 	ASSERT_THROW (static_cast<void>(vector2[0]), std::invalid_argument);
+}
+
+TEST (VectorTests /*test suite name*/, IteratorTest /*test name*/) {
+	custom::Vector<int> vector = {1,2,3,4,5,6,7,8,9};
+	
+	// Range-based for loop
+	int j = 1;
+	for (const int& i : vector) {
+		ASSERT_EQ (i, j++);
+	}
+
+	// Iterator tests, with methods
+	auto it = vector.begin();
+	ASSERT_EQ (*it, 1);
+	it++;
+	ASSERT_EQ (*it, 2);
+	it--;
+	ASSERT_EQ (*it, 1);
+	++it;
+	ASSERT_EQ (*it, 2);
+	--it;
+	ASSERT_EQ (*it, 1);
+	it = vector.end();
+	ASSERT_THROW(it.advance(100), std::runtime_error);
+	ASSERT_THROW(it++, std::out_of_range);
+	ASSERT_THROW(++it, std::out_of_range);
+	it = vector.begin();
+	it.advance(3);
+	ASSERT_EQ (*it, 4);
+	it.advance(-3);
+	ASSERT_EQ (*it, 1);
+	it  = it + 1;
+	ASSERT_EQ (*it, 2);
+	it += 2;
+	ASSERT_EQ (*it, 4);
+	it = it - 1;
+	ASSERT_EQ (*it, 3);
+	it -= 2;
+	ASSERT_EQ (*it, 1);
+	ASSERT_THROW (it.advance(100), std::invalid_argument);
+	it = vector.end();
+	ASSERT_THROW (++it, std::out_of_range);
+	it = vector.end();
+	ASSERT_THROW (it++, std::out_of_range);
+	it = vector.begin();
+	ASSERT_THROW (--it, std::out_of_range);
+	it = vector.begin();
+	ASSERT_THROW (it--, std::out_of_range);
+	it = vector.begin();
+	ASSERT_THROW (it.advance(-100), std::invalid_argument);
+	it = vector.begin();
+	ASSERT_THROW (it=it+100, std::out_of_range);
+	it = vector.begin();
+	ASSERT_THROW (it+=100, std::out_of_range);
+	it = vector.end();
+	ASSERT_THROW (it=it-100, std::out_of_range);
+	it = vector.end();
+	ASSERT_THROW (it-=100, std::out_of_range);
+	auto it2 = vector.begin();
+	it = vector.begin();
+	ASSERT_TRUE (it == it2);
+	++it;
+	ASSERT_FALSE (it == it2);
+	ASSERT_TRUE (it != it2);
+	--it;
+	ASSERT_TRUE (it == it2);
+
+	custom::Vector<std::vector<int>> vec3 = {{1,2,3,4}, {1,2,3}};
+	auto it3 = vec3.begin();
+	ASSERT_EQ (it3->size(), 4);
+	++it3;
+	ASSERT_EQ (it3->size(), 3);
 }

@@ -234,7 +234,7 @@ namespace custom {
 		}
 
 		/**
-		 * Member access operator allows access to a LinkedList member function directly from the iterator.
+		 * Member access operator allows access to the member function of the object being iterated over, directly from the iterator.
 		 * @return - a pointer to the current position of the iterator.
 		 */
 		ListType* operator->() const noexcept {

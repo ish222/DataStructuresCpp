@@ -7,6 +7,289 @@
 #include <utility>
 
 namespace custom {
+
+	/**
+	 * An iterator class for forwards or backwards iterating over the elements of a Vector. Provides
+	 * functionality for incrementing or decrementing the iterator and allows for C++ operations such as range
+	 * based for loops and other iterator methods. The current position of the iterator along with the Vector's
+	 * beginning and, past the ending positions are tracked using pointers.
+	 * @tparam Vector - the Vector type to iterate over.
+	 */
+	template<typename Vector>
+	class VectorIterator {
+	public:
+		using DataType = typename Vector::Type;  /**< An alias for the type of the data in the DoublyLinkedList. */
+
+	public:
+		/**
+		 * Default Vector iterator constructor which sets the member pointers of the iterator to `nullptr`.
+		 */
+		VectorIterator() noexcept : mPtr(nullptr), mBegin(nullptr), mEnd(nullptr) {}
+
+		/**
+		 * Overloaded iterator constructor which provides a pointer to an element in the Vector.
+		 * @param ptr - a pointer to a valid position in the Vector.
+		 * @param begin - a pointer to the first element in the Vector.
+		 * @param end - a pointer past the last element in the Vector.
+		 */
+		VectorIterator(DataType* ptr, DataType* begin, DataType* end) noexcept : mPtr(ptr), mBegin(begin), mEnd(end) {}
+
+		/**
+		 * Copy constructor for the iterator which copies the other iterator's member pointers.
+		 * @param other - an iterator to copy.
+		 */
+		VectorIterator(const VectorIterator& other) noexcept : mPtr(other.mPtr), mBegin(other.mBegin), mEnd(other.mEnd) {}
+
+		/**
+		 * Copy assignment operator which copies anther Vector iterator into the current object.
+		 * Checks for and ignores self-assignment.
+		 * @param other - an iterator to copy.
+		 * @return - a reference to the resultant current object.
+		 */
+		VectorIterator& operator=(const VectorIterator& other) noexcept {
+			if (this != &other) {
+				mPtr = other.mPtr;
+				mBegin = other.mBegin;
+				mEnd = other.mEnd;
+			}
+			return *this;
+		}
+
+		/**
+		 * Move constructor for the iterator.
+		 * @param other - an iterator to move into the current object.
+		 */
+		VectorIterator(VectorIterator&& other) noexcept : mPtr(other.mPtr), mBegin(other.mBegin), mEnd(other.mEnd) {
+			other.mPtr = nullptr;
+			other.mEnd = nullptr;
+		}
+
+		/**
+		 * Move assignment operator. Checks for and ignores self-assignment.
+		 * @param other - an iterator object to move into the current object.
+		 * @return - a reference to the resultant current object.
+		 */
+		VectorIterator& operator=(VectorIterator&& other) noexcept {
+			if (this != &other) {
+				mPtr = other.mPtr;
+				mBegin = other.mBegin;
+				mEnd = other.mEnd;
+				other.mPtr = nullptr;
+				other.mBegin = nullptr;
+				other.mEnd = nullptr;
+			}
+			return *this;
+		}
+
+		/**
+		 * Prefix-increment operator which increments the iterator to the next position. This will throw an
+		 * `out_of_range` exception if an invalid iterator, one which points to an element before the beginning
+		 * or past the end of the vector, is incremented.
+		 * @return - a reference to the current object after incrementing.
+		 */
+		VectorIterator& operator++() {
+			if (mPtr != mEnd) {
+				++mPtr;
+				return *this;
+			}
+			throw std::out_of_range("Cannot increment vector iterator past end of vector");
+		}
+
+		/**
+		 * Postfix-increment operator which increments the iterator to the next position, but returns a copy of the
+		 * iterator at its previous position. This will throw an `out_of_range` exception if an invalid iterator, one which
+		 * points to an element before the beginning or past the end of the vector, is incremented.
+		 * @return - a copy VectorIterator object at the position before incrementing.
+		 */
+		const VectorIterator operator++(int) {
+			if (mPtr != mEnd) {
+				const VectorIterator temp(*this);
+				++*this;
+				return temp;
+			}
+			throw std::out_of_range("Cannot increment vector iterator past end of vector");
+		}
+
+		/**
+		 * Prefix-decrement operator which decrements the iterator to the next position. This will throw an
+		 * `out_of_range` exception if an invalid iterator, one which points to an element before the beginning
+		 * or past the end of the vector, is decremented.
+		 * @return - a reference to the current object after decrementing.
+		 */
+		VectorIterator& operator--() {
+			if (mPtr != mBegin) {
+				--mPtr;
+				return *this;
+			}
+			throw std::out_of_range("Cannot decrement vector iterator before beginning of vector");
+		}
+
+		/**
+		 * Postfix-decrement operator which decrements the iterator to the next position. This will throw an
+		 * `out_of_range` exception if an invalid iterator, one which points to an element before the beginning
+		 * or past the end of the vector, is decremented.
+		 * @return - a copy VectorIterator object at the position before decrementing.
+		 */
+		const VectorIterator operator--(int) {
+			if (mPtr != mBegin) {
+				const VectorIterator temp(*this);
+				--*this;
+				return temp;
+			}
+			throw std::out_of_range("Cannot decrement vector iterator before beginning of vector");
+		}
+
+		/**
+		 * Advances the iterator by a given value, which could be negative to advance backwards. If the value is out of
+		 * the range of the iterator, an `invalid_argument` exception is thrown.
+		 *
+		 * @param distance - an unsigned integer to represent the number of positions to advance.
+		 * @return - a reference to the current object.
+		 */
+		VectorIterator& advance(const int& distance) {
+			if (mPtr != mEnd && mPtr != (mBegin-1)) {
+				int moved = 0;
+				if (distance > 0) {
+					while (mPtr != mEnd && moved < distance) {
+						++*this;
+						++moved;
+					}
+				} else {
+					while (mPtr != mBegin && moved > distance) {
+						--*this;
+						--moved;
+					}
+				}
+				if (moved != distance)
+					throw std::invalid_argument("Distance out of range of iterator");
+				return *this;
+			}
+			throw std::runtime_error("Iterator is at an invalid position, cannot advance");
+		}
+
+		/**
+		 * Plus operator which advances the iterator by the distance specified. If the distance goes out of the
+		 * range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a copy of an advanced iterator.
+		 */
+		VectorIterator operator+(const size_t& amount) {
+			VectorIterator result(*this);
+			size_t moved = 0;
+			while (result.mPtr != result.mEnd && moved < amount) {
+				++result.mPtr;
+				++moved;
+			}
+			if (moved == amount)
+				return result;
+			throw std::out_of_range("Cannot move vector iterator past end of vector");
+		}
+
+		/**
+		 * Plus-equals operator which advances the current object by the distance specified. If the distance goes
+		 * out of the range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a reference to the current advanced iterator.
+		 */
+		VectorIterator& operator+=(const size_t& amount) {
+			size_t moved = 0;
+			while (mPtr != mEnd && moved < amount) {
+				++mPtr;
+				++moved;
+			}
+			if (moved == amount)
+				return *this;
+			throw std::out_of_range("Cannot move vector iterator past end of vector");
+		}
+
+		/**
+		 * Minus operator which advances the iterator backwards by the distance specified. If the distance goes out
+		 * of the range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a copy of an advanced iterator.
+		 */
+		VectorIterator operator-(const size_t& amount) {
+			VectorIterator result(*this);
+			size_t moved = 0;
+			while (result.mPtr != result.mBegin && moved < amount) {
+				--result.mPtr;
+				++moved;
+			}
+			if (moved == amount)
+				return result;
+			throw std::out_of_range("Cannot move vector iterator before beginning of vector");
+		}
+
+		/**
+		 * Minus-equals operator which advances the current object backwards by the distance specified. If the
+		 * distance goes out of the range of the iterator, an `out_of_range` exception is thrown.
+		 * @param amount - an unsigned integer to represent the distance to advance the iterator by.
+		 * @return - a reference to the current advanced iterator.
+		 */
+		VectorIterator& operator-=(const size_t& amount) {
+			size_t moved = 0;
+			while (mPtr != mBegin && moved < amount) {
+				--mPtr;
+				++moved;
+			}
+			if (moved == amount)
+				return *this;
+			throw std::out_of_range("Cannot move vector iterator before beginning of vector");
+		}
+
+		/**
+		 * Equivalence operator which compares two Vector iterators to see if they are at the same position.
+		 * @param other - another Vector iterator to compare.
+		 * @return - a boolean indicating if the two iterators are at the same position.
+		 */
+		bool operator==(const VectorIterator& other) const noexcept {
+			return mPtr == other.mPtr;
+		}
+
+		/**
+		 * Not-equivalence operator which compares two Vector iterators to see if they are not at the same position.
+		 * @param other - another Vector iterator to compare.
+		 * @return - a boolean indicating if the two iterators are not at the same position.
+		 */
+		bool operator!=(const VectorIterator& other) const noexcept {
+			return mPtr != other.mPtr;
+		}
+
+		/**
+		 * De-reference operator which returns the data at the current iterator position. If the iterator points
+		 * to an invalid position, a `runtime_error` exception is thrown.
+		 * @return - A reference to the data at the current iterator position.
+		 */
+		DataType& operator*() const {
+			if (mPtr != mEnd && mPtr != (mBegin-1))
+				return *mPtr;
+			throw std::runtime_error("Iterator does not point to a valid position, cannot dereference");
+		}
+
+		/**
+		 * Member access operator allows access to the member function of the object being iterated over, directly from the iterator.
+		 * @return - a pointer to the current position of the iterator.
+		 */
+		DataType* operator->() const noexcept {
+			return mPtr;
+		}
+
+		/**
+		 * Returns the length of the Vector object being iterated over.
+		 * @return - an unsigned integer representing the length of the Vector object.
+		 */
+		size_t _size() const noexcept {
+			return Vector::mSize;
+		}
+
+		virtual ~VectorIterator() = default;
+
+	private:
+		DataType* mPtr;  /**< A pointer of type Vector::DataType which points to the current position in the Vector. */
+		DataType* mBegin;  /**< A pointer of type Vector::DataType which points to the beginning position of the Vector. */
+		DataType* mEnd;  /**< A pointer of type Vector::DataType which points past the ending position of the Vector. */
+	};
+
 	/**
 	 * A template implementation of a dynamic array. Automatically grows and shrinks
 	 * its capacity based on the number of elements in the array. Provides *O(1)* element retrieval and on average,
@@ -20,6 +303,12 @@ namespace custom {
 	 */
 	template<typename T>
 	class Vector {
+	public:
+		using Type = T;
+		using Iterator = VectorIterator<Vector>;
+
+		friend class VectorIterator<Vector>;
+
 	public:
 		/**
 		 * Default constructor of the Vector class. Allocates memory on the heap for the capacity provided.
@@ -54,7 +343,7 @@ namespace custom {
 			else
 				capacity = mSize + mSize / 2;
 			data = (T*)::operator new(capacity * sizeof(T));
-			for (int i = 0; i < mSize; ++i)
+			for (size_t i = 0; i < mSize; ++i)
 				data[i] = *(init.begin() + i);
 		}
 
@@ -63,7 +352,7 @@ namespace custom {
 		 * deep copy of another vector of the same type `T`.
 		 *
 		 * **Time Complexity** = *O(n)* where n is the number of elements in the other vector.
-		 * 
+		 *
 		 * @param other
 		 */
 		Vector(const Vector<T>& other) noexcept: mSize(other.mSize), capacity(other.capacity) {
@@ -81,7 +370,7 @@ namespace custom {
 		 *
 		 * **Time Complexity** = *O(n)* where n is the number of elements in the other vector + the number of elements
 		 * in the existing vector.
-		 * 
+		 *
 		 * @param other - the Vector to be copied.
 		 * @return - a reference to the current Vector object.
 		 */
@@ -107,7 +396,7 @@ namespace custom {
 		 *
 		 * \note
 		 * As expected of move operations, the other Vector object will be uninitialized.
-		 * 
+		 *
 		 * **Time Complexity** = *O(1)*.
 		 *
 		 * @param other - an *r-value reference* to the Vector object to be moved.
@@ -121,10 +410,10 @@ namespace custom {
 		/**
 		 * Move assignment operator will move an existing Vector object's data into this object. Both Vector objects
 		 * must be of the same type `T`. This function will check for and ignore self assignment.
-		 * 
+		 *
 		 * \note
 		 * If the current object, that is being copied into, is not empty, **it will be cleared**.
-		 * 
+		 *
 		 * **Time Complexity** = *O(n)* where n is the number of elements in the existing Vector object.
 		 *
 		 * @param other - an *r-value reference* to the Vector object to be moved.
@@ -186,7 +475,7 @@ namespace custom {
 		 *
 		 * **Time Complexity** = *O(n)* where n is the number elements in the initialiser list + the number of elements
 		 * in the existing array (if growth is necessary).
-		 * 
+		 *
 		 * @param list - the initialiser list whose elements will be appended to the array.
 		 *
 		 * @see <a href="https://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a>
@@ -208,7 +497,7 @@ namespace custom {
 		 *
 		 * **Time Complexity** = *O(1)* if growth is unnecessary otherwise *O(n)* where n is the number of elements
 		 * in the existing array.
-		 * 
+		 *
 		 * @tparam Ts - dummy template parameters to hold the arguments for the object constructor.
 		 * @param args - the arguments to be forwarded to the object of type `T`'s constructor.
 		 * @return - a reference to the object created.
@@ -231,7 +520,7 @@ namespace custom {
 		 *
 		 * **Time Complexity** = *O(1)* if no shrink is necessary, otherwise *O(n)* where n is the number of elements in
 		 * the array.
-		 * 
+		 *
 		 * @see shrink()
 		 */
 		void pop_back() {
@@ -248,7 +537,7 @@ namespace custom {
 		 * exception will be thrown.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return - a reference to the object of type `T` at the beginning of the array.
 		 */
 		T& front() {
@@ -262,7 +551,7 @@ namespace custom {
 		 * const Vector objects. If the array is empty, a runtime exception will be thrown.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return - a const reference to the object of type `T` at the beginning of the array.
 		 */
 		const T& front() const {
@@ -276,7 +565,7 @@ namespace custom {
 		 * will be thrown.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return - a reference to the object of type `T` at the end of the array.
 		 */
 		T& back() {
@@ -290,7 +579,7 @@ namespace custom {
 		 * const Vector objects. If the array is empty, a runtime exception will be thrown.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return - a const reference to the object of type `T` at the end of the array.
 		 */
 		const T& back() const {
@@ -303,7 +592,7 @@ namespace custom {
 		 * Returns the number of elements in the array.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return - an unsigned integer representing the number of elements in the array.
 		 */
 		[[nodiscard]] size_t size() const noexcept {
@@ -314,7 +603,7 @@ namespace custom {
 		 * Returns a boolean value that indicates whether the Vector object's array is empty.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return  - a boolean value that indicates whether the Vector object's array is empty.
 		 */
 		[[nodiscard]] bool empty() const noexcept {
@@ -326,7 +615,7 @@ namespace custom {
 		 * it evaluates to `false`.
 		 *
 		 * **Time Complexity** = *O(1)*.
-		 * 
+		 *
 		 * @return - the boolean value of whether the size of the array is 0.
 		 */
 		explicit operator bool() const noexcept {
@@ -372,7 +661,7 @@ namespace custom {
 		 * If the index provided is out of bounds, an invalid argument exception is thrown.
 		 *
 		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
-		 * 
+		 *
 		 * @param index - an unsigned integer indicating the index in the array for whose data to return.
 		 *
 		 * @return - a reference, of type `T`, to the data at the element specified by index.
@@ -416,6 +705,24 @@ namespace custom {
 				return res;
 			}
 			return *this;
+		}
+
+		/**
+		 * Creates and returns an iterator with the position of the beginning of the vector.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a VectorIterator object with the position of the beginning element of the vector.
+		 */
+		Iterator begin() const noexcept {
+			return Iterator(data, data, &data[mSize]);
+		}
+
+		/**
+		 * Creates and returns an iterator with the position past the end of the vector.
+		 * **Time Complexity** = *O(1)*.
+		 * @return - a VectorIterator object with the position past the ending element of the vector.
+		 */
+		Iterator end() const noexcept {
+			return Iterator(&data[mSize], data, &data[mSize]);
 		}
 
 		/**

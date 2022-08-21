@@ -341,6 +341,14 @@ namespace custom {
 		}
 
 		/**
+		 * Member access operator allows access to the member function of the object being iterated over, directly from the iterator.
+		 * @return - a pointer to the current position of the iterator.
+		 */
+		ListType* operator->() const noexcept {
+			return mPtr;
+		}
+
+		/**
 		 * Returns the length of the DoublyLinkedList object being iterated over.
 		 * @return - an unsigned integer representing the length of the DoublyLinkedList object.
 		 */
