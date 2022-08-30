@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "Array.h"
 #include "BinarySearchTree.h"
 #include "BinaryTree.h"
 #include "DoublyLinkedList.h"
@@ -225,6 +226,11 @@ int main() {
 		vector2.emplace_back(9);
 		for (int i = 0; i < vector2.size(); ++i)
 			std::cout << vector2[i] << "\t";
+		std::cout << "\n\n";
+
+		Array<int,9> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+		for (int i = 0; i < arr.size(); ++i)
+			std::cout << arr[i] << "\t";
 		std::cout << "\n\n";
 
 	}

@@ -6,5 +6,5 @@ SET(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions("DEBUG=$<CONFIG:Debug>")
 add_compile_definitions("RELEASE=$<CONFIG:Release>")
-ADD_EXECUTABLE(${PROJECT_NAME} main.cpp BinarySearchTree.h BinaryTree.h Graph.h LinkedList.h Map.h Queue.h Stack.h Tree.h Vector.h SortingAlgorithms.h DoublyLinkedList.h)
+ADD_EXECUTABLE(${PROJECT_NAME} main.cpp BinarySearchTree.h BinaryTree.h Graph.h LinkedList.h Map.h Queue.h Stack.h Tree.h Vector.h SortingAlgorithms.h DoublyLinkedList.h Array.h)
 add_subdirectory(test)

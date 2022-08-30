@@ -18,7 +18,7 @@ namespace custom {
 	template<typename Vector>
 	class VectorIterator {
 	public:
-		using DataType = typename Vector::Type;  /**< An alias for the type of the data in the DoublyLinkedList. */
+		using DataType = typename Vector::Type;  /**< An alias for the type of the data in the Vector. */
 
 	public:
 		/**
@@ -304,14 +304,20 @@ namespace custom {
 	template<typename T>
 	class Vector {
 	public:
-		using Type = T;
-		using Iterator = VectorIterator<Vector>;
+		using Type = T;  /**< An alias for the type of data `T` to be used by external utility classes. */
+		using Iterator = VectorIterator<Vector>;  /**< An alias for the Vector iterator class. */
 
-		friend class VectorIterator<Vector>;
+		friend class VectorIterator<Vector>;  /**< Friend Vector iterator class, allowing it to access private members. */
 
 	public:
 		/**
-		 * Default constructor of the Vector class. Allocates memory on the heap for the capacity provided.
+		 * Default constructor of Vector class which initialises an empty vector array with no
+		 * allocated memory. Sets member variables to their default values.
+		 */
+		Vector() noexcept: capacity{0}, mSize{0}, data{nullptr} {}
+
+		/**
+		 * Overloaded constructor of the Vector class. Allocates memory on the heap for the capacity provided.
 		 * This method is noexcept, meaning that failure to allocate memory or
 		 * a <a href="https://en.cppreference.com/w/cpp/memory/new/bad_alloc">`std::bad_alloc`</a>
 		 * exception will terminate the program.
@@ -319,7 +325,7 @@ namespace custom {
 		 *
 		 * @param capacity - an unsigned integer to specify the total capacity of the array at initialization.
 		 */
-		explicit Vector(size_t capacity = 10) noexcept: capacity(capacity), mSize(0) {
+		explicit Vector(size_t capacity) noexcept: capacity(capacity), mSize(0) {
 			data = (T*)::operator new(capacity *
 			                          sizeof(T));  // ::operator new is analogous to malloc i.e. it does not call the constructor of the object within
 		}
@@ -660,14 +666,14 @@ namespace custom {
 		 * Square brackets operator to access elements of a given index in the array.
 		 * If the index provided is out of bounds, an invalid argument exception is thrown.
 		 *
-		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
+		 * **Time Complexity** = *O(1)*.
 		 *
 		 * @param index - an unsigned integer indicating the index in the array for whose data to return.
 		 *
 		 * @return - a reference, of type `T`, to the data at the element specified by index.
 		 */
 		[[nodiscard]] T& operator[](const size_t& index) {
-			if (index >= 0 && index < mSize)
+			if (index >= 0 && index < capacity)
 				return data[index];
 			throw std::invalid_argument("Invalid index, out of range");
 		}
@@ -676,14 +682,14 @@ namespace custom {
 		 * Square brackets operator used to access elements of a given index in the array.
 		 * If the index provided is out of bounds, an invalid argument exception is thrown.
 		 *
-		 * **Time Complexity** = *O(n)* where n is the number of elements in the array.
+		 * **Time Complexity** = *O(1)*.
 		 *
 		 * @param index - an unsigned integer indicating the index in the array for whose data to return.
 		 *
 		 * @return - a const reference, of type `T`, to the data at the element specified by index.
 		 */
 		[[nodiscard]] const T& operator[](const size_t& index) const {
-			if (index >= 0 && index < mSize)
+			if (index >= 0 && index < capacity)
 				return data[index];
 			throw std::invalid_argument("Invalid index, out of range");
 		}
@@ -761,7 +767,7 @@ namespace custom {
 		 */
 		void grow() noexcept {
 			if (!data) {
-				capacity = 10;
+				capacity = 1;
 				data = (T*)::operator new(
 						capacity * sizeof(T));// Allocates memory without calling constructor, analogous to malloc
 				return;
